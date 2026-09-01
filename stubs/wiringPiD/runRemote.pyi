@@ -1,0 +1,9 @@
+"""nanobind bindings for wiringPiD/runRemote.h"""
+
+
+
+def run_remote_commands(fd: int) -> None: ...
+
+def get_no_local_pins() -> int: ...
+
+def set_no_local_pins(value: int) -> None: ...

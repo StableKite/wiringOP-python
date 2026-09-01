@@ -1,0 +1,778 @@
+DEPENDENCY_GATE_OK nanobind=2.14.0 exact_blobs=3 wheel_sha256=OK
+UPSTREAM_GATE_OK commit=a7921ca2f5c124203be10d3418db70a2e15f3c10 gitlink=160000
++ /opt/pyvenv/bin/python3 -m pip install --no-index --no-deps --target /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/nanobind-package /mnt/data/.deps/pypi/nanobind-2.14.0-py3-none-any.whl
+WARNING: The directory '/home/oai/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /mnt/data/.deps/pypi/nanobind-2.14.0-py3-none-any.whl
+Installing collected packages: nanobind
+Successfully installed nanobind-2.14.0
++ cmake -S . -B /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/package-default-config -DCMAKE_BUILD_TYPE=Release
+-- The C compiler identification is GNU 14.2.0
+-- The CXX compiler identification is GNU 14.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Python: /opt/pyvenv/bin/python3 (found suitable version "3.13.5", minimum required is "3.9") found components: Interpreter Development.Module
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Configuring done (13.5s)
+-- Generating done (0.1s)
+-- Build files have been written to: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/package-default-config
+PACKAGE_DEFAULT_CONFIG_OK production=yes nanobind=auto overlays=2
++ /opt/pyvenv/bin/python3 tools/prepare_wiringop.py
+/mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/upstream/wiringOP
++ /opt/pyvenv/bin/python3 tools/generate_manifest.py --output /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/api_manifest.generated.json
+[01/54] devLib/ds1302.h: f=8 s=0 v=0 m=0
+[02/54] devLib/font.h: f=0 s=0 v=3 m=0
+[03/54] devLib/gertboard.h: f=4 s=0 v=0 m=0
+[04/54] devLib/lcd.h: f=12 s=0 v=0 m=1
+[05/54] devLib/lcd128x64.h: f=15 s=0 v=0 m=0
+[06/54] devLib/maxdetect.h: f=2 s=0 v=0 m=0
+[07/54] devLib/piFace.h: f=1 s=0 v=0 m=0
+[08/54] devLib/piGlow.h: f=4 s=0 v=0 m=6
+[09/54] devLib/piNes.h: f=2 s=0 v=0 m=9
+[10/54] devLib/scrollPhat.h: f=12 s=0 v=0 m=0
+[11/54] devLib/scrollPhatFont.h: f=0 s=0 v=2 m=0
+[12/54] version.h: f=0 s=0 v=0 m=3
+[13/54] wiringPi/ads1115.h: f=1 s=0 v=0 m=14
+[14/54] wiringPi/bmp180.h: f=1 s=0 v=0 m=0
+[15/54] wiringPi/drcNet.h: f=1 s=0 v=0 m=0
+[16/54] wiringPi/drcSerial.h: f=1 s=0 v=0 m=0
+[17/54] wiringPi/ds18b20.h: f=1 s=0 v=0 m=0
+[18/54] wiringPi/font.h: f=0 s=1 v=6 m=1
+[19/54] wiringPi/htu21d.h: f=1 s=0 v=0 m=0
+[20/54] wiringPi/max31855.h: f=1 s=0 v=0 m=0
+[21/54] wiringPi/max5322.h: f=1 s=0 v=0 m=0
+[22/54] wiringPi/mcp23008.h: f=1 s=0 v=0 m=0
+[23/54] wiringPi/mcp23016.h: f=1 s=0 v=0 m=0
+[24/54] wiringPi/mcp23016reg.h: f=0 s=0 v=0 m=14
+[25/54] wiringPi/mcp23017.h: f=1 s=0 v=0 m=0
+[26/54] wiringPi/mcp23s08.h: f=1 s=0 v=0 m=0
+[27/54] wiringPi/mcp23s17.h: f=1 s=0 v=0 m=0
+[28/54] wiringPi/mcp23x08.h: f=0 s=0 v=0 m=33
+[29/54] wiringPi/mcp23x0817.h: f=0 s=0 v=0 m=44
+[30/54] wiringPi/mcp3002.h: f=1 s=0 v=0 m=0
+[31/54] wiringPi/mcp3004.h: f=1 s=0 v=0 m=0
+[32/54] wiringPi/mcp3422.h: f=1 s=0 v=0 m=8
+[33/54] wiringPi/mcp4802.h: f=1 s=0 v=0 m=0
+[34/54] wiringPi/oled.h: f=9 s=2 v=2 m=27
+[35/54] wiringPi/pcf8574.h: f=1 s=0 v=0 m=0
+[36/54] wiringPi/pcf8591.h: f=1 s=0 v=0 m=0
+[37/54] wiringPi/pseudoPins.h: f=1 s=0 v=0 m=0
+[38/54] wiringPi/rht03.h: f=1 s=0 v=0 m=0
+[39/54] wiringPi/sn3218.h: f=1 s=0 v=0 m=0
+[40/54] wiringPi/softPwm.h: f=3 s=0 v=0 m=0
+[41/54] wiringPi/softServo.h: f=2 s=0 v=0 m=0
+[42/54] wiringPi/softTone.h: f=3 s=0 v=0 m=0
+[43/54] wiringPi/sr595.h: f=1 s=0 v=0 m=0
+[44/54] wiringPi/w25q64.h: f=16 s=0 v=0 m=0
+[45/54] wiringPi/wiringPi.h: f=63 s=11 v=12 m=438
+[46/54] wiringPi/wiringPiI2C.h: f=8 s=0 v=0 m=0
+[47/54] wiringPi/wiringPiSPI.h: f=4 s=0 v=0 m=0
+[48/54] wiringPi/wiringSerial.h: f=56 s=4 v=0 m=54
+[49/54] wiringPi/wiringShift.h: f=2 s=0 v=0 m=2
+[50/54] wiringPi/wpiExtensions.h: f=1 s=0 v=0 m=0
+[51/54] wiringPiD/daemonise.h: f=1 s=0 v=0 m=0
+[52/54] wiringPiD/drcNetCmd.h: f=0 s=1 v=0 m=10
+[53/54] wiringPiD/network.h: f=8 s=0 v=0 m=0
+[54/54] wiringPiD/runRemote.h: f=1 s=0 v=1 m=0
+{
+  "headers": 54,
+  "functions": 260,
+  "structs": 19,
+  "fields": 207,
+  "variables": 26,
+  "enums": 0,
+  "macros": 664,
+  "python_value_macros": 575,
+  "function_macros": 2
+}
+MANIFEST_REPRO_OK {"enums": 0, "fields": 207, "function_macros": 2, "functions": 260, "headers": 54, "macros": 664, "python_value_macros": 575, "structs": 19, "variables": 26}
++ /opt/pyvenv/bin/python3 tools/audit_bindings.py
+BINDING_AUDIT_OK functions=260 structs=19 fields=207 variables=26 macros=577
++ /opt/pyvenv/bin/python3 tools/audit_docs.py
+DOC_AUDIT_OK headers=54 symbol_references=1459
++ /opt/pyvenv/bin/python3 tools/audit_backend_symbols.py
+MOCK_BACKEND_OK c_files=54 defined_globals=268 known_gaps=digitalRead8,digitalWrite8,getResponce,wiringPiSetupPiFace,wiringPiSetupPiFaceForGpioProg
+PROD_BACKEND_OK c_files=48 defined_globals=376 known_gaps=digitalRead8,digitalWrite8,getResponce,wiringPiSetupPiFace,wiringPiSetupPiFaceForGpioProg
++ /opt/pyvenv/bin/python3 tools/test_serial_pty.py
+WIRING_SERIAL_EXT_PTY_OK
++ /opt/pyvenv/bin/python3 tools/test_pseudopins_64bit.py
+PSEUDOPINS_64BIT_OK
++ /opt/pyvenv/bin/python3 -m compileall -q python tests tools
++ cmake -S . -B /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/mock -DNB_ROOT=/mnt/data/.deps/nanobind-2.14.0 -DWIRINGOP_USE_MOCK=ON -DWIRINGOP_SOURCE=/mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/upstream/wiringOP -DCMAKE_BUILD_TYPE=Release
+-- The C compiler identification is GNU 14.2.0
+-- The CXX compiler identification is GNU 14.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Python: /opt/pyvenv/bin/python3 (found suitable version "3.13.5", minimum required is "3.9") found components: Interpreter Development.Module
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Configuring done (9.1s)
+-- Generating done (0.1s)
+-- Build files have been written to: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/mock
++ cmake --build /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/mock -j2
+[  1%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/devLib/ds1302.c.o
+[  1%] Building CXX object CMakeFiles/nanobind_runtime.dir/mnt/data/.deps/nanobind-2.14.0/src/nb_combined.cpp.o
+[  1%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/devLib/font.c.o
+[  2%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/devLib/gertboard.c.o
+[  3%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/devLib/lcd.c.o
+[  3%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/devLib/lcd128x64.c.o
+[  4%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/devLib/maxdetect.c.o
+[  4%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/devLib/piFace.c.o
+[  5%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/devLib/piGlow.c.o
+[  6%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/devLib/piNes.c.o
+[  6%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/devLib/scrollPhat.c.o
+[  7%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/devLib/scrollPhatFont.c.o
+[  7%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/version.c.o
+[  8%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/ads1115.c.o
+[  9%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/bmp180.c.o
+[  9%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/drcNet.c.o
+[ 10%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/drcSerial.c.o
+[ 10%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/ds18b20.c.o
+[ 11%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/font.c.o
+[ 12%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/htu21d.c.o
+[ 12%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/max31855.c.o
+[ 13%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/max5322.c.o
+[ 14%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp23008.c.o
+[ 14%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp23016.c.o
+[ 15%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp23016reg.c.o
+[ 15%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp23017.c.o
+[ 16%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp23s08.c.o
+[ 17%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp23s17.c.o
+[ 17%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp23x08.c.o
+[ 18%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp23x0817.c.o
+[ 18%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp3002.c.o
+[ 19%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp3004.c.o
+[ 20%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp3422.c.o
+[ 20%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/mcp4802.c.o
+[ 21%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/oled.c.o
+[ 21%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/pcf8574.c.o
+[ 22%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/pcf8591.c.o
+[ 23%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/pseudoPins.c.o
+[ 23%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/rht03.c.o
+[ 24%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/sn3218.c.o
+[ 24%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/softPwm.c.o
+[ 25%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/softServo.c.o
+[ 26%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/softTone.c.o
+[ 26%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/sr595.c.o
+[ 27%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/w25q64.c.o
+[ 27%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/wiringPi.c.o
+[ 28%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/wiringPiI2C.c.o
+[ 29%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/wiringPiSPI.c.o
+[ 29%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/wiringSerial.c.o
+[ 30%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/wiringShift.c.o
+[ 30%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPi/wpiExtensions.c.o
+[ 31%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPiD/daemonise.c.o
+[ 32%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPiD/drcNetCmd.c.o
+[ 32%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPiD/network.c.o
+[ 33%] Building C object CMakeFiles/wiringop_backend.dir/support/mock_backend/wiringPiD/runRemote.c.o
+[ 34%] Linking C static library libwiringop_backend.a
+[ 34%] Built target wiringop_backend
+[ 35%] Linking CXX static library libnanobind_runtime.a
+[ 35%] Built target nanobind_runtime
+[ 36%] Building CXX object CMakeFiles/nb_devLib_font.dir/src/devLib/font.cpp.o
+[ 36%] Building CXX object CMakeFiles/nb_devLib_ds1302.dir/src/devLib/ds1302.cpp.o
+[ 36%] Linking CXX shared module python/wiringop/dev_lib/font.so
+[ 36%] Built target nb_devLib_font
+[ 37%] Linking CXX shared module python/wiringop/dev_lib/ds1302.so
+[ 38%] Building CXX object CMakeFiles/nb_devLib_gertboard.dir/src/devLib/gertboard.cpp.o
+[ 38%] Built target nb_devLib_ds1302
+[ 39%] Building CXX object CMakeFiles/nb_devLib_lcd.dir/src/devLib/lcd.cpp.o
+[ 39%] Linking CXX shared module python/wiringop/dev_lib/gertboard.so
+[ 39%] Built target nb_devLib_gertboard
+[ 39%] Building CXX object CMakeFiles/nb_devLib_lcd128x64.dir/src/devLib/lcd128x64.cpp.o
+[ 40%] Linking CXX shared module python/wiringop/dev_lib/lcd.so
+[ 40%] Built target nb_devLib_lcd
+[ 40%] Building CXX object CMakeFiles/nb_devLib_maxdetect.dir/src/devLib/maxdetect.cpp.o
+[ 41%] Linking CXX shared module python/wiringop/dev_lib/lcd128x64.so
+[ 41%] Built target nb_devLib_lcd128x64
+[ 42%] Building CXX object CMakeFiles/nb_devLib_piFace.dir/src/devLib/piFace.cpp.o
+[ 43%] Linking CXX shared module python/wiringop/dev_lib/maxdetect.so
+[ 43%] Built target nb_devLib_maxdetect
+[ 44%] Building CXX object CMakeFiles/nb_devLib_piGlow.dir/src/devLib/piGlow.cpp.o
+[ 44%] Linking CXX shared module python/wiringop/dev_lib/pi_face.so
+[ 44%] Built target nb_devLib_piFace
+[ 45%] Building CXX object CMakeFiles/nb_devLib_piNes.dir/src/devLib/piNes.cpp.o
+[ 45%] Linking CXX shared module python/wiringop/dev_lib/pi_glow.so
+[ 45%] Built target nb_devLib_piGlow
+[ 45%] Building CXX object CMakeFiles/nb_devLib_scrollPhat.dir/src/devLib/scrollPhat.cpp.o
+[ 46%] Linking CXX shared module python/wiringop/dev_lib/pi_nes.so
+[ 46%] Built target nb_devLib_piNes
+[ 46%] Building CXX object CMakeFiles/nb_devLib_scrollPhatFont.dir/src/devLib/scrollPhatFont.cpp.o
+[ 47%] Linking CXX shared module python/wiringop/dev_lib/scroll_phat.so
+[ 47%] Built target nb_devLib_scrollPhat
+[ 48%] Building CXX object CMakeFiles/nb_version.dir/src/version.cpp.o
+[ 49%] Linking CXX shared module python/wiringop/dev_lib/scroll_phat_font.so
+[ 49%] Built target nb_devLib_scrollPhatFont
+[ 50%] Building CXX object CMakeFiles/nb_wiringPi_ads1115.dir/src/wiringPi/ads1115.cpp.o
+[ 50%] Linking CXX shared module python/wiringop/version.so
+[ 50%] Built target nb_version
+[ 51%] Building CXX object CMakeFiles/nb_wiringPi_bmp180.dir/src/wiringPi/bmp180.cpp.o
+[ 51%] Linking CXX shared module python/wiringop/wiring_pi/ads1115.so
+[ 51%] Built target nb_wiringPi_ads1115
+[ 51%] Building CXX object CMakeFiles/nb_wiringPi_drcNet.dir/src/wiringPi/drcNet.cpp.o
+[ 52%] Linking CXX shared module python/wiringop/wiring_pi/bmp180.so
+[ 52%] Built target nb_wiringPi_bmp180
+[ 52%] Building CXX object CMakeFiles/nb_wiringPi_drcSerial.dir/src/wiringPi/drcSerial.cpp.o
+[ 53%] Linking CXX shared module python/wiringop/wiring_pi/drc_net.so
+[ 53%] Built target nb_wiringPi_drcNet
+[ 54%] Building CXX object CMakeFiles/nb_wiringPi_ds18b20.dir/src/wiringPi/ds18b20.cpp.o
+[ 55%] Linking CXX shared module python/wiringop/wiring_pi/drc_serial.so
+[ 55%] Built target nb_wiringPi_drcSerial
+[ 56%] Building CXX object CMakeFiles/nb_wiringPi_font.dir/src/wiringPi/font.cpp.o
+[ 56%] Linking CXX shared module python/wiringop/wiring_pi/ds18b20.so
+[ 56%] Built target nb_wiringPi_ds18b20
+[ 57%] Building CXX object CMakeFiles/nb_wiringPi_htu21d.dir/src/wiringPi/htu21d.cpp.o
+[ 57%] Linking CXX shared module python/wiringop/wiring_pi/font.so
+[ 57%] Built target nb_wiringPi_font
+[ 57%] Building CXX object CMakeFiles/nb_wiringPi_max31855.dir/src/wiringPi/max31855.cpp.o
+[ 58%] Linking CXX shared module python/wiringop/wiring_pi/htu21d.so
+[ 58%] Built target nb_wiringPi_htu21d
+[ 58%] Building CXX object CMakeFiles/nb_wiringPi_max5322.dir/src/wiringPi/max5322.cpp.o
+[ 59%] Linking CXX shared module python/wiringop/wiring_pi/max31855.so
+[ 59%] Built target nb_wiringPi_max31855
+[ 60%] Building CXX object CMakeFiles/nb_wiringPi_mcp23008.dir/src/wiringPi/mcp23008.cpp.o
+[ 61%] Linking CXX shared module python/wiringop/wiring_pi/max5322.so
+[ 61%] Built target nb_wiringPi_max5322
+[ 62%] Building CXX object CMakeFiles/nb_wiringPi_mcp23016.dir/src/wiringPi/mcp23016.cpp.o
+[ 62%] Linking CXX shared module python/wiringop/wiring_pi/mcp23008.so
+[ 62%] Built target nb_wiringPi_mcp23008
+[ 63%] Building CXX object CMakeFiles/nb_wiringPi_mcp23016reg.dir/src/wiringPi/mcp23016reg.cpp.o
+[ 63%] Linking CXX shared module python/wiringop/wiring_pi/mcp23016.so
+[ 63%] Built target nb_wiringPi_mcp23016
+[ 63%] Building CXX object CMakeFiles/nb_wiringPi_mcp23017.dir/src/wiringPi/mcp23017.cpp.o
+[ 64%] Linking CXX shared module python/wiringop/wiring_pi/mcp23016reg.so
+[ 64%] Built target nb_wiringPi_mcp23016reg
+[ 64%] Building CXX object CMakeFiles/nb_wiringPi_mcp23s08.dir/src/wiringPi/mcp23s08.cpp.o
+[ 65%] Linking CXX shared module python/wiringop/wiring_pi/mcp23017.so
+[ 65%] Built target nb_wiringPi_mcp23017
+[ 66%] Building CXX object CMakeFiles/nb_wiringPi_mcp23s17.dir/src/wiringPi/mcp23s17.cpp.o
+[ 67%] Linking CXX shared module python/wiringop/wiring_pi/mcp23s08.so
+[ 67%] Built target nb_wiringPi_mcp23s08
+[ 68%] Building CXX object CMakeFiles/nb_wiringPi_mcp23x08.dir/src/wiringPi/mcp23x08.cpp.o
+[ 68%] Linking CXX shared module python/wiringop/wiring_pi/mcp23s17.so
+[ 68%] Built target nb_wiringPi_mcp23s17
+[ 68%] Building CXX object CMakeFiles/nb_wiringPi_mcp23x0817.dir/src/wiringPi/mcp23x0817.cpp.o
+[ 69%] Linking CXX shared module python/wiringop/wiring_pi/mcp23x08.so
+[ 69%] Built target nb_wiringPi_mcp23x08
+[ 69%] Building CXX object CMakeFiles/nb_wiringPi_mcp3002.dir/src/wiringPi/mcp3002.cpp.o
+[ 70%] Linking CXX shared module python/wiringop/wiring_pi/mcp23x0817.so
+[ 70%] Built target nb_wiringPi_mcp23x0817
+[ 71%] Building CXX object CMakeFiles/nb_wiringPi_mcp3004.dir/src/wiringPi/mcp3004.cpp.o
+[ 72%] Linking CXX shared module python/wiringop/wiring_pi/mcp3002.so
+[ 72%] Built target nb_wiringPi_mcp3002
+[ 73%] Building CXX object CMakeFiles/nb_wiringPi_mcp3422.dir/src/wiringPi/mcp3422.cpp.o
+[ 73%] Linking CXX shared module python/wiringop/wiring_pi/mcp3004.so
+[ 73%] Built target nb_wiringPi_mcp3004
+[ 74%] Building CXX object CMakeFiles/nb_wiringPi_mcp4802.dir/src/wiringPi/mcp4802.cpp.o
+[ 74%] Linking CXX shared module python/wiringop/wiring_pi/mcp3422.so
+[ 74%] Built target nb_wiringPi_mcp3422
+[ 74%] Building CXX object CMakeFiles/nb_wiringPi_oled.dir/src/wiringPi/oled.cpp.o
+[ 75%] Linking CXX shared module python/wiringop/wiring_pi/mcp4802.so
+[ 75%] Built target nb_wiringPi_mcp4802
+[ 75%] Building CXX object CMakeFiles/nb_wiringPi_pcf8574.dir/src/wiringPi/pcf8574.cpp.o
+[ 76%] Linking CXX shared module python/wiringop/wiring_pi/pcf8574.so
+[ 76%] Built target nb_wiringPi_pcf8574
+[ 77%] Linking CXX shared module python/wiringop/wiring_pi/oled.so
+[ 78%] Building CXX object CMakeFiles/nb_wiringPi_pcf8591.dir/src/wiringPi/pcf8591.cpp.o
+[ 78%] Built target nb_wiringPi_oled
+[ 79%] Building CXX object CMakeFiles/nb_wiringPi_pseudoPins.dir/src/wiringPi/pseudoPins.cpp.o
+[ 79%] Linking CXX shared module python/wiringop/wiring_pi/pcf8591.so
+[ 79%] Built target nb_wiringPi_pcf8591
+[ 79%] Linking CXX shared module python/wiringop/wiring_pi/pseudo_pins.so
+[ 80%] Building CXX object CMakeFiles/nb_wiringPi_rht03.dir/src/wiringPi/rht03.cpp.o
+[ 80%] Built target nb_wiringPi_pseudoPins
+[ 80%] Building CXX object CMakeFiles/nb_wiringPi_sn3218.dir/src/wiringPi/sn3218.cpp.o
+[ 81%] Linking CXX shared module python/wiringop/wiring_pi/rht03.so
+[ 82%] Linking CXX shared module python/wiringop/wiring_pi/sn3218.so
+[ 82%] Built target nb_wiringPi_rht03
+[ 82%] Building CXX object CMakeFiles/nb_wiringPi_softPwm.dir/src/wiringPi/softPwm.cpp.o
+[ 82%] Built target nb_wiringPi_sn3218
+[ 83%] Building CXX object CMakeFiles/nb_wiringPi_softServo.dir/src/wiringPi/softServo.cpp.o
+[ 84%] Linking CXX shared module python/wiringop/wiring_pi/soft_pwm.so
+[ 84%] Built target nb_wiringPi_softPwm
+[ 84%] Linking CXX shared module python/wiringop/wiring_pi/soft_servo.so
+[ 85%] Building CXX object CMakeFiles/nb_wiringPi_softTone.dir/src/wiringPi/softTone.cpp.o
+[ 85%] Built target nb_wiringPi_softServo
+[ 86%] Building CXX object CMakeFiles/nb_wiringPi_sr595.dir/src/wiringPi/sr595.cpp.o
+[ 86%] Linking CXX shared module python/wiringop/wiring_pi/soft_tone.so
+[ 86%] Built target nb_wiringPi_softTone
+[ 87%] Linking CXX shared module python/wiringop/wiring_pi/sr595.so
+[ 87%] Building CXX object CMakeFiles/nb_wiringPi_w25q64.dir/src/wiringPi/w25q64.cpp.o
+[ 87%] Built target nb_wiringPi_sr595
+[ 88%] Building CXX object CMakeFiles/nb_wiringPi_wiringPi.dir/src/wiringPi/wiringPi.cpp.o
+[ 89%] Linking CXX shared module python/wiringop/wiring_pi/w25q64.so
+[ 89%] Built target nb_wiringPi_w25q64
+[ 90%] Building CXX object CMakeFiles/nb_wiringPi_wiringPiI2C.dir/src/wiringPi/wiringPiI2C.cpp.o
+[ 90%] Linking CXX shared module python/wiringop/wiring_pi/wiring_pi_i2c.so
+[ 90%] Built target nb_wiringPi_wiringPiI2C
+[ 91%] Building CXX object CMakeFiles/nb_wiringPi_wiringPiSPI.dir/src/wiringPi/wiringPiSPI.cpp.o
+[ 92%] Linking CXX shared module python/wiringop/wiring_pi/wiring_pi_spi.so
+[ 92%] Built target nb_wiringPi_wiringPiSPI
+[ 92%] Building CXX object CMakeFiles/nb_wiringPi_wiringSerial.dir/src/wiringPi/wiringSerial.cpp.o
+[ 93%] Linking CXX shared module python/wiringop/wiring_pi/wiring_serial.so
+[ 93%] Built target nb_wiringPi_wiringSerial
+[ 93%] Building CXX object CMakeFiles/nb_wiringPi_wiringShift.dir/src/wiringPi/wiringShift.cpp.o
+[ 94%] Linking CXX shared module python/wiringop/wiring_pi/wiring_shift.so
+[ 94%] Built target nb_wiringPi_wiringShift
+[ 95%] Building CXX object CMakeFiles/nb_wiringPi_wpiExtensions.dir/src/wiringPi/wpiExtensions.cpp.o
+[ 95%] Linking CXX shared module python/wiringop/wiring_pi/wpi_extensions.so
+[ 95%] Built target nb_wiringPi_wpiExtensions
+[ 96%] Building CXX object CMakeFiles/nb_wiringPiD_daemonise.dir/src/wiringPiD/daemonise.cpp.o
+[ 96%] Linking CXX shared module python/wiringop/wiring_pi_d/daemonise.so
+[ 96%] Built target nb_wiringPiD_daemonise
+[ 97%] Building CXX object CMakeFiles/nb_wiringPiD_drcNetCmd.dir/src/wiringPiD/drcNetCmd.cpp.o
+[ 98%] Linking CXX shared module python/wiringop/wiring_pi_d/drc_net_cmd.so
+[ 98%] Built target nb_wiringPiD_drcNetCmd
+[ 98%] Building CXX object CMakeFiles/nb_wiringPiD_network.dir/src/wiringPiD/network.cpp.o
+[ 99%] Linking CXX shared module python/wiringop/wiring_pi_d/network.so
+[ 99%] Linking CXX shared module python/wiringop/wiring_pi/wiring_pi.so
+[ 99%] Built target nb_wiringPiD_network
+[100%] Building CXX object CMakeFiles/nb_wiringPiD_runRemote.dir/src/wiringPiD/runRemote.cpp.o
+[100%] Built target nb_wiringPi_wiringPi
+[100%] Linking CXX shared module python/wiringop/wiring_pi_d/run_remote.so
+[100%] Built target nb_wiringPiD_runRemote
+BUILD_GATE_OK backend=mock modules=54
++ /opt/pyvenv/bin/python3 -c 
+import pkgutil, importlib, wiringop
+mods=[m.name for m in pkgutil.walk_packages(wiringop.__path__, wiringop.__name__+'.')]
+failed=[]
+for name in mods:
+    try: importlib.import_module(name)
+    except Exception as exc: failed.append((name, repr(exc)))
+print("IMPORT_SMOKE", len(mods)-len(failed), len(mods), "failed", len(failed))
+if failed:
+    print(failed)
+    raise SystemExit(1)
+
+IMPORT_SMOKE 57 57 failed 0
+MOCK_IMPORT_OK
++ /opt/pyvenv/bin/python3 -m pytest -q
+........................................................................ [ 22%]
+........................................................................ [ 44%]
+........................................................................ [ 67%]
+........................................................................ [ 89%]
+.................................                                        [100%]
+321 passed in 0.53s
++ /opt/pyvenv/bin/python3 -c 
+import json, pathlib
+from nanobind import stubgen
+root=pathlib.Path.cwd()
+d=json.loads((root/'api_manifest.json').read_text())
+for h in d['headers']:
+    out=root/'stubs'/pathlib.Path(h['path']).with_suffix('.pyi')
+    out.parent.mkdir(parents=True, exist_ok=True)
+    stubgen.main(['-m', h['python_module'], '-o', str(out), '--quiet'])
+print('OFFICIAL_STUBGEN_OK', len(d['headers']))
+
+OFFICIAL_STUBGEN_OK 54
++ /opt/pyvenv/bin/python3 tools/audit_stubs.py
+STUB_AUDIT_OK functions=260 classes=19 fields=207 variables=26 macros=577
++ /opt/pyvenv/bin/python3 tools/audit_layout.py
+LAYOUT_AUDIT_OK headers=54 src=54 tests=54 docs=54 stubs=54
++ cmake -S . -B /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/production -DNB_ROOT=/mnt/data/.deps/nanobind-2.14.0 -DWIRINGOP_USE_MOCK=OFF -DWIRINGOP_SOURCE=/mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/upstream/wiringOP -DCMAKE_BUILD_TYPE=Release
+-- The C compiler identification is GNU 14.2.0
+-- The CXX compiler identification is GNU 14.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Python: /opt/pyvenv/bin/python3 (found suitable version "3.13.5", minimum required is "3.9") found components: Interpreter Development.Module
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Configuring done (11.6s)
+-- Generating done (0.2s)
+-- Build files have been written to: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/production
++ cmake --build /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/production -j2
+[  0%] Building CXX object CMakeFiles/nanobind_runtime.dir/mnt/data/.deps/nanobind-2.14.0/src/nb_combined.cpp.o
+[  0%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/ads1115.c.o
+[  1%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/bmp180.c.o
+[  2%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/drcNet.c.o
+[  2%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/drcSerial.c.o
+[  3%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/ds18b20.c.o
+[  3%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/htu21d.c.o
+[  4%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/max31855.c.o
+[  5%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/max5322.c.o
+[  5%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/mcp23008.c.o
+[  6%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/mcp23016.c.o
+[  7%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/mcp23017.c.o
+[  7%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/mcp23s08.c.o
+[  8%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/mcp23s17.c.o
+[  8%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/mcp3002.c.o
+[  9%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/mcp3004.c.o
+[ 10%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/mcp3422.c.o
+[ 10%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/mcp4802.c.o
+[ 11%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/oled.c.o
+[ 12%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/pcf8574.c.o
+[ 12%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/pcf8591.c.o
+[ 13%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/piHiPri.c.o
+[ 14%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/piThread.c.o
+[ 14%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/pseudoPins.c.o
+[ 15%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/rht03.c.o
+[ 15%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/sn3218.c.o
+[ 16%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/softPwm.c.o
+[ 17%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/softServo.c.o
+[ 17%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/softTone.c.o
+[ 18%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/sr595.c.o
+[ 19%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/w25q64.c.o
+[ 19%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/wiringPi.c.o
+[ 20%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/wiringPiI2C.c.o
+[ 20%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/wiringPiSPI.c.o
+[ 21%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/wiringSerial.c.o
+[ 22%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/wiringShift.c.o
+[ 22%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPi/wpiExtensions.c.o
+[ 23%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/devLib/ds1302.c.o
+[ 24%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/devLib/gertboard.c.o
+[ 24%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/devLib/lcd.c.o
+[ 25%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/devLib/lcd128x64.c.o
+[ 25%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/devLib/maxdetect.c.o
+[ 26%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/devLib/piFace.c.o
+[ 27%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/devLib/piGlow.c.o
+[ 27%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/devLib/piNes.c.o
+[ 28%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/devLib/scrollPhat.c.o
+[ 29%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPiD/daemonise.c.o
+[ 29%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPiD/network.c.o
+[ 30%] Building C object CMakeFiles/wiringop_backend.dir/build/upstream/wiringOP/wiringPiD/runRemote.c.o
+[ 31%] Linking C static library libwiringop_backend.a
+[ 31%] Built target wiringop_backend
+[ 32%] Linking CXX static library libnanobind_runtime.a
+[ 32%] Built target nanobind_runtime
+[ 33%] Building CXX object CMakeFiles/nb_devLib_font.dir/src/devLib/font.cpp.o
+[ 33%] Building CXX object CMakeFiles/nb_devLib_ds1302.dir/src/devLib/ds1302.cpp.o
+[ 33%] Linking CXX shared module python/wiringop/dev_lib/font.so
+[ 33%] Built target nb_devLib_font
+[ 34%] Building CXX object CMakeFiles/nb_devLib_gertboard.dir/src/devLib/gertboard.cpp.o
+[ 35%] Linking CXX shared module python/wiringop/dev_lib/ds1302.so
+[ 35%] Built target nb_devLib_ds1302
+[ 35%] Building CXX object CMakeFiles/nb_devLib_lcd.dir/src/devLib/lcd.cpp.o
+[ 36%] Linking CXX shared module python/wiringop/dev_lib/gertboard.so
+[ 36%] Built target nb_devLib_gertboard
+[ 36%] Building CXX object CMakeFiles/nb_devLib_lcd128x64.dir/src/devLib/lcd128x64.cpp.o
+[ 37%] Linking CXX shared module python/wiringop/dev_lib/lcd.so
+[ 37%] Built target nb_devLib_lcd
+[ 38%] Building CXX object CMakeFiles/nb_devLib_maxdetect.dir/src/devLib/maxdetect.cpp.o
+[ 39%] Linking CXX shared module python/wiringop/dev_lib/lcd128x64.so
+[ 39%] Built target nb_devLib_lcd128x64
+[ 40%] Building CXX object CMakeFiles/nb_devLib_piFace.dir/src/devLib/piFace.cpp.o
+[ 40%] Linking CXX shared module python/wiringop/dev_lib/maxdetect.so
+[ 40%] Built target nb_devLib_maxdetect
+[ 40%] Building CXX object CMakeFiles/nb_devLib_piGlow.dir/src/devLib/piGlow.cpp.o
+[ 41%] Linking CXX shared module python/wiringop/dev_lib/pi_face.so
+[ 41%] Built target nb_devLib_piFace
+[ 41%] Building CXX object CMakeFiles/nb_devLib_piNes.dir/src/devLib/piNes.cpp.o
+[ 42%] Linking CXX shared module python/wiringop/dev_lib/pi_glow.so
+[ 42%] Built target nb_devLib_piGlow
+[ 43%] Building CXX object CMakeFiles/nb_devLib_scrollPhat.dir/src/devLib/scrollPhat.cpp.o
+[ 44%] Linking CXX shared module python/wiringop/dev_lib/pi_nes.so
+[ 44%] Built target nb_devLib_piNes
+[ 45%] Building CXX object CMakeFiles/nb_devLib_scrollPhatFont.dir/src/devLib/scrollPhatFont.cpp.o
+[ 45%] Linking CXX shared module python/wiringop/dev_lib/scroll_phat.so
+[ 45%] Built target nb_devLib_scrollPhat
+[ 45%] Building CXX object CMakeFiles/nb_version.dir/src/version.cpp.o
+[ 46%] Linking CXX shared module python/wiringop/dev_lib/scroll_phat_font.so
+[ 46%] Built target nb_devLib_scrollPhatFont
+[ 47%] Building CXX object CMakeFiles/nb_wiringPi_ads1115.dir/src/wiringPi/ads1115.cpp.o
+[ 48%] Linking CXX shared module python/wiringop/version.so
+[ 48%] Built target nb_version
+[ 49%] Building CXX object CMakeFiles/nb_wiringPi_bmp180.dir/src/wiringPi/bmp180.cpp.o
+[ 49%] Linking CXX shared module python/wiringop/wiring_pi/ads1115.so
+[ 49%] Built target nb_wiringPi_ads1115
+[ 50%] Building CXX object CMakeFiles/nb_wiringPi_drcNet.dir/src/wiringPi/drcNet.cpp.o
+[ 50%] Linking CXX shared module python/wiringop/wiring_pi/bmp180.so
+[ 50%] Built target nb_wiringPi_bmp180
+[ 50%] Building CXX object CMakeFiles/nb_wiringPi_drcSerial.dir/src/wiringPi/drcSerial.cpp.o
+[ 51%] Linking CXX shared module python/wiringop/wiring_pi/drc_net.so
+[ 51%] Built target nb_wiringPi_drcNet
+[ 53%] Linking CXX shared module python/wiringop/wiring_pi/drc_serial.so
+[ 53%] Building CXX object CMakeFiles/nb_wiringPi_ds18b20.dir/src/wiringPi/ds18b20.cpp.o
+[ 53%] Built target nb_wiringPi_drcSerial
+[ 54%] Building CXX object CMakeFiles/nb_wiringPi_font.dir/src/wiringPi/font.cpp.o
+[ 54%] Linking CXX shared module python/wiringop/wiring_pi/ds18b20.so
+[ 54%] Built target nb_wiringPi_ds18b20
+[ 55%] Building CXX object CMakeFiles/nb_wiringPi_htu21d.dir/src/wiringPi/htu21d.cpp.o
+[ 55%] Linking CXX shared module python/wiringop/wiring_pi/font.so
+[ 55%] Built target nb_wiringPi_font
+[ 55%] Building CXX object CMakeFiles/nb_wiringPi_max31855.dir/src/wiringPi/max31855.cpp.o
+[ 56%] Linking CXX shared module python/wiringop/wiring_pi/htu21d.so
+[ 56%] Built target nb_wiringPi_htu21d
+[ 57%] Building CXX object CMakeFiles/nb_wiringPi_max5322.dir/src/wiringPi/max5322.cpp.o
+[ 58%] Linking CXX shared module python/wiringop/wiring_pi/max31855.so
+[ 58%] Built target nb_wiringPi_max31855
+[ 59%] Building CXX object CMakeFiles/nb_wiringPi_mcp23008.dir/src/wiringPi/mcp23008.cpp.o
+[ 59%] Linking CXX shared module python/wiringop/wiring_pi/max5322.so
+[ 59%] Built target nb_wiringPi_max5322
+[ 60%] Building CXX object CMakeFiles/nb_wiringPi_mcp23016.dir/src/wiringPi/mcp23016.cpp.o
+[ 60%] Linking CXX shared module python/wiringop/wiring_pi/mcp23008.so
+[ 60%] Built target nb_wiringPi_mcp23008
+[ 60%] Building CXX object CMakeFiles/nb_wiringPi_mcp23016reg.dir/src/wiringPi/mcp23016reg.cpp.o
+[ 61%] Linking CXX shared module python/wiringop/wiring_pi/mcp23016.so
+[ 61%] Built target nb_wiringPi_mcp23016
+[ 62%] Building CXX object CMakeFiles/nb_wiringPi_mcp23017.dir/src/wiringPi/mcp23017.cpp.o
+[ 63%] Linking CXX shared module python/wiringop/wiring_pi/mcp23016reg.so
+[ 63%] Built target nb_wiringPi_mcp23016reg
+[ 64%] Building CXX object CMakeFiles/nb_wiringPi_mcp23s08.dir/src/wiringPi/mcp23s08.cpp.o
+[ 64%] Linking CXX shared module python/wiringop/wiring_pi/mcp23017.so
+[ 64%] Built target nb_wiringPi_mcp23017
+[ 65%] Building CXX object CMakeFiles/nb_wiringPi_mcp23s17.dir/src/wiringPi/mcp23s17.cpp.o
+[ 65%] Linking CXX shared module python/wiringop/wiring_pi/mcp23s08.so
+[ 65%] Built target nb_wiringPi_mcp23s08
+[ 65%] Building CXX object CMakeFiles/nb_wiringPi_mcp23x08.dir/src/wiringPi/mcp23x08.cpp.o
+[ 66%] Linking CXX shared module python/wiringop/wiring_pi/mcp23s17.so
+[ 66%] Built target nb_wiringPi_mcp23s17
+[ 67%] Building CXX object CMakeFiles/nb_wiringPi_mcp23x0817.dir/src/wiringPi/mcp23x0817.cpp.o
+[ 68%] Linking CXX shared module python/wiringop/wiring_pi/mcp23x08.so
+[ 68%] Built target nb_wiringPi_mcp23x08
+[ 69%] Building CXX object CMakeFiles/nb_wiringPi_mcp3002.dir/src/wiringPi/mcp3002.cpp.o
+[ 69%] Linking CXX shared module python/wiringop/wiring_pi/mcp23x0817.so
+[ 69%] Built target nb_wiringPi_mcp23x0817
+[ 69%] Building CXX object CMakeFiles/nb_wiringPi_mcp3004.dir/src/wiringPi/mcp3004.cpp.o
+[ 70%] Linking CXX shared module python/wiringop/wiring_pi/mcp3002.so
+[ 70%] Built target nb_wiringPi_mcp3002
+[ 70%] Building CXX object CMakeFiles/nb_wiringPi_mcp3422.dir/src/wiringPi/mcp3422.cpp.o
+[ 71%] Linking CXX shared module python/wiringop/wiring_pi/mcp3004.so
+[ 71%] Built target nb_wiringPi_mcp3004
+[ 72%] Building CXX object CMakeFiles/nb_wiringPi_mcp4802.dir/src/wiringPi/mcp4802.cpp.o
+[ 73%] Linking CXX shared module python/wiringop/wiring_pi/mcp3422.so
+[ 73%] Built target nb_wiringPi_mcp3422
+[ 74%] Building CXX object CMakeFiles/nb_wiringPi_oled.dir/src/wiringPi/oled.cpp.o
+[ 74%] Linking CXX shared module python/wiringop/wiring_pi/mcp4802.so
+[ 74%] Built target nb_wiringPi_mcp4802
+[ 74%] Building CXX object CMakeFiles/nb_wiringPi_pcf8574.dir/src/wiringPi/pcf8574.cpp.o
+[ 75%] Linking CXX shared module python/wiringop/wiring_pi/pcf8574.so
+[ 75%] Built target nb_wiringPi_pcf8574
+[ 75%] Building CXX object CMakeFiles/nb_wiringPi_pcf8591.dir/src/wiringPi/pcf8591.cpp.o
+[ 76%] Linking CXX shared module python/wiringop/wiring_pi/oled.so
+[ 76%] Built target nb_wiringPi_oled
+[ 77%] Building CXX object CMakeFiles/nb_wiringPi_pseudoPins.dir/src/wiringPi/pseudoPins.cpp.o
+[ 78%] Linking CXX shared module python/wiringop/wiring_pi/pcf8591.so
+[ 78%] Built target nb_wiringPi_pcf8591
+[ 79%] Building CXX object CMakeFiles/nb_wiringPi_rht03.dir/src/wiringPi/rht03.cpp.o
+[ 79%] Linking CXX shared module python/wiringop/wiring_pi/pseudo_pins.so
+[ 79%] Built target nb_wiringPi_pseudoPins
+[ 79%] Building CXX object CMakeFiles/nb_wiringPi_sn3218.dir/src/wiringPi/sn3218.cpp.o
+[ 80%] Linking CXX shared module python/wiringop/wiring_pi/rht03.so
+[ 80%] Built target nb_wiringPi_rht03
+[ 80%] Building CXX object CMakeFiles/nb_wiringPi_softPwm.dir/src/wiringPi/softPwm.cpp.o
+[ 81%] Linking CXX shared module python/wiringop/wiring_pi/sn3218.so
+[ 81%] Built target nb_wiringPi_sn3218
+[ 82%] Building CXX object CMakeFiles/nb_wiringPi_softServo.dir/src/wiringPi/softServo.cpp.o
+[ 83%] Linking CXX shared module python/wiringop/wiring_pi/soft_pwm.so
+[ 83%] Built target nb_wiringPi_softPwm
+[ 84%] Building CXX object CMakeFiles/nb_wiringPi_softTone.dir/src/wiringPi/softTone.cpp.o
+[ 84%] Linking CXX shared module python/wiringop/wiring_pi/soft_servo.so
+[ 84%] Built target nb_wiringPi_softServo
+[ 84%] Building CXX object CMakeFiles/nb_wiringPi_sr595.dir/src/wiringPi/sr595.cpp.o
+[ 85%] Linking CXX shared module python/wiringop/wiring_pi/soft_tone.so
+[ 85%] Built target nb_wiringPi_softTone
+[ 86%] Building CXX object CMakeFiles/nb_wiringPi_w25q64.dir/src/wiringPi/w25q64.cpp.o
+[ 87%] Linking CXX shared module python/wiringop/wiring_pi/sr595.so
+[ 87%] Built target nb_wiringPi_sr595
+[ 88%] Building CXX object CMakeFiles/nb_wiringPi_wiringPi.dir/src/wiringPi/wiringPi.cpp.o
+[ 88%] Linking CXX shared module python/wiringop/wiring_pi/w25q64.so
+[ 88%] Built target nb_wiringPi_w25q64
+[ 89%] Building CXX object CMakeFiles/nb_wiringPi_wiringPiI2C.dir/src/wiringPi/wiringPiI2C.cpp.o
+[ 90%] Linking CXX shared module python/wiringop/wiring_pi/wiring_pi_i2c.so
+[ 90%] Built target nb_wiringPi_wiringPiI2C
+[ 90%] Building CXX object CMakeFiles/nb_wiringPi_wiringPiSPI.dir/src/wiringPi/wiringPiSPI.cpp.o
+[ 91%] Linking CXX shared module python/wiringop/wiring_pi/wiring_pi_spi.so
+[ 91%] Built target nb_wiringPi_wiringPiSPI
+[ 92%] Building CXX object CMakeFiles/nb_wiringPi_wiringSerial.dir/src/wiringPi/wiringSerial.cpp.o
+[ 92%] Linking CXX shared module python/wiringop/wiring_pi/wiring_serial.so
+[ 92%] Built target nb_wiringPi_wiringSerial
+[ 93%] Building CXX object CMakeFiles/nb_wiringPi_wiringShift.dir/src/wiringPi/wiringShift.cpp.o
+[ 93%] Linking CXX shared module python/wiringop/wiring_pi/wiring_shift.so
+[ 93%] Built target nb_wiringPi_wiringShift
+[ 94%] Building CXX object CMakeFiles/nb_wiringPi_wpiExtensions.dir/src/wiringPi/wpiExtensions.cpp.o
+[ 95%] Linking CXX shared module python/wiringop/wiring_pi/wpi_extensions.so
+[ 95%] Built target nb_wiringPi_wpiExtensions
+[ 95%] Building CXX object CMakeFiles/nb_wiringPiD_daemonise.dir/src/wiringPiD/daemonise.cpp.o
+[ 96%] Linking CXX shared module python/wiringop/wiring_pi_d/daemonise.so
+[ 96%] Built target nb_wiringPiD_daemonise
+[ 97%] Building CXX object CMakeFiles/nb_wiringPiD_drcNetCmd.dir/src/wiringPiD/drcNetCmd.cpp.o
+[ 97%] Linking CXX shared module python/wiringop/wiring_pi_d/drc_net_cmd.so
+[ 97%] Built target nb_wiringPiD_drcNetCmd
+[ 98%] Building CXX object CMakeFiles/nb_wiringPiD_network.dir/src/wiringPiD/network.cpp.o
+[ 99%] Linking CXX shared module python/wiringop/wiring_pi_d/network.so
+[ 99%] Built target nb_wiringPiD_network
+[ 99%] Building CXX object CMakeFiles/nb_wiringPiD_runRemote.dir/src/wiringPiD/runRemote.cpp.o
+[ 99%] Linking CXX shared module python/wiringop/wiring_pi/wiring_pi.so
+[ 99%] Built target nb_wiringPi_wiringPi
+[100%] Linking CXX shared module python/wiringop/wiring_pi_d/run_remote.so
+[100%] Built target nb_wiringPiD_runRemote
+BUILD_GATE_OK backend=production modules=54
++ /opt/pyvenv/bin/python3 -c 
+import pkgutil, importlib, wiringop
+mods=[m.name for m in pkgutil.walk_packages(wiringop.__path__, wiringop.__name__+'.')]
+failed=[]
+for name in mods:
+    try: importlib.import_module(name)
+    except Exception as exc: failed.append((name, repr(exc)))
+print("IMPORT_SMOKE", len(mods)-len(failed), len(mods), "failed", len(failed))
+if failed:
+    print(failed)
+    raise SystemExit(1)
+
+IMPORT_SMOKE 57 57 failed 0
+PRODUCTION_IMPORT_OK
++ /opt/pyvenv/bin/python3 tools/test_serial_python_pty.py
+PYTHON_SERIAL_PROD_PTY_OK
++ cmake --install /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/production --prefix /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install
+-- Install configuration: "Release"
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/__init__.py
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/__init__.py
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi_d
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi_d/__init__.py
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/py.typed
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/__init__.py
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/ds1302.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/ds1302.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/font.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/font.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/gertboard.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/gertboard.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/lcd.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/lcd.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/lcd128x64.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/lcd128x64.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/maxdetect.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/maxdetect.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/pi_face.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/pi_face.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/pi_glow.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/pi_glow.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/pi_nes.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/pi_nes.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/scroll_phat.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/scroll_phat.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/scroll_phat_font.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/dev_lib/scroll_phat_font.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/version.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/version.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/ads1115.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/ads1115.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/bmp180.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/bmp180.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/drc_net.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/drc_net.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/drc_serial.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/drc_serial.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/ds18b20.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/ds18b20.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/font.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/font.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/htu21d.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/htu21d.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/max31855.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/max31855.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/max5322.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/max5322.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23008.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23008.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23016.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23016.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23016reg.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23016reg.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23017.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23017.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23s08.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23s08.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23s17.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23s17.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23x08.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23x08.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23x0817.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp23x0817.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp3002.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp3002.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp3004.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp3004.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp3422.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp3422.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp4802.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/mcp4802.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/oled.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/oled.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/pcf8574.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/pcf8574.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/pcf8591.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/pcf8591.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/pseudo_pins.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/pseudo_pins.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/rht03.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/rht03.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/sn3218.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/sn3218.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/soft_pwm.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/soft_pwm.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/soft_servo.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/soft_servo.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/soft_tone.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/soft_tone.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/sr595.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/sr595.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/w25q64.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/w25q64.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wiring_pi.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wiring_pi.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wiring_pi_i2c.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wiring_pi_i2c.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wiring_pi_spi.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wiring_pi_spi.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wiring_serial.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wiring_serial.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wiring_shift.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wiring_shift.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wpi_extensions.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi/wpi_extensions.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi_d/daemonise.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi_d/daemonise.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi_d/drc_net_cmd.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi_d/drc_net_cmd.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi_d/network.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi_d/network.pyi
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi_d/run_remote.so
+-- Installing: /mnt/data/wiringop_handoff_recovered/wiringop_next_chat_handoff_20260831/workspace/wiringop_nanobind/build/acceptance/install/wiringop/wiring_pi_d/run_remote.pyi
++ /opt/pyvenv/bin/python3 -c 
+import pkgutil, importlib, wiringop
+mods=[m.name for m in pkgutil.walk_packages(wiringop.__path__, wiringop.__name__+'.')]
+failed=[]
+for name in mods:
+    try: importlib.import_module(name)
+    except Exception as exc: failed.append((name, repr(exc)))
+print("INSTALL_IMPORT_SMOKE", len(mods)-len(failed), len(mods), "failed", len(failed))
+if failed:
+    print(failed)
+    raise SystemExit(1)
+
+INSTALL_IMPORT_SMOKE 57 57 failed 0
+INSTALL_TREE_OK modules=54 stubs=54 py.typed=yes caches=none
++ /opt/pyvenv/bin/python3 tools/test_qemu_aarch64.py /mnt/data/qemu-aarch64.tar.gz
+QEMU_AARCH64_ACCEPTANCE_OK sha256=2e7723127e679af9a32b5910e5932a952b65f664b5624839ed3fd69853acb6f8 output=AARCH64_QEMU_SELFTEST_OK 1122334455667788
+ACCEPTANCE_OK {"install_tree": {"cache_artifacts": 0, "extensions": 54, "py_typed": true, "stubs": 54}, "manifest_totals": {"enums": 0, "fields": 207, "function_macros": 2, "functions": 260, "headers": 54, "macros": 664, "python_value_macros": 575, "structs": 19, "variables": 26}, "mock_pytest": "321/321 passed", "nanobind_version": "2.14.0", "package_default": "production, nanobind auto-discovery, overlays auto-prepared", "production_import": "57/57", "python_serial_pty": "passed", "qemu": "passed", "status": "ok", "stubgen": "official nanobind.stubgen 2.14.0, 54/54", "wiringop_commit": "a7921ca2f5c124203be10d3418db70a2e15f3c10"}

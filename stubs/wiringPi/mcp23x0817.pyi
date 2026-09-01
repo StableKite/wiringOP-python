@@ -1,0 +1,91 @@
+"""nanobind bindings for wiringPi/mcp23x0817.h"""
+
+
+
+MCP23X08_IODIR: int = 0
+
+MCP23X08_IPOL: int = 1
+
+MCP23X08_GPINTEN: int = 2
+
+MCP23X08_DEFVAL: int = 3
+
+MCP23X08_INTCON: int = 4
+
+MCP23X08_IOCON: int = 5
+
+MCP23X08_GPPU: int = 6
+
+MCP23X08_INTF: int = 7
+
+MCP23X08_INTCAP: int = 8
+
+MCP23X08_GPIO: int = 9
+
+MCP23X08_OLAT: int = 10
+
+MCP23X17_IODIRA: int = 0
+
+MCP23X17_IPOLA: int = 2
+
+MCP23X17_GPINTENA: int = 4
+
+MCP23X17_DEFVALA: int = 6
+
+MCP23X17_INTCONA: int = 8
+
+MCP23X17_IOCON: int = 10
+
+MCP23X17_GPPUA: int = 12
+
+MCP23X17_INTFA: int = 14
+
+MCP23X17_INTCAPA: int = 16
+
+MCP23X17_GPIO_A: int = 18
+
+MCP23X17_OLATA: int = 20
+
+MCP23X17_IODIRB: int = 1
+
+MCP23X17_IPOLB: int = 3
+
+MCP23X17_GPINTENB: int = 5
+
+MCP23X17_DEFVALB: int = 7
+
+MCP23X17_INTCONB: int = 9
+
+MCP23X17_IOCONB: int = 11
+
+MCP23X17_GPPUB: int = 13
+
+MCP23X17_INTFB: int = 15
+
+MCP23X17_INTCAPB: int = 17
+
+MCP23X17_GPIO_B: int = 19
+
+MCP23X17_OLATB: int = 21
+
+IOCON_UNUSED: int = 1
+
+IOCON_INTPOL: int = 2
+
+IOCON_ODR: int = 4
+
+IOCON_HAEN: int = 8
+
+IOCON_DISSLW: int = 16
+
+IOCON_SEQOP: int = 32
+
+IOCON_MIRROR: int = 64
+
+IOCON_BANK_MODE: int = 128
+
+IOCON_INIT: int = 32
+
+CMD_WRITE: int = 64
+
+CMD_READ: int = 65

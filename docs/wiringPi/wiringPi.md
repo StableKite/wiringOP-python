@@ -1,0 +1,714 @@
+# `wiringPi/wiringPi.h`
+
+Python-модуль: `wiringop.wiring_pi.wiring_pi`.
+
+Модуль зеркально покрывает публичный API заголовка wiringOP. Имена Python приведены к Python-стилю; рядом сохраняются C-имена для однозначного сопоставления.
+
+## Функции
+
+- `piGpioLayoutOops` → `pi_gpio_layout_oops(why)`; C return `void`; адаптация `direct`.
+- `wiringPiFailure` → `wiring_pi_failure(fatal, message)`; C return `int`; адаптация `prepared_printf`.
+- `wiringPiFindNode` → `wiring_pi_find_node(pin)`; C return `struct wiringPiNodeStruct *`; адаптация `direct`.
+- `wiringPiNewNode` → `wiring_pi_new_node(pin_base, num_pins)`; C return `struct wiringPiNodeStruct *`; адаптация `direct`.
+- `wiringPiVersion` → `wiring_pi_version(major, minor)`; C return `void`; адаптация `output_pointers`.
+- `wiringPiSetup` → `wiring_pi_setup()`; C return `int`; адаптация `direct`.
+- `wiringPiSetupSys` → `wiring_pi_setup_sys()`; C return `int`; адаптация `direct`.
+- `wiringPiSetupGpio` → `wiring_pi_setup_gpio()`; C return `int`; адаптация `direct`.
+- `wiringPiSetupPhys` → `wiring_pi_setup_phys()`; C return `int`; адаптация `direct`.
+- `pinModeAlt` → `pin_mode_alt(pin, mode)`; C return `void`; адаптация `direct`.
+- `pinMode` → `pin_mode(pin, mode)`; C return `void`; адаптация `direct`.
+- `pullUpDnControl` → `pull_up_dn_control(pin, pud)`; C return `void`; адаптация `direct`.
+- `digitalRead` → `digital_read(pin)`; C return `int`; адаптация `direct`.
+- `digitalWrite` → `digital_write(pin, value)`; C return `void`; адаптация `direct`.
+- `digitalRead8` → `digital_read8(pin)`; C return `unsigned int`; адаптация `missing`.
+- `digitalWrite8` → `digital_write8(pin, value)`; C return `void`; адаптация `missing`.
+- `pwmWrite` → `pwm_write(pin, value)`; C return `void`; адаптация `direct`.
+- `analogRead` → `analog_read(pin)`; C return `int`; адаптация `direct`.
+- `analogWrite` → `analog_write(pin, value)`; C return `void`; адаптация `direct`.
+- `wiringPiSetupPiFace` → `wiring_pi_setup_pi_face()`; C return `int`; адаптация `missing`.
+- `wiringPiSetupPiFaceForGpioProg` → `wiring_pi_setup_pi_face_for_gpio_prog()`; C return `int`; адаптация `missing`.
+- `piBoardId` → `pi_board_id(model)`; C return `void`; адаптация `output_pointers`.
+- `wpiPinToGpio` → `wpi_pin_to_gpio(wpi_pin)`; C return `int`; адаптация `direct`.
+- `physPinToGpio` → `phys_pin_to_gpio(phys_pin)`; C return `int`; адаптация `direct`.
+- `setPadDrive` → `set_pad_drive(group, value)`; C return `void`; адаптация `direct`.
+- `getAlt` → `get_alt(pin)`; C return `int`; адаптация `direct`.
+- `H618_set_pwm_reg` → `h618_set_pwm_reg(pin, sunxi_gpio_info_ptr)`; C return `void`; адаптация `direct`.
+- `s905d3_set_gpio_reg` → `s905d3_set_gpio_reg(pin, s905d3_gpio_info_ptr)`; C return `void`; адаптация `direct`.
+- `rk3588_set_pwm_reg` → `rk3588_set_pwm_reg(pin, rk3588_soc_info_ptr)`; C return `void`; адаптация `direct`.
+- `rk3566_set_pwm_reg` → `rk3566_set_pwm_reg(pin, rk3566_soc_info_ptr)`; C return `void`; адаптация `direct`.
+- `sunxi_pwm_set_enable` → `sunxi_pwm_set_enable(en)`; C return `void`; адаптация `direct`.
+- `pwmToneWrite` → `pwm_tone_write(pin, freq)`; C return `void`; адаптация `direct`.
+- `pwmSetMode` → `pwm_set_mode(pin, mode)`; C return `void`; адаптация `direct`.
+- `pwmSetRange` → `pwm_set_range(pin, range)`; C return `void`; адаптация `direct`.
+- `pwmSetClock` → `pwm_set_clock(pin, divisor)`; C return `void`; адаптация `direct`.
+- `gpioClockSet` → `gpio_clock_set(pin, freq)`; C return `void`; адаптация `direct`.
+- `digitalReadByte` → `digital_read_byte()`; C return `unsigned int`; адаптация `direct`.
+- `digitalReadByte2` → `digital_read_byte2()`; C return `unsigned int`; адаптация `direct`.
+- `digitalWriteByte` → `digital_write_byte(value)`; C return `void`; адаптация `direct`.
+- `digitalWriteByte2` → `digital_write_byte2(value)`; C return `void`; адаптация `direct`.
+- `waitForInterrupt` → `wait_for_interrupt(pin, m_s)`; C return `int`; адаптация `direct`.
+- `wiringPiISR` → `wiring_pi_isr(pin, mode, function)`; C return `int`; адаптация `callback_isr`.
+- `piThreadCreate` → `pi_thread_create(fn)`; C return `int`; адаптация `callback_thread`.
+- `piLock` → `pi_lock(key)`; C return `void`; адаптация `direct`.
+- `piUnlock` → `pi_unlock(key)`; C return `void`; адаптация `direct`.
+- `piHiPri` → `pi_hi_pri(pri)`; C return `int`; адаптация `direct`.
+- `delay` → `delay(how_long)`; C return `void`; адаптация `direct`.
+- `delayMicroseconds` → `delay_microseconds(how_long)`; C return `void`; адаптация `direct`.
+- `millis` → `millis()`; C return `unsigned int`; адаптация `direct`.
+- `micros` → `micros()`; C return `unsigned int`; адаптация `direct`.
+- `readR` → `read_r(addr)`; C return `unsigned int`; адаптация `direct`.
+- `writeR` → `write_r(val, addr)`; C return `void`; адаптация `direct`.
+- `orangepi_get_gpio_mode` → `orangepi_get_gpio_mode(pin)`; C return `int`; адаптация `direct`.
+- `orangepi_set_gpio_mode` → `orangepi_set_gpio_mode(pin, mode)`; C return `int`; адаптация `direct`.
+- `orangepi_digitalRead` → `orangepi_digital_read(pin)`; C return `int`; адаптация `direct`.
+- `orangepi_digitalWrite` → `orangepi_digital_write(pin, value)`; C return `int`; адаптация `direct`.
+- `orangepi_set_gpio_alt` → `orangepi_set_gpio_alt(pin, mode)`; C return `int`; адаптация `direct`.
+- `OrangePi_set_gpio_pullUpDnControl` → `orange_pi_set_gpio_pull_up_dn_control(pin, pud)`; C return `void`; адаптация `direct`.
+- `orangepi_pwm_set_act` → `orangepi_pwm_set_act(pin, act_cys)`; C return `void`; адаптация `direct`.
+- `orangepi_pwm_set_period` → `orangepi_pwm_set_period(pin, period_cys)`; C return `void`; адаптация `direct`.
+- `orangepi_pwm_set_clk` → `orangepi_pwm_set_clk(pin, clk)`; C return `void`; адаптация `direct`.
+- `orangepi_pwm_set_tone` → `orangepi_pwm_set_tone(pin, freq)`; C return `void`; адаптация `direct`.
+- `set_soc_info` → `set_soc_info()`; C return `void`; адаптация `direct`.
+
+## Структуры
+
+### `SunxiGPIOInfo` (`sunxi_gpio_info`)
+
+- `gpio_base_addr` → `gpio_base_addr`: `unsigned int`.
+- `r_gpio_base_addr` → `r_gpio_base_addr`: `unsigned int`.
+- `gpio` → `gpio_address`: `unsigned int *`.
+- `r_gpio` → `r_gpio_address`: `unsigned int *`.
+- `gpio_base_offset` → `gpio_base_offset`: `unsigned int`.
+- `r_gpio_base_offset` → `r_gpio_base_offset`: `unsigned int`.
+- `gpio_bank_offset` → `gpio_bank_offset`: `unsigned int`.
+- `pull_offset` → `pull_offset`: `unsigned int`.
+- `r_gpio_pull_offset` → `r_gpio_pull_offset`: `unsigned int`.
+- `gpio_cfg_mask` → `gpio_cfg_mask`: `unsigned int`.
+- `pwm_base_addr` → `pwm_base_addr`: `unsigned int`.
+- `pwm` → `pwm_address`: `unsigned int *`.
+- `pwm_ctrl` → `pwm_ctrl`: `unsigned int`.
+- `pwm_period` → `pwm_period`: `unsigned int`.
+- `pwm_clk` → `pwm_clk`: `unsigned int`.
+- `pwm_en` → `pwm_en`: `unsigned int`.
+- `pwm_type` → `pwm_type`: `unsigned int`.
+- `pwm_bit_en` → `pwm_bit_en`: `unsigned int`.
+- `pwm_bit_act` → `pwm_bit_act`: `unsigned int`.
+- `pwm_bit_sclk` → `pwm_bit_sclk`: `unsigned int`.
+- `pwm_bit_mode` → `pwm_bit_mode`: `unsigned int`.
+- `pwm_bit_pulse` → `pwm_bit_pulse`: `unsigned int`.
+
+### `Rk3588SocInfo` (`rk3588_soc_info`)
+
+- `gpio0_base` → `gpio0_base_address`: `unsigned int *`.
+- `gpio1_base` → `gpio1_base_address`: `unsigned int *`.
+- `gpio2_base` → `gpio2_base_address`: `unsigned int *`.
+- `gpio3_base` → `gpio3_base_address`: `unsigned int *`.
+- `gpio4_base` → `gpio4_base_address`: `unsigned int *`.
+- `pmu1_ioc_base` → `pmu1_ioc_base_address`: `unsigned int *`.
+- `pmu2_ioc_base` → `pmu2_ioc_base_address`: `unsigned int *`.
+- `bus_ioc_base` → `bus_ioc_base_address`: `unsigned int *`.
+- `cur_base` → `cur_base_address`: `unsigned int *`.
+- `pmu1cur_base` → `pmu1cur_base_address`: `unsigned int *`.
+- `vccio1_4_ioc_base` → `vccio1_4_ioc_base_address`: `unsigned int *`.
+- `vccio3_5_ioc_base` → `vccio3_5_ioc_base_address`: `unsigned int *`.
+- `vccio6_ioc_base` → `vccio6_ioc_base_address`: `unsigned int *`.
+- `pwm0_base` → `pwm0_base_address`: `unsigned int *`.
+- `pwm1_base` → `pwm1_base_address`: `unsigned int *`.
+- `pwm2_base` → `pwm2_base_address`: `unsigned int *`.
+- `pwm3_base` → `pwm3_base_address`: `unsigned int *`.
+- `pwm_base` → `pwm_base`: `unsigned int`.
+- `pwm_mux` → `pwm_mux`: `unsigned int`.
+- `pwm_mux_val` → `pwm_mux_val`: `unsigned int`.
+- `pwm_mux_offset` → `pwm_mux_offset`: `unsigned int`.
+- `ch_period_hpr` → `ch_period_hpr`: `unsigned int`.
+- `ch_duty_lpr` → `ch_duty_lpr`: `unsigned int`.
+- `ch_crtl` → `ch_crtl`: `unsigned int`.
+
+### `Rk3566SocInfo` (`rk3566_soc_info`)
+
+- `gpio0_base` → `gpio0_base_address`: `unsigned int *`.
+- `gpio1_base` → `gpio1_base_address`: `unsigned int *`.
+- `gpio2_base` → `gpio2_base_address`: `unsigned int *`.
+- `gpio3_base` → `gpio3_base_address`: `unsigned int *`.
+- `gpio4_base` → `gpio4_base_address`: `unsigned int *`.
+- `pmu_grf_base` → `pmu_grf_base_address`: `unsigned int *`.
+- `sys_grf_base` → `sys_grf_base_address`: `unsigned int *`.
+- `cru_base` → `cru_base_address`: `unsigned int *`.
+- `pmu_cru_base` → `pmu_cru_base_address`: `unsigned int *`.
+- `pwm2_base` → `pwm2_base_address`: `unsigned int *`.
+- `pwm3_base` → `pwm3_base_address`: `unsigned int *`.
+- `cru_gate_con` → `cru_gate_con`: `unsigned int`.
+- `cru_gate_con_offset` → `cru_gate_con_offset`: `unsigned int`.
+- `pwm_base` → `pwm_base`: `unsigned int`.
+- `pwm_mux` → `pwm_mux`: `unsigned int`.
+- `pwm_mux_val` → `pwm_mux_val`: `unsigned int`.
+- `pwm_mux_offset` → `pwm_mux_offset`: `unsigned int`.
+- `ch_period_hpr` → `ch_period_hpr`: `unsigned int`.
+- `ch_duty_lpr` → `ch_duty_lpr`: `unsigned int`.
+- `ch_crtl` → `ch_crtl`: `unsigned int`.
+
+### `Rk3399SocInfo` (`rk3399_soc_info`)
+
+- `gpio2_base` → `gpio2_base_address`: `unsigned int *`.
+- `grf_base` → `grf_base_address`: `unsigned int *`.
+- `cru_base` → `cru_base_address`: `unsigned int *`.
+- `pmucru_base` → `pmucru_base_address`: `unsigned int *`.
+- `pmugrf_base` → `pmugrf_base_address`: `unsigned int *`.
+- `gpio1_base` → `gpio1_base_address`: `unsigned int *`.
+- `gpio4_base` → `gpio4_base_address`: `unsigned int *`.
+
+### `Rk3328SocInfo` (`rk3328_soc_info`)
+
+- `gpio2_base` → `gpio2_base_address`: `unsigned int *`.
+- `gpio3_base` → `gpio3_base_address`: `unsigned int *`.
+- `cru_base` → `cru_base_address`: `unsigned int *`.
+- `grf_base` → `grf_base_address`: `unsigned int *`.
+
+### `S905d3GPIOInfo` (`s905d3_gpio_info`)
+
+- `gpio_base` → `gpio_base_address`: `unsigned int *`.
+- `gpio_ao_base` → `gpio_ao_base_address`: `unsigned int *`.
+- `gpio_pwm_base` → `gpio_pwm_base_address`: `unsigned int *`.
+- `gpio_pwm_ao_base` → `gpio_pwm_ao_base_address`: `unsigned int *`.
+- `gpio_out_en` → `gpio_out_en`: `unsigned int`.
+- `gpio_out` → `gpio_out`: `unsigned int`.
+- `gpio_in` → `gpio_in`: `unsigned int`.
+- `gpio_pupd` → `gpio_pupd`: `unsigned int`.
+- `gpio_puen` → `gpio_puen`: `unsigned int`.
+- `gpio_mux` → `gpio_mux`: `unsigned int`.
+- `gpio_out_en_offset` → `gpio_out_en_offset`: `unsigned int`.
+- `gpio_out_offset` → `gpio_out_offset`: `unsigned int`.
+- `gpio_in_offset` → `gpio_in_offset`: `unsigned int`.
+- `gpio_pupd_offset` → `gpio_pupd_offset`: `unsigned int`.
+- `gpio_puen_offset` → `gpio_puen_offset`: `unsigned int`.
+- `gpio_mux_offset` → `gpio_mux_offset`: `unsigned int`.
+- `pwm_duty_cycle` → `pwm_duty_cycle`: `unsigned int`.
+- `pwm_misc` → `pwm_misc`: `unsigned int`.
+
+### `A310bGPIOInfo` (`a310b_gpio_info`)
+
+- `iomux_base_group0` → `iomux_base_group0_address`: `void *`.
+- `iomux_base_group1` → `iomux_base_group1_address`: `void *`.
+- `iomux_base_group2` → `iomux_base_group2_address`: `void *`.
+- `iomux_base_group3` → `iomux_base_group3_address`: `void *`.
+- `iomux_base_group4` → `iomux_base_group4_address`: `void *`.
+- `iomux_base_group5` → `iomux_base_group5_address`: `void *`.
+- `iomux_base_group7` → `iomux_base_group7_address`: `void *`.
+- `gpio_base_group0` → `gpio_base_group0_address`: `void *`.
+- `gpio_base_group1` → `gpio_base_group1_address`: `void *`.
+- `gpio_base_group2` → `gpio_base_group2_address`: `void *`.
+- `gpio_base_group3` → `gpio_base_group3_address`: `void *`.
+- `gpio_base_group4` → `gpio_base_group4_address`: `void *`.
+- `gpio_base_group5` → `gpio_base_group5_address`: `void *`.
+- `gpio_base_group7` → `gpio_base_group7_address`: `void *`.
+- `pwm_base` → `pwm_base_address`: `void *`.
+- `pwm_prd2_phyaddr` → `pwm_prd2_phyaddr`: `unsigned int`.
+- `pwm_ch2_pwl_phyaddr` → `pwm_ch2_pwl_phyaddr`: `unsigned int`.
+- `pwm_ch2_pwh_phyaddr` → `pwm_ch2_pwh_phyaddr`: `unsigned int`.
+- `pwm_prd3_phyaddr` → `pwm_prd3_phyaddr`: `unsigned int`.
+- `pwm_ch3_pwl_phyaddr` → `pwm_ch3_pwl_phyaddr`: `unsigned int`.
+- `pwm_ch3_pwh_phyaddr` → `pwm_ch3_pwh_phyaddr`: `unsigned int`.
+- `pwm_measure_time_phyaddr` → `pwm_measure_time_phyaddr`: `unsigned int`.
+
+### `A310pGPIOInfo` (`a310p_gpio_info`)
+
+- `iomux_base_group0` → `iomux_base_group0_address`: `void *`.
+- `iomux_base_group1` → `iomux_base_group1_address`: `void *`.
+- `iomux_base_group2` → `iomux_base_group2_address`: `void *`.
+- `iomux_base_group3` → `iomux_base_group3_address`: `void *`.
+- `iomux_base_group4` → `iomux_base_group4_address`: `void *`.
+- `iomux_base_group5` → `iomux_base_group5_address`: `void *`.
+- `gpio_base_group0` → `gpio_base_group0_address`: `void *`.
+- `gpio_base_group1` → `gpio_base_group1_address`: `void *`.
+- `gpio_base_group2` → `gpio_base_group2_address`: `void *`.
+- `gpio_base_group3` → `gpio_base_group3_address`: `void *`.
+- `gpio_base_group4` → `gpio_base_group4_address`: `void *`.
+- `gpio_base_group5` → `gpio_base_group5_address`: `void *`.
+- `pwm_base` → `pwm_base_address`: `void *`.
+- `pwm_prd1_phyaddr` → `pwm_prd1_phyaddr`: `unsigned int`.
+- `pwm_ch1_pwl_phyaddr` → `pwm_ch1_pwl_phyaddr`: `unsigned int`.
+- `pwm_ch1_pwh_phyaddr` → `pwm_ch1_pwh_phyaddr`: `unsigned int`.
+- `pwm_measure_time_phyaddr` → `pwm_measure_time_phyaddr`: `unsigned int`.
+
+### `Jh7110SocInfo` (`jh7110_soc_info`)
+
+- `sys_iomux_base` → `sys_iomux_base_address`: `unsigned int *`.
+
+### `Kyx1SocInfo` (`kyx1_soc_info`)
+
+- `iomux_base` → `iomux_base_address`: `unsigned int *`.
+- `gpio_base` → `gpio_base_address`: `unsigned int *`.
+
+### `WiringPiNodeStruct` (`wiringPiNodeStruct`)
+
+- `pinBase` → `pin_base`: `int`.
+- `pinMax` → `pin_max`: `int`.
+- `fd` → `fd`: `int`.
+- `data0` → `data0`: `unsigned int`.
+- `data1` → `data1`: `unsigned int`.
+- `data2` → `data2`: `unsigned int`.
+- `data3` → `data3`: `unsigned int`.
+- `pinMode` → `pin_mode_address`: `void (*)(struct wiringPiNodeStruct *, int, int)`.
+- `pullUpDnControl` → `pull_up_dn_control_address`: `void (*)(struct wiringPiNodeStruct *, int, int)`.
+- `digitalRead` → `digital_read_address`: `int (*)(struct wiringPiNodeStruct *, int)`.
+- `digitalWrite` → `digital_write_address`: `void (*)(struct wiringPiNodeStruct *, int, int)`.
+- `pwmWrite` → `pwm_write_address`: `void (*)(struct wiringPiNodeStruct *, int, int)`.
+- `analogRead` → `analog_read_address`: `int (*)(struct wiringPiNodeStruct *, int)`.
+- `analogWrite` → `analog_write_address`: `void (*)(struct wiringPiNodeStruct *, int, int)`.
+- `next` → `next_address`: `struct wiringPiNodeStruct *`.
+
+## Данные и глобальные значения
+
+- `wiringPiDebug` → `wiring_pi_debug` (`int`, `extern`).
+- `piModelNames` → `pi_model_names` (`const char *[16]`, `extern`); отсутствующие legacy extern arrays в production представлены как `None`.
+- `piRevisionNames` → `pi_revision_names` (`const char *[16]`, `extern`); отсутствующие legacy extern arrays в production представлены как `None`.
+- `piMakerNames` → `pi_maker_names` (`const char *[16]`, `extern`); отсутствующие legacy extern arrays в production представлены как `None`.
+- `piMemorySize` → `pi_memory_size` (`const int[8]`, `extern`); отсутствующие legacy extern arrays в production представлены как `None`.
+- `wiringPiNodes` → `wiring_pi_nodes` (`struct wiringPiNodeStruct *`, `extern`).
+- `_wiringPiGpio` → `wiring_pi_gpio` (`volatile unsigned int *`, `extern`).
+- `_wiringPiPwm` → `wiring_pi_pwm` (`volatile unsigned int *`, `extern`).
+- `_wiringPiClk` → `wiring_pi_clk` (`volatile unsigned int *`, `extern`).
+- `_wiringPiPads` → `wiring_pi_pads` (`volatile unsigned int *`, `extern`).
+- `_wiringPiTimer` → `wiring_pi_timer` (`volatile unsigned int *`, `extern`).
+- `_wiringPiTimerIrqRaw` → `wiring_pi_timer_irq_raw` (`volatile unsigned int *`, `extern`).
+
+## Макросы
+
+- `__WIRING_PI_H__` → `WIRING_PI_H`: остаётся C-only; `c_only`; определение ``.
+- `TRUE` → `TRUE`: экспортируется; `value`; определение `(1==1)`.
+- `FALSE` → `FALSE`: экспортируется; `value`; определение `(!TRUE)`.
+- `UNU` → `UNU`: остаётся C-only; `c_only`; определение `__attribute__((unused))`.
+- `MAX_PIN_NUM` → `MAX_PIN_NUM`: экспортируется; `value`; определение `(0x40)`.
+- `PI_MODEL_A` → `PI_MODEL_A`: экспортируется; `value`; определение `0`.
+- `PI_MODEL_B` → `PI_MODEL_B`: экспортируется; `value`; определение `1`.
+- `PI_MODEL_AP` → `PI_MODEL_AP`: экспортируется; `value`; определение `2`.
+- `PI_MODEL_BP` → `PI_MODEL_BP`: экспортируется; `value`; определение `3`.
+- `PI_MODEL_2` → `PI_MODEL_2`: экспортируется; `value`; определение `4`.
+- `PI_ALPHA` → `PI_ALPHA`: экспортируется; `value`; определение `5`.
+- `PI_MODEL_CM` → `PI_MODEL_CM`: экспортируется; `value`; определение `6`.
+- `PI_MODEL_07` → `PI_MODEL_07`: экспортируется; `value`; определение `7`.
+- `PI_MODEL_CM3` → `PI_MODEL_CM3`: экспортируется; `value`; определение `10`.
+- `PI_MODEL_ZERO_W` → `PI_MODEL_ZERO_W`: экспортируется; `value`; определение `12`.
+- `PI_MODEL_3P` → `PI_MODEL_3_P`: экспортируется; `value`; определение `13`.
+- `PI_VERSION_1` → `PI_VERSION_1`: экспортируется; `value`; определение `0`.
+- `PI_VERSION_1_1` → `PI_VERSION_1_1`: экспортируется; `value`; определение `1`.
+- `PI_VERSION_1_2` → `PI_VERSION_1_2`: экспортируется; `value`; определение `2`.
+- `PI_VERSION_2` → `PI_VERSION_2`: экспортируется; `value`; определение `3`.
+- `PI_MAKER_SONY` → `PI_MAKER_SONY`: экспортируется; `value`; определение `0`.
+- `PI_MAKER_EGOMAN` → `PI_MAKER_EGOMAN`: экспортируется; `value`; определение `1`.
+- `PI_MAKER_EMBEST` → `PI_MAKER_EMBEST`: экспортируется; `value`; определение `2`.
+- `PI_MAKER_UNKNOWN` → `PI_MAKER_UNKNOWN`: экспортируется; `value`; определение `3`.
+- `H3_GPIO_BASE_ADDR` → `H3_GPIO_BASE_ADDR`: экспортируется; `value`; определение `0x01C20000U`.
+- `H3_R_GPIO_BASE_ADDR` → `H3_R_GPIO_BASE_ADDR`: экспортируется; `value`; определение `0x01F02000U`.
+- `H6_GPIO_BASE_ADDR` → `H6_GPIO_BASE_ADDR`: экспортируется; `value`; определение `0x0300B000U`.
+- `H6_R_GPIO_BASE_ADDR` → `H6_R_GPIO_BASE_ADDR`: экспортируется; `value`; определение `0x07022000U`.
+- `A527_GPIO_BASE_ADDR` → `A527_GPIO_BASE_ADDR`: экспортируется; `value`; определение `0x02000000U`.
+- `T736_R_GPIO_BASE_ADDR` → `T736_R_GPIO_BASE_ADDR`: экспортируется; `value`; определение `0x07025000U`.
+- `GPIO_PWM` → `GPIO_PWM`: остаётся C-only; `c_only`; определение `GPIO_PWM_OP`.
+- `SUNXI_PWM_BASE` → `SUNXI_PWM_BASE`: остаётся C-only; `c_only`; определение `(sunxi_gpio_info_t.pwm_base_addr)`.
+- `SUNXI_PWM_CTRL_REG` → `SUNXI_PWM_CTRL_REG`: остаётся C-only; `c_only`; определение `(sunxi_gpio_info_t.pwm_ctrl)`.
+- `SUNXI_PWM_CH0_PERIOD` → `SUNXI_PWM_CH0_PERIOD`: остаётся C-only; `inactive`; определение `(SUNXI_PWM_BASE + 0x4)`.
+- `SUNXI_PWM_CH1_PERIOD` → `SUNXI_PWM_CH1_PERIOD`: остаётся C-only; `inactive`; определение `(SUNXI_PWM_BASE + 0x8)`.
+- `SUNXI_PWM_CH0_EN` → `SUNXI_PWM_CH0_EN`: остаётся C-only; `inactive`; определение `(1 << 4)`.
+- `SUNXI_PWM_CH0_ACT_STA` → `SUNXI_PWM_CH0_ACT_STA`: остаётся C-only; `inactive`; определение `(1 << 5)`.
+- `SUNXI_PWM_SCLK_CH0_GATING` → `SUNXI_PWM_SCLK_CH0_GATING`: остаётся C-only; `inactive`; определение `(1 << 6)`.
+- `SUNXI_PWM_CH0_MS_MODE` → `SUNXI_PWM_CH0_MS_MODE`: остаётся C-only; `inactive`; определение `(1 << 7)    //pulse mode`.
+- `SUNXI_PWM_CH0_PUL_START` → `SUNXI_PWM_CH0_PUL_START`: остаётся C-only; `inactive`; определение `(1 << 8)`.
+- `SUNXI_PWM_PERIOD` → `SUNXI_PWM_PERIOD`: остаётся C-only; `c_only`; определение `(sunxi_gpio_info_t.pwm_period)`.
+- `SUNXI_PWM_CLK_REG` → `SUNXI_PWM_CLK_REG`: остаётся C-only; `c_only`; определение `(sunxi_gpio_info_t.pwm_clk)`.
+- `SUNXI_PWM_EN_REG` → `SUNXI_PWM_EN_REG`: остаётся C-only; `c_only`; определение `(sunxi_gpio_info_t.pwm_en)`.
+- `SUNXI_PWM_TYPE` → `SUNXI_PWM_TYPE`: остаётся C-only; `c_only`; определение `(sunxi_gpio_info_t.pwm_type)`.
+- `SUNXI_PWM_EN` → `SUNXI_PWM_EN`: остаётся C-only; `c_only`; определение `(sunxi_gpio_info_t.pwm_bit_en)`.
+- `SUNXI_PWM_ACT_STA` → `SUNXI_PWM_ACT_STA`: остаётся C-only; `c_only`; определение `(sunxi_gpio_info_t.pwm_bit_act)`.
+- `SUNXI_PWM_SCLK_GATING` → `SUNXI_PWM_SCLK_GATING`: остаётся C-only; `c_only`; определение `(sunxi_gpio_info_t.pwm_bit_sclk)`.
+- `SUNXI_PWM_MS_MODE` → `SUNXI_PWM_MS_MODE`: остаётся C-only; `c_only`; определение `(sunxi_gpio_info_t.pwm_bit_mode)`.
+- `SUNXI_PWM_PUL_START` → `SUNXI_PWM_PUL_START`: остаётся C-only; `c_only`; определение `(sunxi_gpio_info_t.pwm_bit_pulse)`.
+- `H3_PWM_BASE` → `H3_PWM_BASE`: экспортируется; `value`; определение `(0x01c21400)`.
+- `H6_PWM_BASE` → `H6_PWM_BASE`: экспортируется; `value`; определение `(0x0300A000)`.
+- `H616_PWM_BASE` → `H616_PWM_BASE`: экспортируется; `value`; определение `(0x0300A000)`.
+- `SUNXI_V1_PWM_TYPE` → `SUNXI_V1_PWM_TYPE`: экспортируется; `value`; определение `(1)`.
+- `SUNXI_V2_PWM_TYPE` → `SUNXI_V2_PWM_TYPE`: экспортируется; `value`; определение `(2)`.
+- `SUNXI_V1_PWM_EN_REG` → `SUNXI_V1_PWM_EN_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0x0)`.
+- `SUNXI_V1_PWM_CLK_REG` → `SUNXI_V1_PWM_CLK_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0x0)`.
+- `SUNXI_V1_PWM_CTRL_REG` → `SUNXI_V1_PWM_CTRL_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0x0)`.
+- `SUNXI_V1_PWM_CH0_PERIOD` → `SUNXI_V1_PWM_CH0_PERIOD`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0x4)`.
+- `SUNXI_V1_PWM_CH0_EN` → `SUNXI_V1_PWM_CH0_EN`: экспортируется; `value`; определение `(1 << 4)`.
+- `SUNXI_V1_PWM_CH0_ACT_STA` → `SUNXI_V1_PWM_CH0_ACT_STA`: экспортируется; `value`; определение `(1 << 5)`.
+- `SUNXI_V1_PWM_SCLK_CH0_GATING` → `SUNXI_V1_PWM_SCLK_CH0_GATING`: экспортируется; `value`; определение `(1 << 6)`.
+- `SUNXI_V1_PWM_CH0_MS_MODE` → `SUNXI_V1_PWM_CH0_MS_MODE`: экспортируется; `value`; определение `(1 << 7)`.
+- `SUNXI_V1_PWM_CH0_PUL_START` → `SUNXI_V1_PWM_CH0_PUL_START`: экспортируется; `value`; определение `(1 << 8)`.
+- `SUNXI_V2_PWM_EN_REG` → `SUNXI_V2_PWM_EN_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0x40)`.
+- `SUNXI_V2_PWM_ACT_STA` → `SUNXI_V2_PWM_ACT_STA`: экспортируется; `value`; определение `(1 << 8)`.
+- `SUNXI_V2_PWM_SCLK_GATING` → `SUNXI_V2_PWM_SCLK_GATING`: экспортируется; `value`; определение `(1 << 4)`.
+- `SUNXI_V2_PWM_MS_MODE` → `SUNXI_V2_PWM_MS_MODE`: экспортируется; `value`; определение `(1 << 9)`.
+- `SUNXI_V2_PWM_PUL_START` → `SUNXI_V2_PWM_PUL_START`: экспортируется; `value`; определение `(1 << 10)`.
+- `SUNXI_V2_PWM1_PERIOD` → `SUNXI_V2_PWM1_PERIOD`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0x84)`.
+- `SUNXI_V2_PWM1_CTRL_REG` → `SUNXI_V2_PWM1_CTRL_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0x80)`.
+- `SUNXI_V2_PWM1_CLK_REG` → `SUNXI_V2_PWM1_CLK_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0x20)`.
+- `SUNXI_V2_PWM1_EN` → `SUNXI_V2_PWM1_EN`: экспортируется; `value`; определение `(1 << 1)`.
+- `SUNXI_V2_PWM2_PERIOD` → `SUNXI_V2_PWM2_PERIOD`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0xA4)`.
+- `SUNXI_V2_PWM2_CTRL_REG` → `SUNXI_V2_PWM2_CTRL_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0xA0)`.
+- `SUNXI_V2_PWM2_CLK_REG` → `SUNXI_V2_PWM2_CLK_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0x24)`.
+- `SUNXI_V2_PWM2_EN` → `SUNXI_V2_PWM2_EN`: экспортируется; `value`; определение `(1 << 2)`.
+- `SUNXI_V2_PWM3_PERIOD` → `SUNXI_V2_PWM3_PERIOD`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0xC4)`.
+- `SUNXI_V2_PWM3_CTRL_REG` → `SUNXI_V2_PWM3_CTRL_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0xC0)`.
+- `SUNXI_V2_PWM3_CLK_REG` → `SUNXI_V2_PWM3_CLK_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0x24)`.
+- `SUNXI_V2_PWM3_EN` → `SUNXI_V2_PWM3_EN`: экспортируется; `value`; определение `(1 << 3)`.
+- `SUNXI_V2_PWM4_PERIOD` → `SUNXI_V2_PWM4_PERIOD`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0xE4)`.
+- `SUNXI_V2_PWM4_CTRL_REG` → `SUNXI_V2_PWM4_CTRL_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0xE0)`.
+- `SUNXI_V2_PWM4_CLK_REG` → `SUNXI_V2_PWM4_CLK_REG`: остаётся C-only; `c_only`; определение `(SUNXI_PWM_BASE + 0x28)`.
+- `SUNXI_V2_PWM4_EN` → `SUNXI_V2_PWM4_EN`: экспортируется; `value`; определение `(1 << 4)`.
+- `PWM_CLK_DIV_120` → `PWM_CLK_DIV_120`: экспортируется; `value`; определение `0`.
+- `PWM_CLK_DIV_180` → `PWM_CLK_DIV_180`: экспортируется; `value`; определение `1`.
+- `PWM_CLK_DIV_240` → `PWM_CLK_DIV_240`: экспортируется; `value`; определение `2`.
+- `PWM_CLK_DIV_360` → `PWM_CLK_DIV_360`: экспортируется; `value`; определение `3`.
+- `PWM_CLK_DIV_480` → `PWM_CLK_DIV_480`: экспортируется; `value`; определение `4`.
+- `PWM_CLK_DIV_12K` → `PWM_CLK_DIV_12_K`: экспортируется; `value`; определение `8`.
+- `PWM_CLK_DIV_24K` → `PWM_CLK_DIV_24_K`: экспортируется; `value`; определение `9`.
+- `PWM_CLK_DIV_36K` → `PWM_CLK_DIV_36_K`: экспортируется; `value`; определение `10`.
+- `PWM_CLK_DIV_48K` → `PWM_CLK_DIV_48_K`: экспортируется; `value`; определение `11`.
+- `PWM_CLK_DIV_72K` → `PWM_CLK_DIV_72_K`: экспортируется; `value`; определение `12`.
+- `SUNXI_PUD_OFF` → `SUNXI_PUD_OFF`: экспортируется; `value`; определение `0`.
+- `SUNXI_PUD_UP` → `SUNXI_PUD_UP`: экспортируется; `value`; определение `1`.
+- `SUNXI_PUD_DOWN` → `SUNXI_PUD_DOWN`: экспортируется; `value`; определение `2`.
+- `RK3588_GPIO0_BASE` → `RK3588_GPIO0_BASE`: экспортируется; `value`; определение `0xfd8a0000U`.
+- `RK3588_GPIO1_BASE` → `RK3588_GPIO1_BASE`: экспортируется; `value`; определение `0xfec20000U`.
+- `RK3588_GPIO2_BASE` → `RK3588_GPIO2_BASE`: экспортируется; `value`; определение `0xfec30000U`.
+- `RK3588_GPIO3_BASE` → `RK3588_GPIO3_BASE`: экспортируется; `value`; определение `0xfec40000U`.
+- `RK3588_GPIO4_BASE` → `RK3588_GPIO4_BASE`: экспортируется; `value`; определение `0xfec50000U`.
+- `RK3588_GPIO_SWPORT_DR_L_OFFSET` → `RK3588_GPIO_SWPORT_DR_L_OFFSET`: экспортируется; `value`; определение `0x00U`.
+- `RK3588_GPIO_SWPORT_DR_H_OFFSET` → `RK3588_GPIO_SWPORT_DR_H_OFFSET`: экспортируется; `value`; определение `0x04U`.
+- `RK3588_GPIO_SWPORT_DDR_L_OFFSET` → `RK3588_GPIO_SWPORT_DDR_L_OFFSET`: экспортируется; `value`; определение `0x08U`.
+- `RK3588_GPIO_SWPORT_DDR_H_OFFSET` → `RK3588_GPIO_SWPORT_DDR_H_OFFSET`: экспортируется; `value`; определение `0x0cU`.
+- `RK3588_GPIO_EXT_PORT_OFFSET` → `RK3588_GPIO_EXT_PORT_OFFSET`: экспортируется; `value`; определение `0x70U`.
+- `RK3588_CRU_BASE` → `RK3588_CRU_BASE`: экспортируется; `value`; определение `0xfd7c0000U`.
+- `RK3588_CRU_GATE_CON16_OFFSET` → `RK3588_CRU_GATE_CON16_OFFSET`: экспортируется; `value`; определение `0x0840U`.
+- `RK3588_CRU_GATE_CON17_OFFSET` → `RK3588_CRU_GATE_CON17_OFFSET`: экспортируется; `value`; определение `0x0844U`.
+- `RK3588_PMU1CRU_BASE` → `RK3588_PMU1_CRU_BASE`: экспортируется; `value`; определение `0xfd7f0000U`.
+- `RK3588_PMU1CRU_GATE_CON5_OFFSET` → `RK3588_PMU1_CRU_GATE_CON5_OFFSET`: экспортируется; `value`; определение `0x0814U`.
+- `RK3588_GPIO_NUM` → `RK3588_GPIO_NUM`: экспортируется; `value`; определение `(0x40)`.
+- `RK3588_GPIO_BIT` → `RK3588_GPIO_BIT`: экспортируется; `function_value`; определение `(x) (1UL << (x))`.
+- `RK3588_PMU1_IOC_BASE` → `RK3588_PMU1_IOC_BASE`: экспортируется; `value`; определение `0xfd5f0000U`.
+- `RK3588_PMU1_IOC_GPIO0A_IOMUX_SEL_L` → `RK3588_PMU1_IOC_GPIO0_A_IOMUX_SEL_L`: экспортируется; `value`; определение `0x00U`.
+- `RK3588_PMU1_IOC_GPIO0A_IOMUX_SEL_H` → `RK3588_PMU1_IOC_GPIO0_A_IOMUX_SEL_H`: экспортируется; `value`; определение `0x04U`.
+- `RK3588_PMU1_IOC_GPIO0B_IOMUX_SEL_L` → `RK3588_PMU1_IOC_GPIO0_B_IOMUX_SEL_L`: экспортируется; `value`; определение `0x08U`.
+- `RK3588_PMU2_IOC_BASE` → `RK3588_PMU2_IOC_BASE`: экспортируется; `value`; определение `0xfd5f4000U`.
+- `RK3588_PMU2_IOC_GPIO0B_IOMUX_SEL_H` → `RK3588_PMU2_IOC_GPIO0_B_IOMUX_SEL_H`: экспортируется; `value`; определение `0x00U`.
+- `RK3588_PMU2_IOC_GPIO0C_IOMUX_SEL_L` → `RK3588_PMU2_IOC_GPIO0_C_IOMUX_SEL_L`: экспортируется; `value`; определение `0x04U`.
+- `RK3588_PMU2_IOC_GPIO0C_IOMUX_SEL_H` → `RK3588_PMU2_IOC_GPIO0_C_IOMUX_SEL_H`: экспортируется; `value`; определение `0x08U`.
+- `RK3588_PMU2_IOC_GPIO0D_IOMUX_SEL_L` → `RK3588_PMU2_IOC_GPIO0_D_IOMUX_SEL_L`: экспортируется; `value`; определение `0x0cU`.
+- `RK3588_PMU2_IOC_GPIO0D_IOMUX_SEL_H` → `RK3588_PMU2_IOC_GPIO0_D_IOMUX_SEL_H`: экспортируется; `value`; определение `0x10U`.
+- `RK3588_BUS_IOC_BASE` → `RK3588_BUS_IOC_BASE`: экспортируется; `value`; определение `0xfd5f8000U`.
+- `RK3588_VCCIO1_4_IOC_BASE` → `RK3588_VCCIO1_4_IOC_BASE`: экспортируется; `value`; определение `0xfd5f9000U`.
+- `RK3588_VCCIO3_5_IOC_BASE` → `RK3588_VCCIO3_5_IOC_BASE`: экспортируется; `value`; определение `0xfd5fa000U`.
+- `RK3588_VCCIO6_IOC_BASE` → `RK3588_VCCIO6_IOC_BASE`: экспортируется; `value`; определение `0xfd5fc000U`.
+- `RK3588_PMU1_IOC_GPIO0A_P` → `RK3588_PMU1_IOC_GPIO0_A_P`: экспортируется; `value`; определение `0x0020U`.
+- `RK3588_PMU1_IOC_GPIO0B_P` → `RK3588_PMU1_IOC_GPIO0_B_P`: экспортируется; `value`; определение `0x0024U`.
+- `RK3588_PMU2_IOC_GPIO0B_P` → `RK3588_PMU2_IOC_GPIO0_B_P`: экспортируется; `value`; определение `0x0028U`.
+- `RK3588_PMU2_IOC_GPIO0C_P` → `RK3588_PMU2_IOC_GPIO0_C_P`: экспортируется; `value`; определение `0x002cU`.
+- `RK3588_PMU2_IOC_GPIO0D_P` → `RK3588_PMU2_IOC_GPIO0_D_P`: экспортируется; `value`; определение `0x0030U`.
+- `RK3588_VCCIO1_4_IOC_GPIO1A_P` → `RK3588_VCCIO1_4_IOC_GPIO1_A_P`: экспортируется; `value`; определение `0x0110U`.
+- `RK3588_VCCIO3_5_IOC_GPIO2A_P` → `RK3588_VCCIO3_5_IOC_GPIO2_A_P`: экспортируется; `value`; определение `0x0120U`.
+- `RK3588_VCCIO6_IOC_GPIO4A_P` → `RK3588_VCCIO6_IOC_GPIO4_A_P`: экспортируется; `value`; определение `0x0140U`.
+- `RK3588_PWM0_BASE` → `RK3588_PWM0_BASE`: экспортируется; `value`; определение `0xfd8b0000U`.
+- `RK3588_PWM1_BASE` → `RK3588_PWM1_BASE`: экспортируется; `value`; определение `0xfe8d0000U`.
+- `RK3588_PWM2_BASE` → `RK3588_PWM2_BASE`: экспортируется; `value`; определение `0xfebe0000U`.
+- `RK3588_PWM3_BASE` → `RK3588_PWM3_BASE`: экспортируется; `value`; определение `0xfebf0000U`.
+- `RK3588_CRU_GATE_CON19` → `RK3588_CRU_GATE_CON19`: экспортируется; `value`; определение `(RK3588_CRU_BASE + 0x084CU)`.
+- `RK3588_CRU_GATE_CON15` → `RK3588_CRU_GATE_CON15`: экспортируется; `value`; определение `(RK3588_CRU_BASE + 0x083CU)`.
+- `RK3588_PMU1CRU_GATE_CON1` → `RK3588_PMU1_CRU_GATE_CON1`: экспортируется; `value`; определение `(RK3588_PMU1CRU_BASE +0x0804U)`.
+- `RK3588_CH0_PERIOD_HPR` → `RK3588_CH0_PERIOD_HPR`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x04)`.
+- `RK3588_CH0_DUTY_LPR` → `RK3588_CH0_DUTY_LPR`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x08)`.
+- `RK3588_CH0_CTRL` → `RK3588_CH0_CTRL`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x0C)`.
+- `RK3588_CH1_PERIOD_HPR` → `RK3588_CH1_PERIOD_HPR`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x14)`.
+- `RK3588_CH1_DUTY_LPR` → `RK3588_CH1_DUTY_LPR`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x18)`.
+- `RK3588_CH1_CTRL` → `RK3588_CH1_CTRL`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x1C)`.
+- `RK3588_CH2_PERIOD_HPR` → `RK3588_CH2_PERIOD_HPR`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x24)`.
+- `RK3588_CH2_DUTY_LPR` → `RK3588_CH2_DUTY_LPR`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x28)`.
+- `RK3588_CH2_CTRL` → `RK3588_CH2_CTRL`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x2C)`.
+- `RK3588_CH3_PERIOD_HPR` → `RK3588_CH3_PERIOD_HPR`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x34)`.
+- `RK3588_CH3_DUTY_LPR` → `RK3588_CH3_DUTY_LPR`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x38)`.
+- `RK3588_CH3_CTRL` → `RK3588_CH3_CTRL`: остаётся C-only; `c_only`; определение `(RK3588_PWM_BASE + 0x3C)`.
+- `RK3588_PWM_BASE` → `RK3588_PWM_BASE`: остаётся C-only; `c_only`; определение `(rk3588_soc_info_t.pwm_base)`.
+- `RK3588_PWM_MUX` → `RK3588_PWM_MUX`: остаётся C-only; `c_only`; определение `(rk3588_soc_info_t.pwm_mux)`.
+- `RK3588_PWM_MUX_VAL` → `RK3588_PWM_MUX_VAL`: остаётся C-only; `c_only`; определение `(rk3588_soc_info_t.pwm_mux_val)`.
+- `RK3588_PWM_MUX_OFFSET` → `RK3588_PWM_MUX_OFFSET`: остаётся C-only; `c_only`; определение `(rk3588_soc_info_t.pwm_mux_offset)`.
+- `RK3588_CH_PERIOD_HPR` → `RK3588_CH_PERIOD_HPR`: остаётся C-only; `c_only`; определение `(rk3588_soc_info_t.ch_period_hpr)`.
+- `RK3588_CH_DUTY_LPR` → `RK3588_CH_DUTY_LPR`: остаётся C-only; `c_only`; определение `(rk3588_soc_info_t.ch_duty_lpr)`.
+- `RK3588_CH_CTRL` → `RK3588_CH_CTRL`: остаётся C-only; `c_only`; определение `(rk3588_soc_info_t.ch_crtl)`.
+- `RK3588_RPT` → `RK3588_RPT`: экспортируется; `value`; определение `(24)`.
+- `RK3588_SCALE` → `RK3588_SCALE`: экспортируется; `value`; определение `(16)`.
+- `RK3588_PRESCALE` → `RK3588_PRESCALE`: экспортируется; `value`; определение `(12)`.
+- `RK3588_CLK_SRC_SEL` → `RK3588_CLK_SRC_SEL`: экспортируется; `value`; определение `(10)`.
+- `RK3588_CLK_SEL` → `RK3588_CLK_SEL`: экспортируется; `value`; определение `(9)`.
+- `RK3588_FORCE_CLK_EN` → `RK3588_FORCE_CLK_EN`: экспортируется; `value`; определение `(8)`.
+- `RK3588_CH_CNT_EN` → `RK3588_CH_CNT_EN`: экспортируется; `value`; определение `(7)`.
+- `RK3588_CONLOCK` → `RK3588_CONLOCK`: экспортируется; `value`; определение `(6)`.
+- `RK3588_OUTPUT_MODE` → `RK3588_OUTPUT_MODE`: экспортируется; `value`; определение `(5)`.
+- `RK3588_INACTIVE_POL` → `RK3588_INACTIVE_POL`: экспортируется; `value`; определение `(4)`.
+- `RK3588_DUTY_POL` → `RK3588_DUTY_POL`: экспортируется; `value`; определение `(3)`.
+- `RK3588_PWM_MODE` → `RK3588_PWM_MODE`: экспортируется; `value`; определение `(1)`.
+- `RK3588_PWM_EN` → `RK3588_PWM_EN`: экспортируется; `value`; определение `(0)`.
+- `RK3566_GPIO0_BASE` → `RK3566_GPIO0_BASE`: экспортируется; `value`; определение `0xfdd60000U`.
+- `RK3566_GPIO1_BASE` → `RK3566_GPIO1_BASE`: экспортируется; `value`; определение `0xfe740000U`.
+- `RK3566_GPIO2_BASE` → `RK3566_GPIO2_BASE`: экспортируется; `value`; определение `0xfe750000U`.
+- `RK3566_GPIO3_BASE` → `RK3566_GPIO3_BASE`: экспортируется; `value`; определение `0xfe760000U`.
+- `RK3566_GPIO4_BASE` → `RK3566_GPIO4_BASE`: экспортируется; `value`; определение `0xfe770000U`.
+- `RK3566_GPIO_SWPORT_DR_L_OFFSET` → `RK3566_GPIO_SWPORT_DR_L_OFFSET`: экспортируется; `value`; определение `0x00U`.
+- `RK3566_GPIO_SWPORT_DR_H_OFFSET` → `RK3566_GPIO_SWPORT_DR_H_OFFSET`: экспортируется; `value`; определение `0x04U`.
+- `RK3566_GPIO_SWPORT_DDR_L_OFFSET` → `RK3566_GPIO_SWPORT_DDR_L_OFFSET`: экспортируется; `value`; определение `0x08U`.
+- `RK3566_GPIO_SWPORT_DDR_H_OFFSET` → `RK3566_GPIO_SWPORT_DDR_H_OFFSET`: экспортируется; `value`; определение `0x0cU`.
+- `RK3566_GPIO_EXT_PORT_OFFSET` → `RK3566_GPIO_EXT_PORT_OFFSET`: экспортируется; `value`; определение `0x70U`.
+- `RK3566_PMU_GRF_BASE` → `RK3566_PMU_GRF_BASE`: экспортируется; `value`; определение `0xfdc20000U`.
+- `RK3566_SYS_GRF_BASE` → `RK3566_SYS_GRF_BASE`: экспортируется; `value`; определение `0xfdc60000U`.
+- `RK3566_PMU_CRU_BASE` → `RK3566_PMU_CRU_BASE`: экспортируется; `value`; определение `0xfdd00000U`.
+- `RK3566_CRU_BASE` → `RK3566_CRU_BASE`: экспортируется; `value`; определение `0xFdd20000U`.
+- `RK3566_CRU_GATE_CON31_OFFSET` → `RK3566_CRU_GATE_CON31_OFFSET`: экспортируется; `value`; определение `0x37CU`.
+- `RK3566_CRU_GATE_CON31` → `RK3566_CRU_GATE_CON31`: экспортируется; `value`; определение `(RK3566_CRU_BASE + 0x37CU)`.
+- `RK3566_CRU_GATE_CON32_OFFSET` → `RK3566_CRU_GATE_CON32_OFFSET`: экспортируется; `value`; определение `0x380U`.
+- `RK3566_CRU_GATE_CON32` → `RK3566_CRU_GATE_CON32`: экспортируется; `value`; определение `(RK3566_CRU_BASE + 0x380U)`.
+- `RK3566_PMUCRU_PMUGATE_CON01_OFFSET` → `RK3566_PMUCRU_PMUGATE_CON01_OFFSET`: экспортируется; `value`; определение `0x184U`.
+- `RK3566_GRF_GPIO1A_IOMUX_L_OFFSET` → `RK3566_GRF_GPIO1_A_IOMUX_L_OFFSET`: экспортируется; `value`; определение `0x00U`.
+- `RK3566_GRF_GPIO1A_P_OFFSET` → `RK3566_GRF_GPIO1_A_P_OFFSET`: экспортируется; `value`; определение `0x80U`.
+- `RK3566_PMU_GRF_GPIO0A_IOMUX_L_OFFSET` → `RK3566_PMU_GRF_GPIO0_A_IOMUX_L_OFFSET`: экспортируется; `value`; определение `0x00U`.
+- `RK3566_PMU_GRF_GPIO0A_P_OFFSET` → `RK3566_PMU_GRF_GPIO0_A_P_OFFSET`: экспортируется; `value`; определение `0x20U`.
+- `RK3566_PWM_MUX_REG` → `RK3566_PWM_MUX_REG`: экспортируется; `value`; определение `(RK3566_SYS_GRF_BASE + 0x70)`.
+- `RK3566_PWM2_BASE` → `RK3566_PWM2_BASE`: экспортируется; `value`; определение `0xfe6f0000U`.
+- `RK3566_PWM3_BASE` → `RK3566_PWM3_BASE`: экспортируется; `value`; определение `0xfe700000U`.
+- `RK3566_CH3_PERIOD_HPR` → `RK3566_CH3_PERIOD_HPR`: остаётся C-only; `c_only`; определение `(RK3566_PWM_BASE + 0x34)`.
+- `RK3566_CH3_DUTY_LPR` → `RK3566_CH3_DUTY_LPR`: остаётся C-only; `c_only`; определение `(RK3566_PWM_BASE + 0x38)`.
+- `RK3566_CH3_CTRL` → `RK3566_CH3_CTRL`: остаётся C-only; `c_only`; определение `(RK3566_PWM_BASE + 0x3C)`.
+- `RK3566_CRU_GATE_CON` → `RK3566_CRU_GATE_CON`: остаётся C-only; `c_only`; определение `(rk3566_soc_info_t.cru_gate_con)`.
+- `RK3566_CRU_GATE_CON_OFFSET` → `RK3566_CRU_GATE_CON_OFFSET`: остаётся C-only; `c_only`; определение `(rk3566_soc_info_t.cru_gate_con_offset)`.
+- `RK3566_PWM_BASE` → `RK3566_PWM_BASE`: остаётся C-only; `c_only`; определение `(rk3566_soc_info_t.pwm_base)`.
+- `RK3566_PWM_MUX` → `RK3566_PWM_MUX`: остаётся C-only; `c_only`; определение `(rk3566_soc_info_t.pwm_mux)`.
+- `RK3566_PWM_MUX_VAL` → `RK3566_PWM_MUX_VAL`: остаётся C-only; `c_only`; определение `(rk3566_soc_info_t.pwm_mux_val)`.
+- `RK3566_PWM_MUX_OFFSET` → `RK3566_PWM_MUX_OFFSET`: остаётся C-only; `c_only`; определение `(rk3566_soc_info_t.pwm_mux_offset)`.
+- `RK3566_CH_PERIOD_HPR` → `RK3566_CH_PERIOD_HPR`: остаётся C-only; `c_only`; определение `(rk3566_soc_info_t.ch_period_hpr)`.
+- `RK3566_CH_DUTY_LPR` → `RK3566_CH_DUTY_LPR`: остаётся C-only; `c_only`; определение `(rk3566_soc_info_t.ch_duty_lpr)`.
+- `RK3566_CH_CTRL` → `RK3566_CH_CTRL`: остаётся C-only; `c_only`; определение `(rk3566_soc_info_t.ch_crtl)`.
+- `RK3566_RPT` → `RK3566_RPT`: экспортируется; `value`; определение `(24)`.
+- `RK3566_SCALE` → `RK3566_SCALE`: экспортируется; `value`; определение `(16)`.
+- `RK3566_PRESCALE` → `RK3566_PRESCALE`: экспортируется; `value`; определение `(12)`.
+- `RK3566_CLK_SRC_SEL` → `RK3566_CLK_SRC_SEL`: экспортируется; `value`; определение `(10)`.
+- `RK3566_CLK_SEL` → `RK3566_CLK_SEL`: экспортируется; `value`; определение `(9)`.
+- `RK3566_FORCE_CLK_EN` → `RK3566_FORCE_CLK_EN`: экспортируется; `value`; определение `(8)`.
+- `RK3566_CH_CNT_EN` → `RK3566_CH_CNT_EN`: экспортируется; `value`; определение `(7)`.
+- `RK3566_CONLOCK` → `RK3566_CONLOCK`: экспортируется; `value`; определение `(6)`.
+- `RK3566_OUTPUT_MODE` → `RK3566_OUTPUT_MODE`: экспортируется; `value`; определение `(5)`.
+- `RK3566_INACTIVE_POL` → `RK3566_INACTIVE_POL`: экспортируется; `value`; определение `(4)`.
+- `RK3566_DUTY_POL` → `RK3566_DUTY_POL`: экспортируется; `value`; определение `(3)`.
+- `RK3566_PWM_MODE` → `RK3566_PWM_MODE`: экспортируется; `value`; определение `(1)`.
+- `RK3566_PWM_EN` → `RK3566_PWM_EN`: экспортируется; `value`; определение `(0)`.
+- `RK3399_GPIO1_BASE` → `RK3399_GPIO1_BASE`: экспортируется; `value`; определение `0xff730000U`.
+- `RK3399_GPIO2_BASE` → `RK3399_GPIO2_BASE`: экспортируется; `value`; определение `0xff780000U`.
+- `RK3399_GPIO4_BASE` → `RK3399_GPIO4_BASE`: экспортируется; `value`; определение `0xff790000U`.
+- `RK3399_GPIO_NUM` → `RK3399_GPIO_NUM`: экспортируется; `value`; определение `(0x40)`.
+- `RK3399_GPIO_BIT` → `RK3399_GPIO_BIT`: экспортируется; `function_value`; определение `(x) (1UL << (x))`.
+- `RK3399_GPIO_SWPORTA_DR_OFFSET` → `RK3399_GPIO_SWPORTA_DR_OFFSET`: экспортируется; `value`; определение `0x00U`.
+- `RK3399_GPIO_SWPORTA_DDR_OFFSET` → `RK3399_GPIO_SWPORTA_DDR_OFFSET`: экспортируется; `value`; определение `0x04U`.
+- `RK3399_GPIO_EXT_PORTA_OFFSET` → `RK3399_GPIO_EXT_PORTA_OFFSET`: экспортируется; `value`; определение `0x50U`.
+- `RK3399_GRF_GPIO2_3_4_P_OFFSET` → `RK3399_GRF_GPIO2_3_4_P_OFFSET`: экспортируется; `value`; определение `0x00040U`.
+- `RK3399_PMUGRF_GPIO0_1_P_OFFSET` → `RK3399_PMUGRF_GPIO0_1_P_OFFSET`: экспортируется; `value`; определение `0x00040U`.
+- `RK3399_PMUGRF_BASE` → `RK3399_PMUGRF_BASE`: экспортируется; `value`; определение `0xff320000U`.
+- `RK3399_GRF_BASE` → `RK3399_GRF_BASE`: экспортируется; `value`; определение `0xff77e000U`.
+- `RK3399_CRU_BASE` → `RK3399_CRU_BASE`: экспортируется; `value`; определение `0xff760000U`.
+- `RK3399_PMUCRU_BASE` → `RK3399_PMUCRU_BASE`: экспортируется; `value`; определение `0xff750000U`.
+- `RK3399_CRU_CLKGATE_CON31_OFFSET` → `RK3399_CRU_CLKGATE_CON31_OFFSET`: экспортируется; `value`; определение `0x037cU`.
+- `RK3399_PMUCRU_CLKGATE_CON1_OFFSET` → `RK3399_PMUCRU_CLKGATE_CON1_OFFSET`: экспортируется; `value`; определение `0x0104U`.
+- `RK3328_GPIO2_BASE` → `RK3328_GPIO2_BASE`: экспортируется; `value`; определение `0xff230000`.
+- `RK3328_GPIO3_BASE` → `RK3328_GPIO3_BASE`: экспортируется; `value`; определение `0xff240000`.
+- `RK3328_GPIO_NUM` → `RK3328_GPIO_NUM`: экспортируется; `value`; определение `(0x40)`.
+- `RK3328_GPIO_SWPORTA_DR_OFFSET` → `RK3328_GPIO_SWPORTA_DR_OFFSET`: экспортируется; `value`; определение `0x00`.
+- `RK3328_GPIO_SWPORTA_DDR_OFFSET` → `RK3328_GPIO_SWPORTA_DDR_OFFSET`: экспортируется; `value`; определение `0x04`.
+- `RK3328_GPIO_EXT_PORTA_OFFSET` → `RK3328_GPIO_EXT_PORTA_OFFSET`: экспортируется; `value`; определение `0x50`.
+- `RK3328_GRF_BASE` → `RK3328_GRF_BASE`: экспортируется; `value`; определение `0xff100000`.
+- `RK3328_CRU_BASE` → `RK3328_CRU_BASE`: экспортируется; `value`; определение `0xff440000`.
+- `RK3328_CRU_CLKGATE_CON16_OFFSET` → `RK3328_CRU_CLKGATE_CON16_OFFSET`: экспортируется; `value`; определение `0x0240`.
+- `S905D3_GPIO_BASE` → `S905_D3_GPIO_BASE`: экспортируется; `value`; определение `0xFF634000`.
+- `S905D3_GPIO_AO_BASE` → `S905_D3_GPIO_AO_BASE`: экспортируется; `value`; определение `0xFF800000`.
+- `S905D3_GPIO_PWM_BASE` → `S905_D3_GPIO_PWM_BASE`: экспортируется; `value`; определение `0xFFD19000`.
+- `S905D3_GPIO_PWM_AO_BASE` → `S905_D3_GPIO_PWM_AO_BASE`: экспортируется; `value`; определение `0xFF802000`.
+- `S905D3_GPIOA_OUT_EN_REG` → `S905_D3_GPIO_A_OUT_EN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x120)`.
+- `S905D3_GPIOA_OUT_REG` → `S905_D3_GPIO_A_OUT_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x121)`.
+- `S905D3_GPIOA_IN_REG` → `S905_D3_GPIO_A_IN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x122)`.
+- `S905D3_GPIOA_PUPD_REG` → `S905_D3_GPIO_A_PUPD_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x13F)`.
+- `S905D3_GPIOA_PUEN_REG` → `S905_D3_GPIO_A_PUEN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x14D)`.
+- `S905D3_GPIOA_MUX_REG1` → `S905_D3_GPIO_A_MUX_REG1`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x1BD)`.
+- `S905D3_GPIOA_MUX_REG2` → `S905_D3_GPIO_A_MUX_REG2`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x1BE)`.
+- `S905D3_GPIOC_OUT_EN_REG` → `S905_D3_GPIO_C_OUT_EN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x113)`.
+- `S905D3_GPIOC_OUT_REG` → `S905_D3_GPIO_C_OUT_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x114)`.
+- `S905D3_GPIOC_IN_REG` → `S905_D3_GPIO_C_IN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x115)`.
+- `S905D3_GPIOC_PUPD_REG` → `S905_D3_GPIO_C_PUPD_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x13B)`.
+- `S905D3_GPIOC_PUEN_REG` → `S905_D3_GPIO_C_PUEN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x149)`.
+- `S905D3_GPIOC_MUX_REG` → `S905_D3_GPIO_C_MUX_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x1B9)`.
+- `S905D3_GPIOH_OUT_EN_REG` → `S905_D3_GPIO_H_OUT_EN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x119)`.
+- `S905D3_GPIOH_OUT_REG` → `S905_D3_GPIO_H_OUT_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x11A)`.
+- `S905D3_GPIOH_IN_REG` → `S905_D3_GPIO_H_IN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x11B)`.
+- `S905D3_GPIOH_PUPD_REG` → `S905_D3_GPIO_H_PUPD_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x13D)`.
+- `S905D3_GPIOH_PUEN_REG` → `S905_D3_GPIO_H_PUEN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x14B)`.
+- `S905D3_GPIOH_MUX_REG1` → `S905_D3_GPIO_H_MUX_REG1`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x1BB)`.
+- `S905D3_GPIOH_MUX_REG2` → `S905_D3_GPIO_H_MUX_REG2`: экспортируется; `value`; определение `(S905D3_GPIO_BASE + 0x1BC)`.
+- `S905D3_GPIOAO_OUT_EN_REG` → `S905_D3_GPIO_AO_OUT_EN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_AO_BASE + 0x109)`.
+- `S905D3_GPIOAO_OUT_REG` → `S905_D3_GPIO_AO_OUT_REG`: экспортируется; `value`; определение `(S905D3_GPIO_AO_BASE + 0x10D)`.
+- `S905D3_GPIOAO_IN_REG` → `S905_D3_GPIO_AO_IN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_AO_BASE + 0x10A)`.
+- `S905D3_GPIOAO_PUPD_REG` → `S905_D3_GPIO_AO_PUPD_REG`: экспортируется; `value`; определение `(S905D3_GPIO_AO_BASE + 0x10B)`.
+- `S905D3_GPIOAO_PUEN_REG` → `S905_D3_GPIO_AO_PUEN_REG`: экспортируется; `value`; определение `(S905D3_GPIO_AO_BASE + 0x10C)`.
+- `S905D3_GPIOAO_MUX_REG1` → `S905_D3_GPIO_AO_MUX_REG1`: экспортируется; `value`; определение `(S905D3_GPIO_AO_BASE + 0x105)`.
+- `S905D3_GPIOAO_MUX_REG2` → `S905_D3_GPIO_AO_MUX_REG2`: экспортируется; `value`; определение `(S905D3_GPIO_AO_BASE + 0x106)`.
+- `S905D3_GPIO_OUT_EN` → `S905_D3_GPIO_OUT_EN`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_out_en)`.
+- `S905D3_GPIO_OUT` → `S905_D3_GPIO_OUT`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_out)`.
+- `S905D3_GPIO_IN` → `S905_D3_GPIO_IN`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_in)`.
+- `S905D3_GPIO_PUPD` → `S905_D3_GPIO_PUPD`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_pupd)`.
+- `S905D3_GPIO_PUEN` → `S905_D3_GPIO_PUEN`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_puen)`.
+- `S905D3_GPIO_MUX` → `S905_D3_GPIO_MUX`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_mux)`.
+- `S905D3_GPIO_OUT_EN_OFFSET` → `S905_D3_GPIO_OUT_EN_OFFSET`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_out_en_offset)`.
+- `S905D3_GPIO_OUT_OFFSET` → `S905_D3_GPIO_OUT_OFFSET`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_out_offset)`.
+- `S905D3_GPIO_IN_OFFSET` → `S905_D3_GPIO_IN_OFFSET`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_in_offset)`.
+- `S905D3_GPIO_PUPD_OFFSET` → `S905_D3_GPIO_PUPD_OFFSET`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_pupd_offset)`.
+- `S905D3_GPIO_PUEN_OFFSET` → `S905_D3_GPIO_PUEN_OFFSET`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_puen_offset)`.
+- `S905D3_GPIO_MUX_OFFSET` → `S905_D3_GPIO_MUX_OFFSET`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.gpio_mux_offset)`.
+- `S905D3_PWM_DUTY_CYCLE_F_REG` → `S905_D3_PWM_DUTY_CYCLE_F_REG`: экспортируется; `value`; определение `(S905D3_GPIO_PWM_BASE + 0x01)`.
+- `S905D3_PWM_MISC_EF_REG` → `S905_D3_PWM_MISC_EF_REG`: экспортируется; `value`; определение `(S905D3_GPIO_PWM_BASE + 0x02)`.
+- `S905D3_PWM_DUTY_CYCLE_AO_C_REG` → `S905_D3_PWM_DUTY_CYCLE_AO_C_REG`: экспортируется; `value`; определение `(S905D3_GPIO_PWM_AO_BASE)`.
+- `S905D3_PWM_MISC_AO_CD_REG` → `S905_D3_PWM_MISC_AO_CD_REG`: экспортируется; `value`; определение `(S905D3_GPIO_PWM_AO_BASE + 0x02)`.
+- `S905D3_PWM_DUTY_CYCLE` → `S905_D3_PWM_DUTY_CYCLE`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.pwm_duty_cycle)`.
+- `S905D3_PWM_MISC` → `S905_D3_PWM_MISC`: остаётся C-only; `c_only`; определение `(s905d3_gpio_info_t.pwm_misc)`.
+- `S905D3_PWM_CLK_EN_1` → `S905_D3_PWM_CLK_EN_1`: экспортируется; `value`; определение `(23)`.
+- `S905D3_PWM_CLK_DIV_1` → `S905_D3_PWM_CLK_DIV_1`: экспортируется; `value`; определение `(16)`.
+- `S905D3_PWM_CLK_EN_0` → `S905_D3_PWM_CLK_EN_0`: экспортируется; `value`; определение `(15)`.
+- `S905D3_PWM_CLK_DIV_0` → `S905_D3_PWM_CLK_DIV_0`: экспортируется; `value`; определение `(8)`.
+- `S905D3_PWM_CLK_SEL_1` → `S905_D3_PWM_CLK_SEL_1`: экспортируется; `value`; определение `(6)`.
+- `S905D3_PWM_CLK_SEL_0` → `S905_D3_PWM_CLK_SEL_0`: экспортируется; `value`; определение `(4)`.
+- `S905D3_PWM_EN_1` → `S905_D3_PWM_EN_1`: экспортируется; `value`; определение `(1)`.
+- `S905D3_PWM_EN_0` → `S905_D3_PWM_EN_0`: экспортируется; `value`; определение `(0)`.
+- `A310B_IOMUX_BASE_GROUP0` → `A310_B_IOMUX_BASE_GROUP0`: экспортируется; `value`; определение `0xC4000000`.
+- `A310B_IOMUX_BASE_GROUP1` → `A310_B_IOMUX_BASE_GROUP1`: экспортируется; `value`; определение `0xC4000000`.
+- `A310B_IOMUX_BASE_GROUP2` → `A310_B_IOMUX_BASE_GROUP2`: экспортируется; `value`; определение `0x82320000`.
+- `A310B_IOMUX_BASE_GROUP3` → `A310_B_IOMUX_BASE_GROUP3`: экспортируется; `value`; определение `0x82320000`.
+- `A310B_IOMUX_BASE_GROUP4` → `A310_B_IOMUX_BASE_GROUP4`: экспортируется; `value`; определение `0xA0140000`.
+- `A310B_IOMUX_BASE_GROUP5` → `A310_B_IOMUX_BASE_GROUP5`: экспортируется; `value`; определение `0x3001D0000`.
+- `A310B_IOMUX_BASE_GROUP7` → `A310_B_IOMUX_BASE_GROUP7`: экспортируется; `value`; определение `0x400140000`.
+- `A310B_GPIO_BASE_GROUP0` → `A310_B_GPIO_BASE_GROUP0`: экспортируется; `value`; определение `0xC4040000`.
+- `A310B_GPIO_BASE_GROUP1` → `A310_B_GPIO_BASE_GROUP1`: экспортируется; `value`; определение `0xC4050000`.
+- `A310B_GPIO_BASE_GROUP2` → `A310_B_GPIO_BASE_GROUP2`: экспортируется; `value`; определение `0x820F0000`.
+- `A310B_GPIO_BASE_GROUP3` → `A310_B_GPIO_BASE_GROUP3`: экспортируется; `value`; определение `0x82100000`.
+- `A310B_GPIO_BASE_GROUP4` → `A310_B_GPIO_BASE_GROUP4`: экспортируется; `value`; определение `0xA0160000`.
+- `A310B_GPIO_BASE_GROUP5` → `A310_B_GPIO_BASE_GROUP5`: экспортируется; `value`; определение `0x300160000`.
+- `A310B_GPIO_BASE_GROUP7` → `A310_B_GPIO_BASE_GROUP7`: экспортируется; `value`; определение `0x400150000`.
+- `A310B_GPIO_DIRECTION_OFFSET` → `A310_B_GPIO_DIRECTION_OFFSET`: экспортируется; `value`; определение `0x4`.
+- `A310B_GPIO_SET_VALUE_OFFSET` → `A310_B_GPIO_SET_VALUE_OFFSET`: экспортируется; `value`; определение `0x0`.
+- `A310B_GPIO_GET_VALUE_OFFSET` → `A310_B_GPIO_GET_VALUE_OFFSET`: экспортируется; `value`; определение `0x50`.
+- `A310B_PWM_BASE` → `A310_B_PWM_BASE`: экспортируется; `value`; определение `0xC4080000`.
+- `A310B_PWM_PRD2_OFFSET` → `A310_B_PWM_PRD2_OFFSET`: экспортируется; `value`; определение `0x20`.
+- `A310B_PWM_CH2_PWL_OFFSET` → `A310_B_PWM_CH2_PWL_OFFSET`: экспортируется; `value`; определение `0x24`.
+- `A310B_PWM_CH2_PWH_OFFSET` → `A310_B_PWM_CH2_PWH_OFFSET`: экспортируется; `value`; определение `0x28`.
+- `A310B_PWM_PRD3_OFFSET` → `A310_B_PWM_PRD3_OFFSET`: экспортируется; `value`; определение `0x2C`.
+- `A310B_PWM_CH3_PWL_OFFSET` → `A310_B_PWM_CH3_PWL_OFFSET`: экспортируется; `value`; определение `0x30`.
+- `A310B_PWM_CH3_PWH_OFFSET` → `A310_B_PWM_CH3_PWH_OFFSET`: экспортируется; `value`; определение `0x34`.
+- `A310B_PWM_MEASURE_TIME_OFFSET` → `A310_B_PWM_MEASURE_TIME_OFFSET`: экспортируется; `value`; определение `0x108`.
+- `A310P_IOMUX_BASE_GROUP0` → `A310_P_IOMUX_BASE_GROUP0`: экспортируется; `value`; определение `0xA4560000`.
+- `A310P_IOMUX_BASE_GROUP1` → `A310_P_IOMUX_BASE_GROUP1`: экспортируется; `value`; определение `0xA4560000`.
+- `A310P_IOMUX_BASE_GROUP2` → `A310_P_IOMUX_BASE_GROUP2`: экспортируется; `value`; определение `0xA4560000`.
+- `A310P_IOMUX_BASE_GROUP3` → `A310_P_IOMUX_BASE_GROUP3`: экспортируется; `value`; определение `0xFA6E0000`.
+- `A310P_IOMUX_BASE_GROUP4` → `A310_P_IOMUX_BASE_GROUP4`: экспортируется; `value`; определение `0x8B160000`.
+- `A310P_IOMUX_BASE_GROUP5` → `A310_P_IOMUX_BASE_GROUP5`: экспортируется; `value`; определение `0x84020000`.
+- `A310P_GPIO_BASE_GROUP0` → `A310_P_GPIO_BASE_GROUP0`: экспортируется; `value`; определение `0xA4500000`.
+- `A310P_GPIO_BASE_GROUP1` → `A310_P_GPIO_BASE_GROUP1`: экспортируется; `value`; определение `0xA4510000`.
+- `A310P_GPIO_BASE_GROUP2` → `A310_P_GPIO_BASE_GROUP2`: экспортируется; `value`; определение `0xA4520000`.
+- `A310P_GPIO_BASE_GROUP3` → `A310_P_GPIO_BASE_GROUP3`: экспортируется; `value`; определение `0xFA6B0000`.
+- `A310P_GPIO_BASE_GROUP4` → `A310_P_GPIO_BASE_GROUP4`: экспортируется; `value`; определение `0x8B100000`.
+- `A310P_GPIO_BASE_GROUP5` → `A310_P_GPIO_BASE_GROUP5`: экспортируется; `value`; определение `0x840E0000`.
+- `A310P_GPIO_DIRECTION_OFFSET` → `A310_P_GPIO_DIRECTION_OFFSET`: экспортируется; `value`; определение `0x4`.
+- `A310P_GPIO_SET_VALUE_OFFSET` → `A310_P_GPIO_SET_VALUE_OFFSET`: экспортируется; `value`; определение `0x0`.
+- `A310P_GPIO_GET_VALUE_OFFSET` → `A310_P_GPIO_GET_VALUE_OFFSET`: экспортируется; `value`; определение `0x50`.
+- `A310P_PWM_BASE` → `A310_P_PWM_BASE`: экспортируется; `value`; определение `0x0084000000`.
+- `A310P_PWM_PRD1_OFFSET` → `A310_P_PWM_PRD1_OFFSET`: экспортируется; `value`; определение `0x14`.
+- `A310P_PWM_CH1_PWL_OFFSET` → `A310_P_PWM_CH1_PWL_OFFSET`: экспортируется; `value`; определение `0x18`.
+- `A310P_PWM_CH1_PWH_OFFSET` → `A310_P_PWM_CH1_PWH_OFFSET`: экспортируется; `value`; определение `0x1C`.
+- `A310P_PWM_MEASURE_TIME_OFFSET` → `A310_P_PWM_MEASURE_TIME_OFFSET`: экспортируется; `value`; определение `0x108`.
+- `JH7110_SYS_IOMUX_BASE` → `JH7110_SYS_IOMUX_BASE`: экспортируется; `value`; определение `0x13040000U`.
+- `JH7110_SYS_DOEN_REG_BASE` → `JH7110_SYS_DOEN_REG_BASE`: экспортируется; `value`; определение `0x000U`.
+- `JH7110_SYS_DOUT_REG_BASE` → `JH7110_SYS_DOUT_REG_BASE`: экспортируется; `value`; определение `0x040U`.
+- `JH7110_SYS_GPI_REG_BASE` → `JH7110_SYS_GPI_REG_BASE`: экспортируется; `value`; определение `0x080U`.
+- `JH7110_SYS_GPIOIN_REG_BASE` → `JH7110_SYS_GPIO_IN_REG_BASE`: экспортируется; `value`; определение `0x118U`.
+- `JH7110_DOEN_MASK` → `JH7110_DOEN_MASK`: экспортируется; `value`; определение `0x3fU`.
+- `JH7110_DOUT_MASK` → `JH7110_DOUT_MASK`: экспортируется; `value`; определение `0x7fU`.
+- `JH7110_SYS_GPO_PDA_0_74_CFG` → `JH7110_SYS_GPO_PDA_0_74_CFG`: экспортируется; `value`; определение `0x120U`.
+- `JH7110_GPOEN_ENABLE` → `JH7110_GPOEN_ENABLE`: экспортируется; `value`; определение `0`.
+- `JH7110_GPOEN_DISABLE` → `JH7110_GPOEN_DISABLE`: экспортируется; `value`; определение `1`.
+- `GPIO_NUM_PER_WORD` → `GPIO_NUM_PER_WORD`: экспортируется; `value`; определение `32`.
+- `KYX1_GPIO_BASE` → `KYX1_GPIO_BASE`: экспортируется; `value`; определение `0xd4019000U`.
+- `KYX1_IOMUX_BASE` → `KYX1_IOMUX_BASE`: экспортируется; `value`; определение `0xd401e000U`.
+- `KYX1_FUNC_MASK` → `KYX1_FUNC_MASK`: экспортируется; `value`; определение `0xff77U`.
+- `KYX1_OFFSET` → `KYX1_OFFSET`: экспортируется; `value`; определение `0x3fcU`.
+- `KYX1_PULL_DIS` → `KYX1_PULL_DIS`: экспортируется; `value`; определение `(0 << 13)`.
+- `KYX1_PULL_UP` → `KYX1_PULL_UP`: экспортируется; `value`; определение `(6 << 13)`.
+- `KYX1_PULL_DOWN` → `KYX1_PULL_DOWN`: экспортируется; `value`; определение `(5 << 13)`.
+- `PI_GPIO_MASK` → `PI_GPIO_MASK`: экспортируется; `value`; определение `(0xFFFFFFC0)`.
+- `WPI_MODE_PINS` → `WPI_MODE_PINS`: экспортируется; `value`; определение `0`.
+- `WPI_MODE_GPIO` → `WPI_MODE_GPIO`: экспортируется; `value`; определение `1`.
+- `WPI_MODE_GPIO_SYS` → `WPI_MODE_GPIO_SYS`: экспортируется; `value`; определение `2`.
+- `WPI_MODE_PHYS` → `WPI_MODE_PHYS`: экспортируется; `value`; определение `3`.
+- `WPI_MODE_PIFACE` → `WPI_MODE_PIFACE`: экспортируется; `value`; определение `4`.
+- `WPI_MODE_UNINITIALISED` → `WPI_MODE_UNINITIALISED`: экспортируется; `value`; определение `-1`.
+- `INPUT` → `INPUT`: экспортируется; `value`; определение `0`.
+- `OUTPUT` → `OUTPUT`: экспортируется; `value`; определение `1`.
+- `PWM_OUTPUT` → `PWM_OUTPUT`: экспортируется; `value`; определение `2`.
+- `GPIO_CLOCK` → `GPIO_CLOCK`: экспортируется; `value`; определение `3`.
+- `SOFT_PWM_OUTPUT` → `SOFT_PWM_OUTPUT`: экспортируется; `value`; определение `4`.
+- `SOFT_TONE_OUTPUT` → `SOFT_TONE_OUTPUT`: экспортируется; `value`; определение `5`.
+- `PWM_TONE_OUTPUT` → `PWM_TONE_OUTPUT`: экспортируется; `value`; определение `6`.
+- `LOW` → `LOW`: экспортируется; `value`; определение `0`.
+- `HIGH` → `HIGH`: экспортируется; `value`; определение `1`.
+- `PUD_OFF` → `PUD_OFF`: экспортируется; `value`; определение `0`.
+- `PUD_DOWN` → `PUD_DOWN`: экспортируется; `value`; определение `1`.
+- `PUD_UP` → `PUD_UP`: экспортируется; `value`; определение `2`.
+- `PWM_MODE_MS` → `PWM_MODE_MS`: экспортируется; `value`; определение `0`.
+- `PWM_MODE_BAL` → `PWM_MODE_BAL`: экспортируется; `value`; определение `1`.
+- `INT_EDGE_SETUP` → `INT_EDGE_SETUP`: экспортируется; `value`; определение `0`.
+- `INT_EDGE_FALLING` → `INT_EDGE_FALLING`: экспортируется; `value`; определение `1`.
+- `INT_EDGE_RISING` → `INT_EDGE_RISING`: экспортируется; `value`; определение `2`.
+- `INT_EDGE_BOTH` → `INT_EDGE_BOTH`: экспортируется; `value`; определение `3`.
+- `PI_MODEL_3` → `PI_MODEL_3`: экспортируется; `value`; определение `0`.
+- `PI_MODEL_LTIE_2` → `PI_MODEL_LTIE_2`: экспортируется; `value`; определение `1`.
+- `PI_MODEL_ZERO` → `PI_MODEL_ZERO`: экспортируется; `value`; определение `2`.
+- `PI_MODEL_H3` → `PI_MODEL_H3`: экспортируется; `value`; определение `3`.
+- `PI_MODEL_ZERO_PLUS_2` → `PI_MODEL_ZERO_PLUS_2`: экспортируется; `value`; определение `4`.
+- `PI_MODEL_WIN` → `PI_MODEL_WIN`: экспортируется; `value`; определение `5`.
+- `PI_MODEL_PRIME` → `PI_MODEL_PRIME`: экспортируется; `value`; определение `6`.
+- `PI_MODEL_PC_2` → `PI_MODEL_PC_2`: экспортируется; `value`; определение `7`.
+- `PI_MODEL_ZERO_PLUS` → `PI_MODEL_ZERO_PLUS`: экспортируется; `value`; определение `8`.
+- `PI_MODEL_ZERO_2` → `PI_MODEL_ZERO_2`: экспортируется; `value`; определение `9`.
+- `PI_MODEL_ZERO_2_W` → `PI_MODEL_ZERO_2_W`: экспортируется; `value`; определение `10`.
+- `PI_MODEL_ZERO_3_PLUS` → `PI_MODEL_ZERO_3_PLUS`: экспортируется; `value`; определение `11`.
+- `PI_MODEL_800` → `PI_MODEL_800`: экспортируется; `value`; определение `15`.
+- `PI_MODEL_4` → `PI_MODEL_4`: экспортируется; `value`; определение `16`.
+- `PI_MODEL_4_LTS` → `PI_MODEL_4_LTS`: экспортируется; `value`; определение `17`.
+- `PI_MODEL_RK3399` → `PI_MODEL_RK3399`: экспортируется; `value`; определение `18`.
+- `PI_MODEL_R1_PLUS` → `PI_MODEL_R1_PLUS`: экспортируется; `value`; определение `22`.
+- `PI_MODEL_900` → `PI_MODEL_900`: экспортируется; `value`; определение `23`.
+- `PI_MODEL_5` → `PI_MODEL_5`: экспортируется; `value`; определение `24`.
+- `PI_MODEL_5B` → `PI_MODEL_5_B`: экспортируется; `value`; определение `25`.
+- `PI_MODEL_5_PRO` → `PI_MODEL_5_PRO`: экспортируется; `value`; определение `26`.
+- `PI_MODEL_5_MAX` → `PI_MODEL_5_MAX`: экспортируется; `value`; определение `27`.
+- `PI_MODEL_5_PLUS` → `PI_MODEL_5_PLUS`: экспортируется; `value`; определение `28`.
+- `PI_MODEL_CM5` → `PI_MODEL_CM5`: экспортируется; `value`; определение `29`.
+- `PI_MODEL_CM5_TABLET` → `PI_MODEL_CM5_TABLET`: экспортируется; `value`; определение `39`.
+- `PI_MODEL_5_ULTRA` → `PI_MODEL_5_ULTRA`: экспортируется; `value`; определение `40`.
+- `PI_MODEL_AI_MAX` → `PI_MODEL_AI_MAX`: экспортируется; `value`; определение `41`.
+- `PI_MODEL_CM4` → `PI_MODEL_CM4`: экспортируется; `value`; определение `50`.
+- `PI_MODEL_3B` → `PI_MODEL_3_B`: экспортируется; `value`; определение `51`.
+- `PI_MODEL_3_PLUS` → `PI_MODEL_3_PLUS`: экспортируется; `value`; определение `60`.
+- `PI_MODEL_AI_PRO` → `PI_MODEL_AI_PRO`: экспортируется; `value`; определение `70`.
+- `PI_MODEL_KUNPENG_PRO` → `PI_MODEL_KUNPENG_PRO`: экспортируется; `value`; определение `71`.
+- `PI_MODEL_AI_STATION` → `PI_MODEL_AI_STATION`: экспортируется; `value`; определение `75`.
+- `PI_MODEL_RV` → `PI_MODEL_RV`: экспортируется; `value`; определение `80`.
+- `PI_MODEL_4A` → `PI_MODEL_4_A`: экспортируется; `value`; определение `90`.
+- `PI_MODEL_RV2` → `PI_MODEL_RV2`: экспортируется; `value`; определение `100`.
+- `PI_MODEL_4_PRO` → `PI_MODEL_4_PRO`: экспортируется; `value`; определение `110`.
+- `PI_MODEL_ZERO_3_W` → `PI_MODEL_ZERO_3_W`: экспортируется; `value`; определение `111`.
+- `PI_MODEL_ZERO_4` → `PI_MODEL_ZERO_4`: экспортируется; `value`; определение `112`.
+- `PI_THREAD` → `PI_THREAD`: остаётся C-only; `c_only`; определение `(X) void *X (UNU void *dummy)`.
+- `WPI_FATAL` → `WPI_FATAL`: экспортируется; `value`; определение `(1==1)`.
+- `WPI_ALMOST` → `WPI_ALMOST`: экспортируется; `value`; определение `(1==2)`.

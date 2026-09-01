@@ -1,0 +1,9 @@
+"""nanobind bindings for wiringPi/softTone.h"""
+
+
+
+def soft_tone_create(pin: int) -> int: ...
+
+def soft_tone_stop(pin: int) -> None: ...
+
+def soft_tone_write(pin: int, freq: int) -> None: ...

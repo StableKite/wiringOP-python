@@ -1,0 +1,4 @@
+Upstream base: a7921ca2f5c124203be10d3418db70a2e15f3c10
+PR1 -Werror cleanup: c6d9ecbcafe2a6eb4c2cb34be8a8ffb7b16537d3
+PR2 UART standalone: 2f8aea5af3a94573ffb887816ed0ba5acd462cae
+Integration PR1+PR2: 3a666f78d8529b70209a4e3d6e6e2f47047ad498
