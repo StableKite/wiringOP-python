@@ -7,7 +7,7 @@ set -eu
 export PYTHON_GIL=0
 export PYTHON_JIT=1
 apk add --no-cache bash build-base ca-certificates cmake curl git jq linux-headers \
-  make musl-dev patchelf binutils libxcrypt-dev python3 py3-pip
+  make musl-dev patchelf binutils python3 py3-pip
 curl -LsSf https://astral.sh/uv/install.sh | sh
 export PATH="/root/.local/bin:$PATH"
 # Derive strict final numeric X.Y.Z from uv's actual musl architecture inventory.
