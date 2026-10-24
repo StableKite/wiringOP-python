@@ -8,7 +8,11 @@ import shutil
 import tempfile
 from pathlib import Path
 
-from audit_production_backend import _safe_origin_paths, audit
+from audit_production_backend import (
+    _safe_backend_sidecar_paths,
+    _safe_origin_paths,
+    audit,
+)
 
 
 def must_reject(func, marker: str) -> None:
@@ -21,12 +25,62 @@ def must_reject(func, marker: str) -> None:
         raise AssertionError("audit silently accepted unsafe layout: " + marker)
 
 
+def selftest_backend_sidecar_paths() -> None:
+    """Reject unsafe paths and require sidecars only for direct dependencies."""
+    sidecar = {"libstdc++-1234abcd.so.6": "f" * 64}
+    independent = (
+        "Library runpath: [$ORIGIN:$ORIGIN/..]\nShared library: [libc.musl-x86_64.so.1]"
+    )
+    assert _safe_backend_sidecar_paths(independent, sidecar) == [
+        "$ORIGIN",
+        "$ORIGIN/..",
+    ]
+    grafted = (
+        "Library rpath: [$ORIGIN/../wiringop_nanobind.libs]\n"
+        "Shared library: [libstdc++-1234abcd.so.6]"
+    )
+    assert _safe_backend_sidecar_paths(grafted, sidecar) == [
+        "$ORIGIN/../wiringop_nanobind.libs"
+    ]
+    must_reject(
+        lambda: _safe_backend_sidecar_paths(
+            "Library rpath: [$ORIGIN]\nShared library: [libstdc++-1234abcd.so.6]",
+            sidecar,
+        ),
+        "cannot resolve auditwheel sidecar safely",
+    )
+    must_reject(
+        lambda: _safe_backend_sidecar_paths(
+            "Library rpath: [/tmp/foreign:$ORIGIN]", sidecar
+        ),
+        "unsafe/non-relative RPATH/RUNPATH",
+    )
+    must_reject(
+        lambda: _safe_backend_sidecar_paths(
+            "Library runpath: [$ORIGIN:$ORIGIN]", sidecar
+        ),
+        "unsafe/non-relative RPATH/RUNPATH",
+    )
+    must_reject(
+        lambda: _safe_backend_sidecar_paths(
+            "Library runpath: [$ORIGIN/../wiringop_nanobind.libs]", {}
+        ),
+        "unsafe/non-relative RPATH/RUNPATH",
+    )
+    must_reject(
+        lambda: _safe_backend_sidecar_paths("unrelated ELF metadata", sidecar),
+        "missing a single relocatable RPATH/RUNPATH",
+    )
+    print("PASS safe direct/indirect auditwheel sidecar RPATH contract")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--installed-package", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--old-static-module", type=Path, default=None)
     args = parser.parse_args()
+    selftest_backend_sidecar_paths()
     source = args.installed_package.resolve(strict=True)
     manifest = args.manifest.resolve(strict=True)
     old_static = (

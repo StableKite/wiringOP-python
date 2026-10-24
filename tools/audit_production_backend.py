@@ -55,6 +55,36 @@ def _safe_origin_paths(
     return paths
 
 
+def _safe_backend_sidecar_paths(
+    dynamic: str, sidecar_hashes: dict[str, str]
+) -> list[str]:
+    """Validate backend RPATH by the grafted libraries it actually needs.
+
+    auditwheel may graft C++ dependencies used by extension modules while the
+    plain-C physical backend itself needs none of the sidecar libraries. The
+    latter must not be forced to advertise an unnecessary sidecar directory.
+    """
+    entries = re.findall(r"Library (?:runpath|rpath): \[([^]]+)\]", dynamic)
+    if len(entries) != 1:
+        fail("shared GPIO backend missing a single relocatable RPATH/RUNPATH")
+    paths = entries[0].split(":")
+    sidecar_path = "$ORIGIN/../wiringop_nanobind.libs"
+    allowed = {"$ORIGIN", "$ORIGIN/..", sidecar_path}
+    if (
+        not paths
+        or len(paths) != len(set(paths))
+        or any(path not in allowed for path in paths)
+        or (sidecar_path in paths and not sidecar_hashes)
+    ):
+        fail("shared GPIO backend has unsafe/non-relative RPATH/RUNPATH")
+    directly_needed = set(
+        re.findall(r"Shared library: \[([^]]+)\]", dynamic)
+    ).intersection(sidecar_hashes)
+    if directly_needed and sidecar_path not in paths:
+        fail("shared GPIO backend cannot resolve auditwheel sidecar safely")
+    return paths
+
+
 def _audit_sidecar(root: Path, native: list[Path]) -> dict[str, str]:
     """Allow only used, SHA-hashed auditwheel-grafted system libraries."""
     sidecar = root.parent / "wiringop_nanobind.libs"
@@ -166,11 +196,7 @@ def audit(
         fail("unexpected/duplicate native libraries")
     if has_sidecar:
         backend_dyn = command("readelf", "-d", str(backend))
-        backend_paths = re.findall(
-            r"Library (?:runpath|rpath): \[([^]]+)\]", backend_dyn
-        )
-        if backend_paths != ["$ORIGIN/../wiringop_nanobind.libs"]:
-            fail("shared GPIO backend cannot resolve auditwheel sidecar safely")
+        _safe_backend_sidecar_paths(backend_dyn, sidecar_hashes)
     if (
         "wiringop.wiring_pi.wiring_pi" not in needed
         or "wiringop.wiring_pi.wiring_pi_i2c" not in needed
