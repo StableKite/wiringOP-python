@@ -8,6 +8,14 @@ export PYTHON_GIL=0
 export PYTHON_JIT=1
 apk add --no-cache bash build-base ca-certificates cmake curl git jq linux-headers \
   make musl-dev patchelf binutils python3 py3-pip
+# The host checkout is bind-mounted into Alpine with a different UID.
+# Trust only the exact workspace paths; do not relax commit or gitlink checks.
+git config --global --add safe.directory /src
+git config --global --add safe.directory /src/extern/wiringOP
+if [ "$(git -C /src rev-parse HEAD)" != "$GITHUB_SHA" ]; then
+  echo 'FAIL_CLOSED: Alpine checkout HEAD differs from GitHub event SHA' >&2
+  exit 1
+fi
 curl -LsSf https://astral.sh/uv/install.sh | sh
 export PATH="/root/.local/bin:$PATH"
 # Derive strict final numeric X.Y.Z from uv's actual musl architecture inventory.
