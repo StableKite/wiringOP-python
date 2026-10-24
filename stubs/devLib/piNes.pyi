@@ -1,9 +1,6 @@
 """nanobind bindings for devLib/piNes.h"""
 
-
-
 def setup_nes_joystick(d_pin: int, c_pin: int, l_pin: int) -> int: ...
-
 def read_nes_joystick(joystick: int) -> int: ...
 
 MAX_NES_JOYSTICKS: int = 8

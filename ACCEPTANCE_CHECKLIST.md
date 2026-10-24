@@ -2,6 +2,13 @@
 
 Проект считается завершённым только если все применимые пункты ниже проходят в одной сохранённой версии дерева.
 
+**АУДИТ-ОГОВОРКА (21.10.2026):** отметки ниже относятся к историческому
+прохождению acceptance на исходной upstream базе `a7921ca...` с подготовленными
+patch overlays. Новый source contract текущего Gitlink `53fe570...`, five-platform
+free-threaded CI и реальная публикация devpi **не принимаются** этими старым отметками.
+См. `PROJECT_REQUIREMENTS.md` и `tools/upstream_contract.py`. Эти старые результаты
+сохранены без переобозначения PASS/FAIL.
+
 ## Upstream/layout
 
 - [x] `extern/wiringOP` — gitlink/submodule на exact commit `a7921ca2f5c124203be10d3418db70a2e15f3c10`.

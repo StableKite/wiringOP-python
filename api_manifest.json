@@ -1,10 +1,8 @@
 {
   "schema": 3,
-  "wiringop_commit": "a7921ca2f5c124203be10d3418db70a2e15f3c10",
-  "overlay_patches": [
-    "patches/wiringOP/0001-werror-cleanup.patch",
-    "patches/wiringOP/0002-wiringSerial-extended-UART.patch"
-  ],
+  "wiringop_commit": "53fe570936ebca007d6d76f26ef21ba9f2609ca6",
+  "wiringop_base_commit": "a7921ca2f5c124203be10d3418db70a2e15f3c10",
+  "overlay_patches": [],
   "headers": [
     {
       "path": "devLib/ds1302.h",

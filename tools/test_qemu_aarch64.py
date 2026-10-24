@@ -8,7 +8,9 @@ import tarfile
 import tempfile
 from pathlib import Path
 
-EXPECTED_ARCHIVE_SHA256 = "2e7723127e679af9a32b5910e5932a952b65f664b5624839ed3fd69853acb6f8"
+EXPECTED_ARCHIVE_SHA256 = (
+    "2e7723127e679af9a32b5910e5932a952b65f664b5624839ed3fd69853acb6f8"
+)
 EXPECTED_OUTPUT = "AARCH64_QEMU_SELFTEST_OK 1122334455667788"
 
 
@@ -28,7 +30,9 @@ def main() -> int:
     archive = ns.archive.resolve()
     actual = sha256(archive)
     if actual != ns.expected_sha256:
-        raise SystemExit(f"QEMU archive SHA256 mismatch: {actual} != {ns.expected_sha256}")
+        raise SystemExit(
+            f"QEMU archive SHA256 mismatch: {actual} != {ns.expected_sha256}"
+        )
     with tempfile.TemporaryDirectory(prefix="wiringop-qemu-") as td:
         root = Path(td)
         with tarfile.open(archive, "r:gz") as tf:

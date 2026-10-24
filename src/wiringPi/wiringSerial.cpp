@@ -74,6 +74,7 @@ public:
 
     void open() {
         std::lock_guard<std::mutex> lock(state_);
+        if (closing_) throw nb::value_error("serial port is closing");
         if (ctx_) throw nb::value_error("serial port is already open");
         open_locked();
     }
@@ -81,6 +82,11 @@ public:
         serialContext *ctx = nullptr;
         {
             std::unique_lock<std::mutex> lock(state_);
+            if (closing_) {
+                // Another caller already owns the close: never free ctx twice.
+                idle_.wait(lock, [&]{ return !closing_; });
+                return;
+            }
             if (!ctx_) return;
             closing_ = true;
             ctx = ctx_;
@@ -94,9 +100,14 @@ public:
                 if (serialGetConfig(fd, &tmp) == 0) config_cache_ = tmp;
             }
             ctx_ = nullptr;
+        }
+        // Keep closing_ true until the native C destructor is finished.
+        serialContextClose(ctx);
+        {
+            std::lock_guard<std::mutex> lock(state_);
             closing_ = false;
         }
-        serialContextClose(ctx);
+        idle_.notify_all();
     }
     bool is_open() const { std::lock_guard<std::mutex> lock(state_); return ctx_ != nullptr; }
     int fileno() { OpGuard op(*this); return op.fd(); }

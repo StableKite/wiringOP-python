@@ -1,25 +1,17 @@
 """nanobind bindings for wiringPiD/drcNetCmd.h"""
 
-
-
 class DrcNetComStruct:
     def __init__(self) -> None: ...
-
     @property
     def pin(self) -> int: ...
-
     @pin.setter
     def pin(self, arg: int, /) -> None: ...
-
     @property
     def cmd(self) -> int: ...
-
     @cmd.setter
     def cmd(self, arg: int, /) -> None: ...
-
     @property
     def data(self) -> int: ...
-
     @data.setter
     def data(self, arg: int, /) -> None: ...
 

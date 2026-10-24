@@ -1,7 +1,5 @@
 """nanobind bindings for wiringPi/ads1115.h"""
 
-
-
 def ads1115_setup(pin_base: int, i2c_address: int) -> int: ...
 
 ADS1115_GAIN_6: int = 0

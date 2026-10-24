@@ -4,6 +4,7 @@ from __future__ import annotations
 import importlib
 import os
 import pty
+import sys
 import threading
 import time
 
@@ -36,7 +37,11 @@ def main() -> int:
             started.set()
             try:
                 result["cancel_value"] = p.read(1)
-            except BaseException as exc:  # Either b"" or an OS cancellation error is valid.
+            except (
+                OSError,
+                RuntimeError,
+                ValueError,
+            ) as exc:  # OS cancellation error is valid.
                 result["cancel_exc"] = repr(exc)
             finally:
                 done.set()
@@ -60,7 +65,7 @@ def main() -> int:
             started2.set()
             try:
                 result["close_value"] = p.read(1)
-            except BaseException as exc:
+            except (OSError, RuntimeError, ValueError) as exc:
                 result["close_exc"] = repr(exc)
             finally:
                 done2.set()
@@ -86,8 +91,8 @@ def main() -> int:
             try:
                 if p.is_open:
                     p.close()
-            except Exception:
-                pass
+            except (OSError, RuntimeError, ValueError) as exc:
+                print(f"serial cleanup failed: {exc}", file=sys.stderr)
         os.close(master)
 
 

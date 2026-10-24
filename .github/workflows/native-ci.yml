@@ -1,0 +1,241 @@
+name: wiringOP-python / native FT validate + guarded devpi
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Explicitly request publication (only after full 5-platform success)
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_JIT: '1'
+  PYTHON_GIL: '0'
+  DEVPI_SERVER: https://devpi.stablekite.com/
+  DEVPI_TARGET_INDEX: https://devpi.stablekite.com/StableKite/index/
+  CMAKE_BUILD_PARALLEL_LEVEL: '2'
+
+jobs:
+  windows_x86_64:
+    name: Windows x86_64 / mock native CPython t / 324+ tests
+    runs-on: windows-2025
+    timeout-minutes: 110
+    steps:
+      - name: Exact checkout including source provenance
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Newest final free-threaded CPython
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+          freethreaded: true
+          allow-prereleases: false
+          check-latest: true
+      - name: Create final-path FT validation environment
+        shell: pwsh
+        run: |
+          python -m venv "$env:RUNNER_TEMP/wiringop-ft"
+          "$env:RUNNER_TEMP/wiringop-ft/Scripts" >> $env:GITHUB_PATH
+      - name: Real MSVC native 54-module wheel and all tests, mock-only
+        shell: pwsh
+        run: |
+          python .github/scripts/ci_platform.py --kind windows --platform win_amd64 --sha "$env:GITHUB_SHA" --scratch "$env:RUNNER_TEMP/wiringop-work" --artifacts "$env:RUNNER_TEMP/wiringop-validate-out"
+
+  glibc_x86_64:
+    name: Linux glibc x86_64 / physical ABI + mock FT tests
+    runs-on: ubuntu-22.04
+    timeout-minutes: 110
+    steps:
+      - name: Exact checkout including source provenance
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Newest final free-threaded CPython
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+          freethreaded: true
+          allow-prereleases: false
+          check-latest: true
+      - name: Install required C native audit tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y cmake make gcc g++ binutils patchelf libcrypt-dev
+      - name: Create final-path FT validation environment
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/wiringop-ft"
+          echo "$RUNNER_TEMP/wiringop-ft/bin" >> "$GITHUB_PATH"
+      - name: Install auditwheel in FT environment
+        run: python -m pip install --disable-pip-version-check 'auditwheel>=6' patchelf
+      - name: Strict additional source quality gates
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check ruff pyright pylint flake8 wemake-python-styleguide
+          python -m ruff check .
+          python -m ruff format --check .
+          python -m pylint tools .github/scripts
+          python -m flake8 tools .github/scripts python tests
+          python -m pyright --warnings
+          python -m pip install "git+https://github.com/StableKite/SKLint.git@383de0df661fa43cdf404cf082aefe3335219146"
+          sklint check .
+          sklint format --check .
+          npx --yes cspell@latest --no-progress .
+      - name: Real physical and mock native wheel validation
+        run: |
+          set -euo pipefail
+          python .github/scripts/ci_platform.py --kind glibc --platform manylinux_2_35_x86_64 --sha "$GITHUB_SHA" --scratch "$RUNNER_TEMP/wiringop-work" --artifacts "$RUNNER_TEMP/wiringop-production-dist"
+      - name: Upload canonical sdist and audited glibc wheel
+        uses: actions/upload-artifact@v7
+        with:
+          name: wiringop-production-glibc-x86_64
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/wiringop-production-dist/*.tar.gz
+            ${{ runner.temp }}/wiringop-production-dist/*.whl
+
+  glibc_aarch64:
+    name: Linux glibc aarch64 / physical ABI + mock FT tests
+    runs-on: ubuntu-22.04-arm
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+          freethreaded: true
+          allow-prereleases: false
+          check-latest: true
+      - name: Native tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y cmake make gcc g++ binutils patchelf libcrypt-dev
+      - name: Final-path FT venv
+        run: |
+          python -m venv "$RUNNER_TEMP/wiringop-ft"
+          echo "$RUNNER_TEMP/wiringop-ft/bin" >> "$GITHUB_PATH"
+      - name: Auditwheel
+        run: python -m pip install --disable-pip-version-check 'auditwheel>=6' patchelf
+      - name: Real physical and mock native wheel validation
+        run: |
+          set -euo pipefail
+          python .github/scripts/ci_platform.py --kind glibc --platform manylinux_2_35_aarch64 --sha "$GITHUB_SHA" --scratch "$RUNNER_TEMP/wiringop-work" --artifacts "$RUNNER_TEMP/wiringop-production-dist"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wiringop-production-glibc-aarch64
+          if-no-files-found: error
+          path: ${{ runner.temp }}/wiringop-production-dist/*.whl
+
+  musl_x86_64:
+    name: Linux musl x86_64 / Alpine latest final FT, physical + mock
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Build natively inside musl container
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/wiringop-production-dist"
+          docker run --rm --platform linux/amd64 -e GITHUB_SHA -e PYTHON_GIL -e PYTHON_JIT \
+            -e WIRINGOP_MUSL_TARGET=musllinux_1_2_x86_64 -e WIRINGOP_OUTPUT_DIR=/hosttmp/wiringop-production-dist \
+            -v "$GITHUB_WORKSPACE:/src" -v "$RUNNER_TEMP:/hosttmp" -w /src \
+            alpine:3.24 sh .github/scripts/ci_musl_entry.sh
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wiringop-production-musl-x86_64
+          if-no-files-found: error
+          path: ${{ runner.temp }}/wiringop-production-dist/*.whl
+
+  musl_aarch64:
+    name: Linux musl aarch64 / Alpine latest final FT, physical + mock
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Build natively inside musl container
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/wiringop-production-dist"
+          docker run --rm --platform linux/arm64 -e GITHUB_SHA -e PYTHON_GIL -e PYTHON_JIT \
+            -e WIRINGOP_MUSL_TARGET=musllinux_1_2_aarch64 -e WIRINGOP_OUTPUT_DIR=/hosttmp/wiringop-production-dist \
+            -v "$GITHUB_WORKSPACE:/src" -v "$RUNNER_TEMP:/hosttmp" -w /src \
+            alpine:3.24 sh .github/scripts/ci_musl_entry.sh
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wiringop-production-musl-aarch64
+          if-no-files-found: error
+          path: ${{ runner.temp }}/wiringop-production-dist/*.whl
+
+  publish:
+    name: Version-aware, fail-closed devpi publisher
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    needs: [windows_x86_64, glibc_x86_64, glibc_aarch64, musl_x86_64, musl_aarch64]
+    steps:
+      - name: Checkout immutable release source history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Newest final free-threaded publish-host Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+          freethreaded: true
+          allow-prereleases: false
+          check-latest: true
+      - name: Determine exact version-change or explicit manual intent
+        id: intent
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          MANUAL_REQUEST: ${{ inputs.publish && 'true' || 'false' }}
+        run: |
+          set -euo pipefail
+          python .github/scripts/ci_release_policy.py intent --event '${{ github.event_name }}' --before "$BEFORE_SHA" --head "$GITHUB_SHA" --manual-publish "$MANUAL_REQUEST" --ref "$GITHUB_REF" --repository "$GITHUB_REPOSITORY"
+      - name: Validation-only marker — no devpi access, auth or artifact download
+        if: steps.intent.outputs.should_publish == 'false'
+        run: |
+          echo 'VALIDATION_ONLY_VERSION_UNCHANGED_OR_MANUAL_NO_PUBLISH'
+          echo 'All five validators succeeded. No devpi operation performed.'
+      - name: Download ONLY physical Linux publish artifacts
+        if: steps.intent.outputs.should_publish == 'true'
+        uses: actions/download-artifact@v8
+        with:
+          pattern: wiringop-production-*
+          path: ${{ runner.temp }}/wiringop-publish-set
+          merge-multiple: true
+      - name: Fail-closed exact publish set and wheel RECORD verification
+        if: steps.intent.outputs.should_publish == 'true'
+        run: |
+          python .github/scripts/ci_release_policy.py publish-set --dir "$RUNNER_TEMP/wiringop-publish-set" --version '${{ steps.intent.outputs.current_version }}'
+      # Credentials are deliberately unavailable to validation jobs. The new
+      # host redirects anonymous requests to /+login; authenticated token flow
+      # and byte-exact post-download verification must be reviewed first.
+      # DO NOT move this step after an upload command.
+      - name: Release safety block — token auth/post-download not yet verified
+        if: steps.intent.outputs.should_publish == 'true'
+        run: |
+          echo 'FAIL_CLOSED: New devpi host SSO/token upload and SHA post-download checks are not yet acceptance-tested.' >&2
+          echo 'No DEVPI_TOKEN exposed and no upload attempted.' >&2
+          exit 1

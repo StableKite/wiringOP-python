@@ -1,7 +1,5 @@
 """nanobind bindings for wiringPi/mcp23016reg.h"""
 
-
-
 MCP23016_GP0: int = 0
 
 MCP23016_GP1: int = 1

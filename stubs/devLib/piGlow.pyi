@@ -1,13 +1,8 @@
 """nanobind bindings for devLib/piGlow.h"""
 
-
-
 def pi_glow1(leg: int, ring: int, intensity: int) -> None: ...
-
 def pi_glow_leg(leg: int, intensity: int) -> None: ...
-
 def pi_glow_ring(ring: int, intensity: int) -> None: ...
-
 def pi_glow_setup(clear: int) -> None: ...
 
 PIGLOW_RED: int = 0

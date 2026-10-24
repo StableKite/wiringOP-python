@@ -1,7 +1,5 @@
 """nanobind bindings for wiringPi/mcp23x08.h"""
 
-
-
 IODIRA: int = 0
 
 IPOLA: int = 2

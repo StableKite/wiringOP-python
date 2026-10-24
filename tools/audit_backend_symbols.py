@@ -18,20 +18,34 @@ KNOWN_GAPS = {
 
 
 def run(cmd: list[str], *, cwd: Path | None = None) -> str:
-    cp = subprocess.run(cmd, cwd=cwd, check=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cp = subprocess.run(
+        cmd,
+        cwd=cwd,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
     return cp.stdout
 
 
 def production_sources(upstream: Path) -> list[Path]:
     result = sorted((upstream / "wiringPi").glob("*.c"))
-    result += [p for p in sorted((upstream / "devLib").glob("*.c")) if p.name != "piFaceOld.c"]
-    result += [p for p in sorted((upstream / "wiringPiD").glob("*.c")) if p.name != "wiringpid.c"]
+    result += [
+        p for p in sorted((upstream / "devLib").glob("*.c")) if p.name != "piFaceOld.c"
+    ]
+    result += [
+        p
+        for p in sorted((upstream / "wiringPiD").glob("*.c"))
+        if p.name != "wiringpid.c"
+    ]
     if len(result) != 48:
         raise SystemExit(f"expected exactly 48 production C files, got {len(result)}")
     return result
 
 
-def compile_backend(name: str, sources: list[Path], upstream: Path, out_root: Path) -> Path:
+def compile_backend(
+    name: str, sources: list[Path], upstream: Path, out_root: Path
+) -> Path:
     obj_dir = out_root / name
     obj_dir.mkdir(parents=True, exist_ok=True)
     includes = [
@@ -44,10 +58,18 @@ def compile_backend(name: str, sources: list[Path], upstream: Path, out_root: Pa
     for index, source in enumerate(sources):
         obj = obj_dir / f"{index:03d}.o"
         cmd = [
-            "gcc", "-std=gnu11", "-fPIC", "-D_GNU_SOURCE", "-DCONFIG_ORANGEPI",
+            "gcc",
+            "-std=gnu11",
+            "-fPIC",
+            "-D_GNU_SOURCE",
+            "-DCONFIG_ORANGEPI",
             *(f"-I{x}" for x in includes),
-            "-Wno-unused-result", "-Wno-format-security",
-            "-c", str(source), "-o", str(obj),
+            "-Wno-unused-result",
+            "-Wno-format-security",
+            "-c",
+            str(source),
+            "-o",
+            str(obj),
         ]
         subprocess.run(cmd, check=True)
         objs.append(obj)
@@ -75,7 +97,9 @@ def main() -> int:
     out_root.mkdir(parents=True)
 
     manifest = json.loads((ROOT / "api_manifest.json").read_text())
-    functions = {f["c_name"] for h in manifest["headers"] for f in h.get("functions", [])}
+    functions = {
+        f["c_name"] for h in manifest["headers"] for f in h.get("functions", [])
+    }
     mocks = sorted((ROOT / "support/mock_backend").rglob("*.c"))
     if len(mocks) != 54:
         raise SystemExit(f"expected 54 mock C files, got {len(mocks)}")
@@ -89,14 +113,20 @@ def main() -> int:
         unexpected = missing - KNOWN_GAPS
         lost_known = KNOWN_GAPS - missing
         if unexpected:
-            raise SystemExit(f"{name}: unexpected missing functions: {sorted(unexpected)}")
+            raise SystemExit(
+                f"{name}: unexpected missing functions: {sorted(unexpected)}"
+            )
         # If an upstream gap gets implemented, force an explicit allowlist review rather than silently hiding it.
         if lost_known:
-            raise SystemExit(f"{name}: known-gap allowlist is stale; now defined: {sorted(lost_known)}")
+            raise SystemExit(
+                f"{name}: known-gap allowlist is stale; now defined: {sorted(lost_known)}"
+            )
         results.append((name, len(sources), len(symbols), sorted(missing)))
 
     for name, count, symbols, missing in results:
-        print(f"{name.upper()}_BACKEND_OK c_files={count} defined_globals={symbols} known_gaps={','.join(missing)}")
+        print(
+            f"{name.upper()}_BACKEND_OK c_files={count} defined_globals={symbols} known_gaps={','.join(missing)}"
+        )
     return 0
 
 

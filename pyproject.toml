@@ -13,3 +13,30 @@ license = {text = "LGPL-3.0-or-later"}
 testpaths = ["tests"]
 python_files = ["*.py"]
 addopts = ["--import-mode=importlib"]
+
+# The Git submodule is a *checkout* dependency, not a distributable Git repo.
+# Ship the separately SHA-256-attested exact 53fe570 git archive instead.
+# A sdist must not contain local CMake/MSVC build outputs or a partial fork.
+[tool.scikit-build.sdist]
+include = ["/support/upstream/wiringOP-53fe570936ebca007d6d76f26ef21ba9f2609ca6-git-archive.zip"]
+exclude = [
+    "/extern/wiringOP/**",
+    "/_r2_native_build/**",
+    "/build/**",
+    "/dist/**",
+    "/.venv/**",
+    "/**/.git/**",
+    "/**/.pytest_cache/**",
+    "/**/__pycache__/**",
+    "/**/*.pyc",
+    "/**/*.pyd",
+    "/**/*.obj",
+    "/**/*.lib",
+    "/**/*.dll",
+    "/**/*.pdb",
+    "/**/CMakeFiles/**",
+    "/**/CMakeCache.txt",
+]
+
+[tool.sklint]
+strict = true

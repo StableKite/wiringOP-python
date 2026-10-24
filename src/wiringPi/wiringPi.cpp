@@ -21,13 +21,21 @@ extern "C" {
 namespace nb = nanobind;
 
 
+// Registration and dispatch run on different native threads when Python is FT.
+// Both sides must protect the callback slot and snapshot a strong Python ref.
 static PyObject *g_isr_callbacks[MAX_PIN_NUM] = {nullptr};
 static std::mutex g_isr_mutex;
+static std::recursive_mutex g_isr_registration_mutex;
+static uint64_t g_isr_epoch[MAX_PIN_NUM] = {0};
 template <size_t I> static void isr_trampoline() noexcept {
     nb::gil_scoped_acquire gil;
-    PyObject *cb = g_isr_callbacks[I];
+    PyObject *cb = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(g_isr_mutex);
+        cb = g_isr_callbacks[I];
+        Py_XINCREF(cb);
+    }
     if (!cb) return;
-    Py_INCREF(cb);
     PyObject *r = PyObject_CallNoArgs(cb);
     if (!r) PyErr_WriteUnraisable(cb); else Py_DECREF(r);
     Py_DECREF(cb);
@@ -337,7 +345,36 @@ NB_MODULE(wiring_pi, m) {
   m.def("digital_write_byte", &digitalWriteByte, nb::arg("value"));
   m.def("digital_write_byte2", &digitalWriteByte2, nb::arg("value"));
   m.def("wait_for_interrupt", &waitForInterrupt, nb::arg("pin"), nb::arg("m_s"));
-  m.def("wiring_pi_isr", [](int pin,int mode,nb::callable cb) { if(pin<0||pin>=MAX_PIN_NUM) throw nb::value_error("pin is outside MAX_PIN_NUM"); std::lock_guard<std::mutex> lock(g_isr_mutex); PyObject *q=cb.ptr(); Py_INCREF(q); Py_XDECREF(g_isr_callbacks[pin]); g_isr_callbacks[pin]=q; int rc=wiringPiISR(pin,mode,isr_fn((size_t)pin)); if(rc<0) Py_CLEAR(g_isr_callbacks[pin]); return rc; }, nb::arg("pin"), nb::arg("mode"), nb::arg("callback"));
+  m.def("wiring_pi_isr", [](int pin,int mode,nb::callable cb) {
+    if (pin < 0 || pin >= MAX_PIN_NUM) throw nb::value_error("pin is outside MAX_PIN_NUM");
+    std::lock_guard<std::recursive_mutex> registration(g_isr_registration_mutex);
+    PyObject *next = cb.ptr();
+    Py_INCREF(next);
+    PyObject *previous = nullptr;
+    uint64_t epoch = 0;
+    {
+        std::lock_guard<std::mutex> lock(g_isr_mutex);
+        previous = g_isr_callbacks[pin];
+        g_isr_callbacks[pin] = next;
+        epoch = ++g_isr_epoch[pin];
+    }
+    Py_XDECREF(previous); // May invoke user __del__: never hold slot lock.
+    int rc = wiringPiISR(pin, mode, isr_fn((size_t)pin));
+    if (rc < 0) {
+        PyObject *retire = nullptr;
+        {
+            std::lock_guard<std::mutex> lock(g_isr_mutex);
+            // Nested registration from a mock synchronous ISR supersedes us.
+            if (g_isr_epoch[pin] == epoch) {
+                retire = g_isr_callbacks[pin];
+                g_isr_callbacks[pin] = nullptr;
+                ++g_isr_epoch[pin];
+            }
+        }
+        Py_XDECREF(retire);
+    }
+    return rc;
+  }, nb::arg("pin"), nb::arg("mode"), nb::arg("callback"));
   m.def("pi_thread_create", [](nb::callable cb) { size_t slot=16; { std::lock_guard<std::mutex> lock(g_thread_mutex); for(size_t i=0;i<16;++i) if(!g_thread_callbacks[i]){slot=i;Py_INCREF(cb.ptr());g_thread_callbacks[i]=cb.ptr();break;} } if(slot==16) throw std::runtime_error("no free callback slots"); int rc=piThreadCreate(thread_fn(slot)); if(rc<0){std::lock_guard<std::mutex> lock(g_thread_mutex);Py_CLEAR(g_thread_callbacks[slot]);} return rc; }, nb::arg("callback"));
   m.def("pi_lock", &piLock, nb::arg("key"));
   m.def("pi_unlock", &piUnlock, nb::arg("key"));

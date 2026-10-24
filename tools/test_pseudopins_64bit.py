@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+
 import argparse
 import subprocess
 import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-C_TEST = r'''#include <assert.h>
+C_TEST = r"""#include <assert.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -32,15 +33,44 @@ int main(void) {
   close(node.fd); shm_unlink("wiringPiPseudoPins");
   return 0;
 }
-'''
+"""
+
 
 def main() -> int:
-    ap=argparse.ArgumentParser(); ap.add_argument('--wiringop-source',type=Path,default=ROOT/'build/upstream/wiringOP'); ns=ap.parse_args()
-    src=ns.wiringop_source.resolve()
-    with tempfile.TemporaryDirectory(prefix='pseudopins64-') as td_s:
-        td=Path(td_s); c=td/'test.c'; exe=td/'test'; c.write_text(C_TEST)
-        cmd=['gcc','-std=gnu11','-D_GNU_SOURCE','-DCONFIG_ORANGEPI','-Wall','-Wextra','-Werror',
-             '-I',str(src),'-I',str(src/'wiringPi'),str(c),str(src/'wiringPi/pseudoPins.c'),'-lrt','-o',str(exe)]
-        subprocess.run(cmd,check=True); subprocess.run([str(exe)],check=True)
-    print('PSEUDOPINS_64BIT_OK'); return 0
-if __name__=='__main__': raise SystemExit(main())
+    ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "--wiringop-source", type=Path, default=ROOT / "build/upstream/wiringOP"
+    )
+    ns = ap.parse_args()
+    src = ns.wiringop_source.resolve()
+    with tempfile.TemporaryDirectory(prefix="pseudopins64-") as td_s:
+        td = Path(td_s)
+        c = td / "test.c"
+        exe = td / "test"
+        c.write_text(C_TEST)
+        cmd = [
+            "gcc",
+            "-std=gnu11",
+            "-D_GNU_SOURCE",
+            "-DCONFIG_ORANGEPI",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-I",
+            str(src),
+            "-I",
+            str(src / "wiringPi"),
+            str(c),
+            str(src / "wiringPi/pseudoPins.c"),
+            "-lrt",
+            "-o",
+            str(exe),
+        ]
+        subprocess.run(cmd, check=True)
+        subprocess.run([str(exe)], check=True)
+    print("PSEUDOPINS_64BIT_OK")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

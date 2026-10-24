@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+
 import argparse
 import subprocess
 import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-C_TEST = r'''#include <assert.h>
+C_TEST = r"""#include <assert.h>
 #include <dirent.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -101,29 +102,47 @@ int main(void) {
 
   serialClose(fd); close(master); puts("WIRING_SERIAL_EXT_PTY_OK"); return 0;
 }
-'''
+"""
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument('--wiringop-source', type=Path, default=ROOT / 'build/upstream/wiringOP')
+    ap.add_argument(
+        "--wiringop-source", type=Path, default=ROOT / "build/upstream/wiringOP"
+    )
     ns = ap.parse_args()
     src = ns.wiringop_source.resolve()
-    serial_c = src / 'wiringPi/wiringSerial.c'
+    serial_c = src / "wiringPi/wiringSerial.c"
     if not serial_c.is_file():
-        raise SystemExit(f'missing patched wiringSerial.c: {serial_c}')
-    with tempfile.TemporaryDirectory(prefix='wiringserial-pty-') as td_s:
+        raise SystemExit(f"missing patched wiringSerial.c: {serial_c}")
+    with tempfile.TemporaryDirectory(prefix="wiringserial-pty-") as td_s:
         td = Path(td_s)
-        test_c = td / 'test.c'
-        exe = td / 'test'
+        test_c = td / "test.c"
+        exe = td / "test"
         test_c.write_text(C_TEST)
         cmd = [
-            'gcc','-std=gnu11','-D_GNU_SOURCE','-Wall','-Wextra','-Werror','-pthread',
-            '-I',str(src),'-I',str(src/'wiringPi'),str(test_c),str(serial_c),'-lutil','-o',str(exe),
+            "gcc",
+            "-std=gnu11",
+            "-D_GNU_SOURCE",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-pthread",
+            "-I",
+            str(src),
+            "-I",
+            str(src / "wiringPi"),
+            str(test_c),
+            str(serial_c),
+            "-lutil",
+            "-o",
+            str(exe),
         ]
         subprocess.run(cmd, check=True)
         cp = subprocess.run([str(exe)], check=True, text=True, capture_output=True)
         print(cp.stdout.strip())
     return 0
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     raise SystemExit(main())

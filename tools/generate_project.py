@@ -1,40 +1,69 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import json, re, shutil
+
+import json
+import re
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / 'api_manifest.json'
-UPSTREAM = ROOT / 'build/upstream/wiringOP'
+MANIFEST = ROOT / "api_manifest.json"
+UPSTREAM = ROOT / "build/upstream/wiringOP"
 
 SCALAR_TYPES = {
-    'int','const int','unsigned int','const unsigned int','uint8_t','const uint8_t',
-    'uint16_t','const uint16_t','uint32_t','const uint32_t','uint64_t','const uint64_t',
-    'bool','ssize_t','size_t','const size_t','unsigned char','const unsigned char',
-    'short','const short','unsigned short','const unsigned short','long','const long',
-    'unsigned long','const unsigned long'
+    "int",
+    "const int",
+    "unsigned int",
+    "const unsigned int",
+    "uint8_t",
+    "const uint8_t",
+    "uint16_t",
+    "const uint16_t",
+    "uint32_t",
+    "const uint32_t",
+    "uint64_t",
+    "const uint64_t",
+    "bool",
+    "ssize_t",
+    "size_t",
+    "const size_t",
+    "unsigned char",
+    "const unsigned char",
+    "short",
+    "const short",
+    "unsigned short",
+    "const unsigned short",
+    "long",
+    "const long",
+    "unsigned long",
+    "const unsigned long",
 }
-OPTIONAL_LEGACY_ARRAYS = {'piModelNames','piRevisionNames','piMakerNames','piMemorySize'}
+OPTIONAL_LEGACY_ARRAYS = {
+    "piModelNames",
+    "piRevisionNames",
+    "piMakerNames",
+    "piMemorySize",
+}
 
 
 def decl(t: str, n: str) -> str:
-    if '(*)' in t:
-        return t.replace('(*)', f'(*{n})')
-    return f'{t} {n}'
+    if "(*)" in t:
+        return t.replace("(*)", f"(*{n})")
+    return f"{t} {n}"
 
 
 def arg_ann(params: list[dict]) -> str:
     if not params:
-        return ''
-    return ', ' + ', '.join(f'nb::arg("{p["python_name"]}")' for p in params)
+        return ""
+    return ", " + ", ".join(f'nb::arg("{p["python_name"]}")' for p in params)
 
 
 def module_basename(h: dict) -> str:
-    return h['python_module'].rsplit('.', 1)[-1]
+    return h["python_module"].rsplit(".", 1)[-1]
 
 
 def py_rel_from_module(mod: str) -> Path:
-    return Path(*mod.split('.')[1:])
+    return Path(*mod.split(".")[1:])
 
 
 def include_for(h: dict) -> str:
@@ -42,21 +71,21 @@ def include_for(h: dict) -> str:
 
 
 def cpp_type_name(ct: str) -> str:
-    x = ct.strip().replace('const ', '').replace('volatile ', '').replace('struct ', '')
-    x = x.replace('*', '').strip()
+    x = ct.strip().replace("const ", "").replace("volatile ", "").replace("struct ", "")
+    x = x.replace("*", "").strip()
     return x
 
 
 def struct_class_map(d: dict) -> dict[str, str]:
     out = {}
-    for h in d['headers']:
-        for s in h['structs']:
-            out[s['c_name']] = s['python_name']
+    for h in d["headers"]:
+        for s in h["structs"]:
+            out[s["c_name"]] = s["python_name"]
     return out
 
 
 def preamble(h: dict) -> str:
-    return f'''// Generated from api_manifest.json. Do not edit directly.
+    return f"""// Generated from api_manifest.json. Do not edit directly.
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 #include <Python.h>
@@ -76,51 +105,51 @@ def preamble(h: dict) -> str:
 
 namespace nb = nanobind;
 
-'''
+"""
 
 
 def bind_struct(s: dict) -> str:
-    cn, py = s['c_name'], s['python_name']
+    cn, py = s["c_name"], s["python_name"]
     lines = [f'  auto cls_{py} = nb::class_<{cn}>(m, "{py}").def(nb::init<>());']
-    for f in s['fields']:
-        fn, pn, ct = f['name'], f['python_name'], f['c_type']
-        if f['pointer']:
+    for f in s["fields"]:
+        fn, pn, ct = f["name"], f["python_name"], f["c_type"]
+        if f["pointer"]:
             lines.append(
                 f'  cls_{py}.def_prop_rw("{pn}", '
-                f'[]({cn} &self) -> uintptr_t {{ return reinterpret_cast<uintptr_t>(self.{fn}); }}, '
-                f'[]({cn} &self, uintptr_t value) {{ self.{fn} = reinterpret_cast<decltype(self.{fn})>(value); }});'
+                f"[]({cn} &self) -> uintptr_t {{ return reinterpret_cast<uintptr_t>(self.{fn}); }}, "
+                f"[]({cn} &self, uintptr_t value) {{ self.{fn} = reinterpret_cast<decltype(self.{fn})>(value); }});"
             )
-        elif '[' in ct:
-            dims = [int(x) for x in re.findall(r'\[(\d+)\]', ct)]
+        elif "[" in ct:
+            dims = [int(x) for x in re.findall(r"\[(\d+)\]", ct)]
             total = 1
             for x in dims:
                 total *= x
-            elem = ct.split('[')[0].strip().replace('const ', '')
-            if elem in ('uint8_t', 'unsigned char', 'char'):
+            elem = ct.split("[")[0].strip().replace("const ", "")
+            if elem in ("uint8_t", "unsigned char", "char"):
                 lines.append(
                     f'  cls_{py}.def_prop_rw("{pn}", '
-                    f'[]({cn} &self) {{ return nb::bytes(reinterpret_cast<const char *>(&self.{fn}[0]), {total}); }}, '
-                    f'[]({cn} &self, nb::bytes value) {{ if (nb::len(value) != {total}) '
+                    f"[]({cn} &self) {{ return nb::bytes(reinterpret_cast<const char *>(&self.{fn}[0]), {total}); }}, "
+                    f"[]({cn} &self, nb::bytes value) {{ if (nb::len(value) != {total}) "
                     f'throw nb::value_error("{pn} must contain exactly {total} bytes"); '
-                    f'std::memcpy(&self.{fn}[0], PyBytes_AS_STRING(value.ptr()), {total}); }});'
+                    f"std::memcpy(&self.{fn}[0], PyBytes_AS_STRING(value.ptr()), {total}); }});"
                 )
             else:
                 lines.append(
                     f'  cls_{py}.def_prop_rw("{pn}", '
-                    f'[]({cn} &self) {{ nb::list out; const {elem} *p = reinterpret_cast<const {elem} *>(&self.{fn}[0]); '
-                    f'for (size_t i=0;i<{total};++i) out.append(p[i]); return nb::tuple(out); }}, '
-                    f'[]({cn} &self, nb::sequence seq) {{ if (nb::len(seq) != {total}) '
+                    f"[]({cn} &self) {{ nb::list out; const {elem} *p = reinterpret_cast<const {elem} *>(&self.{fn}[0]); "
+                    f"for (size_t i=0;i<{total};++i) out.append(p[i]); return nb::tuple(out); }}, "
+                    f"[]({cn} &self, nb::sequence seq) {{ if (nb::len(seq) != {total}) "
                     f'throw nb::value_error("{pn} must contain exactly {total} items"); '
-                    f'{elem} *p = reinterpret_cast<{elem} *>(&self.{fn}[0]); '
-                    f'for (size_t i=0;i<{total};++i) p[i]=nb::cast<{elem}>(seq[i]); }});'
+                    f"{elem} *p = reinterpret_cast<{elem} *>(&self.{fn}[0]); "
+                    f"for (size_t i=0;i<{total};++i) p[i]=nb::cast<{elem}>(seq[i]); }});"
                 )
         else:
             lines.append(f'  cls_{py}.def_rw("{pn}", &{cn}::{fn});')
-    return '\n'.join(lines)
+    return "\n".join(lines)
 
 
 def buffer_helpers() -> str:
-    return r'''
+    return r"""
 struct PyBufferGuard {
     Py_buffer view{};
     bool active = false;
@@ -133,20 +162,32 @@ struct PyBufferGuard {
     PyBufferGuard(const PyBufferGuard &) = delete;
     PyBufferGuard &operator=(const PyBufferGuard &) = delete;
 };
-'''
+"""
 
 
 def callback_helpers() -> str:
-    isr_cases = '\n'.join(f'    case {i}: return &isr_trampoline<{i}>;' for i in range(64))
-    thr_cases = '\n'.join(f'    case {i}: return &thread_trampoline<{i}>;' for i in range(16))
-    return f'''
+    isr_cases = "\n".join(
+        f"    case {i}: return &isr_trampoline<{i}>;" for i in range(64)
+    )
+    thr_cases = "\n".join(
+        f"    case {i}: return &thread_trampoline<{i}>;" for i in range(16)
+    )
+    return f"""
+// Registration and dispatch run on different native threads when Python is FT.
+// Both sides must protect the callback slot and snapshot a strong Python ref.
 static PyObject *g_isr_callbacks[MAX_PIN_NUM] = {{nullptr}};
 static std::mutex g_isr_mutex;
+static std::recursive_mutex g_isr_registration_mutex;
+static uint64_t g_isr_epoch[MAX_PIN_NUM] = {{0}};
 template <size_t I> static void isr_trampoline() noexcept {{
     nb::gil_scoped_acquire gil;
-    PyObject *cb = g_isr_callbacks[I];
+    PyObject *cb = nullptr;
+    {{
+        std::lock_guard<std::mutex> lock(g_isr_mutex);
+        cb = g_isr_callbacks[I];
+        Py_XINCREF(cb);
+    }}
     if (!cb) return;
-    Py_INCREF(cb);
     PyObject *r = PyObject_CallNoArgs(cb);
     if (!r) PyErr_WriteUnraisable(cb); else Py_DECREF(r);
     Py_DECREF(cb);
@@ -172,13 +213,13 @@ using ThreadFn = void *(*)(void *);
 static ThreadFn thread_fn(size_t i) {{ switch(i) {{
 {thr_cases}
     default: return nullptr; }} }}
-'''
+"""
 
 
 def serial_port_class() -> str:
     # serialContext makes cancellation real (pipe wakeup inside the C layer). OpGuard
     # prevents context destruction racing with any method that is currently using it.
-    return r'''
+    return r"""
 class SerialPort {
 public:
     SerialPort(const char *device, int baud = 115200) : device_(device ? device : "") {
@@ -219,6 +260,7 @@ public:
 
     void open() {
         std::lock_guard<std::mutex> lock(state_);
+        if (closing_) throw nb::value_error("serial port is closing");
         if (ctx_) throw nb::value_error("serial port is already open");
         open_locked();
     }
@@ -226,6 +268,11 @@ public:
         serialContext *ctx = nullptr;
         {
             std::unique_lock<std::mutex> lock(state_);
+            if (closing_) {
+                // Another caller already owns the close: never free ctx twice.
+                idle_.wait(lock, [&]{ return !closing_; });
+                return;
+            }
             if (!ctx_) return;
             closing_ = true;
             ctx = ctx_;
@@ -239,9 +286,14 @@ public:
                 if (serialGetConfig(fd, &tmp) == 0) config_cache_ = tmp;
             }
             ctx_ = nullptr;
+        }
+        // Keep closing_ true until the native C destructor is finished.
+        serialContextClose(ctx);
+        {
+            std::lock_guard<std::mutex> lock(state_);
             closing_ = false;
         }
-        serialContextClose(ctx);
+        idle_.notify_all();
     }
     bool is_open() const { std::lock_guard<std::mutex> lock(state_); return ctx_ != nullptr; }
     int fileno() { OpGuard op(*this); return op.fd(); }
@@ -487,355 +539,743 @@ static void bind_serial_port(nb::module_ &m) {
       .def_prop_ro("hardware_info",&SerialPort::hardware_info).def_prop_ro("capabilities",&SerialPort::capabilities)
       .def("cancel_read",&SerialPort::cancel_read).def("cancel_write",&SerialPort::cancel_write);
 }
-'''
+"""
 
 
 def bind_function(f: dict) -> str:
-    c, py, p, ad, rt = f['c_name'], f['python_name'], f['parameters'], f['adaptation'], f['return_type']
+    c, py, p, ad, rt = (
+        f["c_name"],
+        f["python_name"],
+        f["parameters"],
+        f["adaptation"],
+        f["return_type"],
+    )
     anns = arg_ann(p)
-    if ad == 'direct':
-        policy = ', nb::rv_policy::reference' if '*' in rt else ''
+    if ad == "direct":
+        policy = ", nb::rv_policy::reference" if "*" in rt else ""
         return f'  m.def("{py}", &{c}{policy}{anns});'
-    if ad == 'missing':
-        params = ', '.join(decl(x['c_type'], x['name']) for x in p)
-        voids = ' '.join(f'(void){x["name"]};' for x in p)
-        ret = '' if rt == 'void' else f' -> {rt}'
+    if ad == "missing":
+        params = ", ".join(decl(x["c_type"], x["name"]) for x in p)
+        voids = " ".join(f"(void){x['name']};" for x in p)
+        ret = "" if rt == "void" else f" -> {rt}"
         return f'  m.def("{py}", []({params}){ret} {{ {voids} PyErr_SetString(PyExc_NotImplementedError, "{c} is declared by wiringOP but not implemented in this revision"); throw nb::python_error(); }}{anns});'
-    if ad == 'legacy_typo':
+    if ad == "legacy_typo":
         return '  m.def("get_response_legacy", [](int client_fd) { return getResponse(client_fd); }, nb::arg("client_fd"));'
-    if ad == 'prepared_printf':
+    if ad == "prepared_printf":
         nonmsg = p[:-1]
-        params = ', '.join(decl(x['c_type'],x['name']) for x in nonmsg) + (', ' if nonmsg else '') + 'const char *message'
-        args = ', '.join(x['name'] for x in nonmsg)
-        call = (args + ', ' if args else '') + '"%s", message'
-        return f'  m.def("{py}", []({params}) {{ return {c}({call}); }}' + arg_ann(nonmsg + [{'python_name':'message'}]) + ');'
-    if ad == 'output_pointers':
-        outs = [x for x in p if '*' in x['c_type'] and not x['c_type'].lstrip().startswith('const ')]
+        params = (
+            ", ".join(decl(x["c_type"], x["name"]) for x in nonmsg)
+            + (", " if nonmsg else "")
+            + "const char *message"
+        )
+        args = ", ".join(x["name"] for x in nonmsg)
+        call = (args + ", " if args else "") + '"%s", message'
+        return (
+            f'  m.def("{py}", []({params}) {{ return {c}({call}); }}'
+            + arg_ann(nonmsg + [{"python_name": "message"}])
+            + ");"
+        )
+    if ad == "output_pointers":
+        outs = [
+            x
+            for x in p
+            if "*" in x["c_type"] and not x["c_type"].lstrip().startswith("const ")
+        ]
         ins = [x for x in p if x not in outs]
         defs, args = [], []
         for x in p:
             if x in outs:
-                base = x['c_type'].replace('*','').replace('const ','').strip()
-                defs.append(f'{base} {x["name"]}=0;'); args.append('&'+x['name'])
-            else: args.append(x['name'])
-        vals = ', '.join(x['name'] for x in outs)
-        expr = outs[0]['name'] if rt=='void' and len(outs)==1 else (f'nb::make_tuple({vals})' if rt=='void' else f'nb::make_tuple(status, {vals})')
-        prefix = '' if rt=='void' else f'{rt} status = '
-        params = ', '.join(decl(x['c_type'],x['name']) for x in ins)
-        return f'  m.def("{py}", []({params}) {{ {" ".join(defs)} {prefix}{c}({", ".join(args)}); return {expr}; }}' + arg_ann(ins) + ');'
-    if ad == 'ds1302_clock_read':
+                base = x["c_type"].replace("*", "").replace("const ", "").strip()
+                defs.append(f"{base} {x['name']}=0;")
+                args.append("&" + x["name"])
+            else:
+                args.append(x["name"])
+        vals = ", ".join(x["name"] for x in outs)
+        expr = (
+            outs[0]["name"]
+            if rt == "void" and len(outs) == 1
+            else (
+                f"nb::make_tuple({vals})"
+                if rt == "void"
+                else f"nb::make_tuple(status, {vals})"
+            )
+        )
+        prefix = "" if rt == "void" else f"{rt} status = "
+        params = ", ".join(decl(x["c_type"], x["name"]) for x in ins)
+        return (
+            f'  m.def("{py}", []({params}) {{ {" ".join(defs)} {prefix}{c}({", ".join(args)}); return {expr}; }}'
+            + arg_ann(ins)
+            + ");"
+        )
+    if ad == "ds1302_clock_read":
         return f'  m.def("{py}", []() {{ int v[8]={{0}}; {c}(v); nb::list out; for(int x:v) out.append(x); return nb::tuple(out); }});'
-    if ad == 'ds1302_clock_write':
+    if ad == "ds1302_clock_write":
         return f'  m.def("{py}", [](nb::sequence seq) {{ if(nb::len(seq)!=8) throw nb::value_error("clock_data must contain 8 items"); int v[8]; for(size_t i=0;i<8;++i)v[i]=nb::cast<int>(seq[i]); {c}(v); }}, nb::arg("clock_data"));'
-    if ad == 'lcd_screen_size':
+    if ad == "lcd_screen_size":
         return f'  m.def("{py}", []() {{ int x=0,y=0; {c}(&x,&y); return nb::make_tuple(x,y); }});'
-    if ad == 'lcd_char_def':
+    if ad == "lcd_char_def":
         return f'  m.def("{py}", [](int fd,int index,nb::bytes data) {{ if(nb::len(data)!=8) throw nb::value_error("data must contain exactly 8 bytes"); unsigned char v[8]; std::memcpy(v,PyBytes_AS_STRING(data.ptr()),8); {c}(fd,index,v); }}, nb::arg("fd"), nb::arg("index"), nb::arg("data"));'
-    if ad == 'maxdetect_read':
+    if ad == "maxdetect_read":
         return f'  m.def("{py}", [](int pin) {{ unsigned char b[4]={{0}}; int st={c}(pin,b); return nb::make_tuple(st, nb::bytes(reinterpret_cast<char*>(b),4)); }}, nb::arg("pin"));'
-    if ad == 'rht03_read':
+    if ad == "rht03_read":
         return f'  m.def("{py}", [](int pin) {{ int temp=0,rh=0; int st={c}(pin,&temp,&rh); return nb::make_tuple(st,temp,rh); }}, nb::arg("pin"));'
-    if ad == 'w25_manufacturer':
+    if ad == "w25_manufacturer":
         return f'  m.def("{py}", []() {{ uint8_t b[3]={{0}}; {c}(b); return nb::bytes(reinterpret_cast<char*>(b),3); }});'
-    if ad == 'w25_unique_id':
+    if ad == "w25_unique_id":
         return f'  m.def("{py}", []() {{ uint8_t b[7]={{0}}; {c}(b); return nb::bytes(reinterpret_cast<char*>(b),7); }});'
-    if ad == 'w25_read':
+    if ad == "w25_read":
         return f'  m.def("{py}", [](uint32_t addr,uint16_t n) {{ std::vector<uint8_t>b(n); uint16_t got={c}(addr,b.data(),n); if(got>b.size()) got=(uint16_t)b.size(); return nb::bytes(reinterpret_cast<char*>(b.data()),got); }}, nb::arg("addr"), nb::arg("n"));'
-    if ad == 'w25_page_write':
+    if ad == "w25_page_write":
         return f'  m.def("{py}", [](uint16_t sect_no,uint16_t inaddr,nb::handle data) {{ PyBufferGuard b(data,PyBUF_CONTIG_RO); if(b.view.len>255) throw nb::value_error("page write is limited to 255 bytes"); if((size_t)inaddr+(size_t)b.view.len>256) throw nb::value_error("write crosses a 256-byte page boundary"); return {c}(sect_no,inaddr,reinterpret_cast<uint8_t*>(b.view.buf),(uint8_t)b.view.len); }}, nb::arg("sect_no"), nb::arg("inaddr"), nb::arg("data"));'
-    if ad == 'spi_inout_buffer':
+    if ad == "spi_inout_buffer":
         return f'  m.def("{py}", [](int channel,nb::handle data) {{ PyBufferGuard b(data,PyBUF_WRITABLE|PyBUF_C_CONTIGUOUS); return {c}(channel,reinterpret_cast<unsigned char*>(b.view.buf),(int)b.view.len); }}, nb::arg("channel"), nb::arg("data"));'
-    if ad == 'callback_isr':
-        return f'  m.def("{py}", [](int pin,int mode,nb::callable cb) {{ if(pin<0||pin>=MAX_PIN_NUM) throw nb::value_error("pin is outside MAX_PIN_NUM"); std::lock_guard<std::mutex> lock(g_isr_mutex); PyObject *q=cb.ptr(); Py_INCREF(q); Py_XDECREF(g_isr_callbacks[pin]); g_isr_callbacks[pin]=q; int rc={c}(pin,mode,isr_fn((size_t)pin)); if(rc<0) Py_CLEAR(g_isr_callbacks[pin]); return rc; }}, nb::arg("pin"), nb::arg("mode"), nb::arg("callback"));'
-    if ad == 'callback_thread':
+    if ad == "callback_isr":
+        # Registration may invoke the trampoline synchronously (mock ABI), so
+        # do not hold the callback-slot mutex across the C registration call.
+        # Serialize C registration, including re-entrant callback registration.
+        return f'''  m.def("{py}", [](int pin,int mode,nb::callable cb) {{
+    if (pin < 0 || pin >= MAX_PIN_NUM) throw nb::value_error("pin is outside MAX_PIN_NUM");
+    std::lock_guard<std::recursive_mutex> registration(g_isr_registration_mutex);
+    PyObject *next = cb.ptr();
+    Py_INCREF(next);
+    PyObject *previous = nullptr;
+    uint64_t epoch = 0;
+    {{
+        std::lock_guard<std::mutex> lock(g_isr_mutex);
+        previous = g_isr_callbacks[pin];
+        g_isr_callbacks[pin] = next;
+        epoch = ++g_isr_epoch[pin];
+    }}
+    Py_XDECREF(previous); // May invoke user __del__: never hold slot lock.
+    int rc = {c}(pin, mode, isr_fn((size_t)pin));
+    if (rc < 0) {{
+        PyObject *retire = nullptr;
+        {{
+            std::lock_guard<std::mutex> lock(g_isr_mutex);
+            // Nested registration from a mock synchronous ISR supersedes us.
+            if (g_isr_epoch[pin] == epoch) {{
+                retire = g_isr_callbacks[pin];
+                g_isr_callbacks[pin] = nullptr;
+                ++g_isr_epoch[pin];
+            }}
+        }}
+        Py_XDECREF(retire);
+    }}
+    return rc;
+  }}, nb::arg("pin"), nb::arg("mode"), nb::arg("callback"));'''
+    if ad == "callback_thread":
         return f'  m.def("{py}", [](nb::callable cb) {{ size_t slot=16; {{ std::lock_guard<std::mutex> lock(g_thread_mutex); for(size_t i=0;i<16;++i) if(!g_thread_callbacks[i]){{slot=i;Py_INCREF(cb.ptr());g_thread_callbacks[i]=cb.ptr();break;}} }} if(slot==16) throw std::runtime_error("no free callback slots"); int rc={c}(thread_fn(slot)); if(rc<0){{std::lock_guard<std::mutex> lock(g_thread_mutex);Py_CLEAR(g_thread_callbacks[slot]);}} return rc; }}, nb::arg("callback"));'
-    if ad == 'mutable_c_string':
-        params=[]; prep=[]; args=[]
+    if ad == "mutable_c_string":
+        params = []
+        prep = []
+        args = []
         for x in p:
-            if x['c_type']=='char *':
-                params.append(f'const char *{x["name"]}'); prep.append(f'std::vector<char> {x["name"]}_buf({x["name"]},{x["name"]}+std::strlen({x["name"]})+1);'); args.append(x['name']+'_buf.data()')
-            else: params.append(decl(x['c_type'],x['name'])); args.append(x['name'])
+            if x["c_type"] == "char *":
+                params.append(f"const char *{x['name']}")
+                prep.append(
+                    f"std::vector<char> {x['name']}_buf({x['name']},{x['name']}+std::strlen({x['name']})+1);"
+                )
+                args.append(x["name"] + "_buf.data()")
+            else:
+                params.append(decl(x["c_type"], x["name"]))
+                args.append(x["name"])
         return f'  m.def("{py}", []({", ".join(params)}) {{ {" ".join(prep)} return {c}({", ".join(args)}); }}{arg_ann(p)});'
-    if ad == 'oled_open':
+    if ad == "oled_open":
         return f'  m.def("{py}", [](display_info &disp,const char *filename) {{ std::vector<char>b(filename,filename+std::strlen(filename)+1); return {c}(&disp,b.data()); }}, nb::arg("disp"), nb::arg("filename"));'
-    if ad == 'oled_send':
+    if ad == "oled_send":
         return f'  m.def("{py}", [](display_info &disp,nb::handle payload) {{ PyBufferGuard b(payload,PyBUF_CONTIG_RO); sized_array s{{(int)b.view.len,reinterpret_cast<const uint8_t*>(b.view.buf)}}; return {c}(&disp,&s); }}, nb::arg("disp"), nb::arg("payload"));'
-    if ad == 'oled_putstr':
+    if ad == "oled_putstr":
         return f'  m.def("{py}", [](display_info &disp,uint8_t line,const char *text) {{ std::vector<uint8_t>b(text,text+std::strlen(text)+1); {c}(&disp,line,b.data()); }}, nb::arg("disp"), nb::arg("line"), nb::arg("text"));'
-    if ad == 'oled_putstrto':
+    if ad == "oled_putstrto":
         return f'  m.def("{py}", [](display_info &disp,uint8_t x,uint8_t y,const char *text) {{ std::vector<char>b(text,text+std::strlen(text)+1); {c}(&disp,x,y,b.data()); }}, nb::arg("disp"), nb::arg("x"), nb::arg("y"), nb::arg("text"));'
-    if ad == 'serial_config_init': return f'  m.def("{py}", []() {{ serialConfig v{{}}; {c}(&v); return v; }});'
-    if ad == 'serial_get_config': return f'  m.def("{py}", [](int fd) {{ serialConfig v{{}}; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
-    if ad == 'serial_get_baud': return f'  m.def("{py}", [](int fd) {{ unsigned int v=0; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
-    if ad == 'serial_read': return f'  m.def("{py}", [](int fd,size_t count) {{ std::vector<char>b(count); ssize_t n; {{nb::gil_scoped_release r;n={c}(fd,b.data(),count);}} if(n<0)throw std::runtime_error("serial read failed"); return nb::bytes(b.data(),(size_t)n); }}, nb::arg("fd"), nb::arg("count"));'
-    if ad == 'serial_write': return f'  m.def("{py}", [](int fd,nb::handle data) {{ PyBufferGuard b(data,PyBUF_CONTIG_RO); nb::gil_scoped_release r; return {c}(fd,b.view.buf,(size_t)b.view.len); }}, nb::arg("fd"), nb::arg("data"));'
-    if ad == 'serial_read_timeout': return f'  m.def("{py}", [](int fd,size_t count,int timeout_ms,int inter_byte_timeout_ms) {{ std::vector<char>b(count); ssize_t n; {{nb::gil_scoped_release r;n={c}(fd,b.data(),count,timeout_ms,inter_byte_timeout_ms);}} if(n<0)throw std::runtime_error("serial read failed"); return nb::bytes(b.data(),(size_t)n); }}, nb::arg("fd"), nb::arg("count"), nb::arg("timeout_ms"), nb::arg("inter_byte_timeout_ms")=-1);'
-    if ad == 'serial_write_timeout': return f'  m.def("{py}", [](int fd,nb::handle data,int timeout_ms) {{ PyBufferGuard b(data,PyBUF_CONTIG_RO); nb::gil_scoped_release r; return {c}(fd,b.view.buf,(size_t)b.view.len,timeout_ms); }}, nb::arg("fd"), nb::arg("data"), nb::arg("timeout_ms"));'
-    if ad == 'serial_get_modem_lines': return f'  m.def("{py}", [](int fd) {{ unsigned int v=0; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
-    if ad == 'serial_get_counters': return f'  m.def("{py}", [](int fd) {{ serialCounters v{{}}; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
-    if ad == 'serial_get_rs485': return f'  m.def("{py}", [](int fd) {{ serialRS485Config v{{}}; v.structSize=sizeof(v); int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
-    if ad == 'serial_get_hardware_info': return f'  m.def("{py}", [](int fd) {{ serialHardwareInfo v{{}}; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
-    if ad == 'serial_get_capabilities': return f'  m.def("{py}", [](int fd) {{ uint64_t v=0; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
-    if ad == 'serial_context_open': return f'  m.def("{py}", [](const char *device,const serialConfig &cfg) -> uintptr_t {{ serialContext *q={c}(device,&cfg); if(!q)throw std::runtime_error("serialContextOpen failed"); return reinterpret_cast<uintptr_t>(q); }}, nb::arg("device"), nb::arg("config"));'
-    if ad == 'serial_context_from_fd': return f'  m.def("{py}", [](int fd,int take_ownership) -> uintptr_t {{ serialContext *q={c}(fd,take_ownership); if(!q)throw std::runtime_error("serialContextFromFd failed"); return reinterpret_cast<uintptr_t>(q); }}, nb::arg("fd"), nb::arg("take_ownership")=0);'
-    if ad == 'serial_context_close': return f'  m.def("{py}", [](uintptr_t address) {{ {c}(reinterpret_cast<serialContext*>(address)); }}, nb::arg("address"));'
-    if ad == 'serial_context_get_fd': return f'  m.def("{py}", [](uintptr_t address) {{ return {c}(reinterpret_cast<const serialContext*>(address)); }}, nb::arg("address"));'
-    if ad == 'serial_context_read': return f'  m.def("{py}", [](uintptr_t address,size_t count,int timeout_ms,int inter_byte_timeout_ms) {{ std::vector<char>b(count); ssize_t n; {{nb::gil_scoped_release r;n={c}(reinterpret_cast<serialContext*>(address),b.data(),count,timeout_ms,inter_byte_timeout_ms);}} if(n<0)throw std::runtime_error("serialContextRead failed"); return nb::bytes(b.data(),(size_t)n); }}, nb::arg("address"), nb::arg("count"), nb::arg("timeout_ms")=-1, nb::arg("inter_byte_timeout_ms")=-1);'
-    if ad == 'serial_context_write': return f'  m.def("{py}", [](uintptr_t address,nb::handle data,int timeout_ms) {{ PyBufferGuard b(data,PyBUF_CONTIG_RO); nb::gil_scoped_release r; return {c}(reinterpret_cast<serialContext*>(address),b.view.buf,(size_t)b.view.len,timeout_ms); }}, nb::arg("address"), nb::arg("data"), nb::arg("timeout_ms")=-1);'
-    if ad in ('serial_context_cancel_read','serial_context_cancel_write'):
+    if ad == "serial_config_init":
+        return f'  m.def("{py}", []() {{ serialConfig v{{}}; {c}(&v); return v; }});'
+    if ad == "serial_get_config":
+        return f'  m.def("{py}", [](int fd) {{ serialConfig v{{}}; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
+    if ad == "serial_get_baud":
+        return f'  m.def("{py}", [](int fd) {{ unsigned int v=0; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
+    if ad == "serial_read":
+        return f'  m.def("{py}", [](int fd,size_t count) {{ std::vector<char>b(count); ssize_t n; {{nb::gil_scoped_release r;n={c}(fd,b.data(),count);}} if(n<0)throw std::runtime_error("serial read failed"); return nb::bytes(b.data(),(size_t)n); }}, nb::arg("fd"), nb::arg("count"));'
+    if ad == "serial_write":
+        return f'  m.def("{py}", [](int fd,nb::handle data) {{ PyBufferGuard b(data,PyBUF_CONTIG_RO); nb::gil_scoped_release r; return {c}(fd,b.view.buf,(size_t)b.view.len); }}, nb::arg("fd"), nb::arg("data"));'
+    if ad == "serial_read_timeout":
+        return f'  m.def("{py}", [](int fd,size_t count,int timeout_ms,int inter_byte_timeout_ms) {{ std::vector<char>b(count); ssize_t n; {{nb::gil_scoped_release r;n={c}(fd,b.data(),count,timeout_ms,inter_byte_timeout_ms);}} if(n<0)throw std::runtime_error("serial read failed"); return nb::bytes(b.data(),(size_t)n); }}, nb::arg("fd"), nb::arg("count"), nb::arg("timeout_ms"), nb::arg("inter_byte_timeout_ms")=-1);'
+    if ad == "serial_write_timeout":
+        return f'  m.def("{py}", [](int fd,nb::handle data,int timeout_ms) {{ PyBufferGuard b(data,PyBUF_CONTIG_RO); nb::gil_scoped_release r; return {c}(fd,b.view.buf,(size_t)b.view.len,timeout_ms); }}, nb::arg("fd"), nb::arg("data"), nb::arg("timeout_ms"));'
+    if ad == "serial_get_modem_lines":
+        return f'  m.def("{py}", [](int fd) {{ unsigned int v=0; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
+    if ad == "serial_get_counters":
+        return f'  m.def("{py}", [](int fd) {{ serialCounters v{{}}; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
+    if ad == "serial_get_rs485":
+        return f'  m.def("{py}", [](int fd) {{ serialRS485Config v{{}}; v.structSize=sizeof(v); int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
+    if ad == "serial_get_hardware_info":
+        return f'  m.def("{py}", [](int fd) {{ serialHardwareInfo v{{}}; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
+    if ad == "serial_get_capabilities":
+        return f'  m.def("{py}", [](int fd) {{ uint64_t v=0; int rc={c}(fd,&v); return nb::make_tuple(rc,v); }}, nb::arg("fd"));'
+    if ad == "serial_context_open":
+        return f'  m.def("{py}", [](const char *device,const serialConfig &cfg) -> uintptr_t {{ serialContext *q={c}(device,&cfg); if(!q)throw std::runtime_error("serialContextOpen failed"); return reinterpret_cast<uintptr_t>(q); }}, nb::arg("device"), nb::arg("config"));'
+    if ad == "serial_context_from_fd":
+        return f'  m.def("{py}", [](int fd,int take_ownership) -> uintptr_t {{ serialContext *q={c}(fd,take_ownership); if(!q)throw std::runtime_error("serialContextFromFd failed"); return reinterpret_cast<uintptr_t>(q); }}, nb::arg("fd"), nb::arg("take_ownership")=0);'
+    if ad == "serial_context_close":
+        return f'  m.def("{py}", [](uintptr_t address) {{ {c}(reinterpret_cast<serialContext*>(address)); }}, nb::arg("address"));'
+    if ad == "serial_context_get_fd":
+        return f'  m.def("{py}", [](uintptr_t address) {{ return {c}(reinterpret_cast<const serialContext*>(address)); }}, nb::arg("address"));'
+    if ad == "serial_context_read":
+        return f'  m.def("{py}", [](uintptr_t address,size_t count,int timeout_ms,int inter_byte_timeout_ms) {{ std::vector<char>b(count); ssize_t n; {{nb::gil_scoped_release r;n={c}(reinterpret_cast<serialContext*>(address),b.data(),count,timeout_ms,inter_byte_timeout_ms);}} if(n<0)throw std::runtime_error("serialContextRead failed"); return nb::bytes(b.data(),(size_t)n); }}, nb::arg("address"), nb::arg("count"), nb::arg("timeout_ms")=-1, nb::arg("inter_byte_timeout_ms")=-1);'
+    if ad == "serial_context_write":
+        return f'  m.def("{py}", [](uintptr_t address,nb::handle data,int timeout_ms) {{ PyBufferGuard b(data,PyBUF_CONTIG_RO); nb::gil_scoped_release r; return {c}(reinterpret_cast<serialContext*>(address),b.view.buf,(size_t)b.view.len,timeout_ms); }}, nb::arg("address"), nb::arg("data"), nb::arg("timeout_ms")=-1);'
+    if ad in ("serial_context_cancel_read", "serial_context_cancel_write"):
         return f'  m.def("{py}", [](uintptr_t address) {{ return {c}(reinterpret_cast<serialContext*>(address)); }}, nb::arg("address"));'
-    raise RuntimeError(f'unhandled adaptation {ad} for {c}')
+    raise RuntimeError(f"unhandled adaptation {ad} for {c}")
 
 
 def bind_variables(h: dict) -> str:
-    lines=[]
-    for v in h['variables']:
-        c, py, ct = v['c_name'], v['python_name'], v['c_type']
+    lines = []
+    for v in h["variables"]:
+        c, py, ct = v["c_name"], v["python_name"], v["c_type"]
         if c in OPTIONAL_LEGACY_ARRAYS:
-            if 'char *' in ct:
-                n=int(re.findall(r'\[(\d+)\]',ct)[-1])
-                lines.append(f'  {{ void *sym=dlsym(RTLD_DEFAULT,"{c}"); if(sym){{ const char * const *p=reinterpret_cast<const char * const *>(sym); nb::list x; for(size_t i=0;i<{n};++i)x.append(p[i]?nb::str(p[i]):nb::none()); m.attr("{py}")=nb::tuple(x); }} else m.attr("{py}")=nb::none(); }}')
+            if "char *" in ct:
+                n = int(re.findall(r"\[(\d+)\]", ct)[-1])
+                lines.append(
+                    f'  {{ void *sym=dlsym(RTLD_DEFAULT,"{c}"); if(sym){{ const char * const *p=reinterpret_cast<const char * const *>(sym); nb::list x; for(size_t i=0;i<{n};++i)x.append(p[i]?nb::str(p[i]):nb::none()); m.attr("{py}")=nb::tuple(x); }} else m.attr("{py}")=nb::none(); }}'
+                )
             else:
-                n=int(re.findall(r'\[(\d+)\]',ct)[-1])
-                base=ct.split('[')[0].replace('const ','').strip()
-                lines.append(f'  {{ void *sym=dlsym(RTLD_DEFAULT,"{c}"); if(sym){{ const {base} *p=reinterpret_cast<const {base} *>(sym); nb::list x; for(size_t i=0;i<{n};++i)x.append(p[i]); m.attr("{py}")=nb::tuple(x); }} else m.attr("{py}")=nb::none(); }}')
-        elif '[' in ct:
-            dims=[int(x) for x in re.findall(r'\[(\d+)\]',ct)];total=1
-            for x in dims: total*=x
-            base=ct.split('[')[0].strip()
-            if 'char *' in base:
-                lines.append(f'  {{ nb::list x; for(size_t i=0;i<{total};++i)x.append({c}[i]?nb::str({c}[i]):nb::none());m.attr("{py}")=nb::tuple(x); }}')
-            elif 'char' in base or 'uint8_t' in base:
-                lines.append(f'  m.attr("{py}")=nb::bytes(reinterpret_cast<const char *>(&{c}[0]),{total});')
+                n = int(re.findall(r"\[(\d+)\]", ct)[-1])
+                base = ct.split("[")[0].replace("const ", "").strip()
+                lines.append(
+                    f'  {{ void *sym=dlsym(RTLD_DEFAULT,"{c}"); if(sym){{ const {base} *p=reinterpret_cast<const {base} *>(sym); nb::list x; for(size_t i=0;i<{n};++i)x.append(p[i]); m.attr("{py}")=nb::tuple(x); }} else m.attr("{py}")=nb::none(); }}'
+                )
+        elif "[" in ct:
+            dims = [int(x) for x in re.findall(r"\[(\d+)\]", ct)]
+            total = 1
+            for x in dims:
+                total *= x
+            base = ct.split("[")[0].strip()
+            if "char *" in base:
+                lines.append(
+                    f'  {{ nb::list x; for(size_t i=0;i<{total};++i)x.append({c}[i]?nb::str({c}[i]):nb::none());m.attr("{py}")=nb::tuple(x); }}'
+                )
+            elif "char" in base or "uint8_t" in base:
+                lines.append(
+                    f'  m.attr("{py}")=nb::bytes(reinterpret_cast<const char *>(&{c}[0]),{total});'
+                )
             else:
-                b=base.replace('const ','')
-                lines.append(f'  {{nb::list x;const {b} *p=reinterpret_cast<const {b} *>(&{c}[0]);for(size_t i=0;i<{total};++i)x.append(p[i]);m.attr("{py}")=nb::tuple(x);}}')
-        elif '*' in ct:
-            lines.append(f'  m.def("get_{py}_address", []() -> uintptr_t {{ return reinterpret_cast<uintptr_t>({c}); }});')
-            if 'const ' not in ct:
-                lines.append(f'  m.def("set_{py}_address", [](uintptr_t value) {{ {c}=reinterpret_cast<decltype({c})>(value); }}, nb::arg("address"));')
-        elif 'struct ' in ct:
+                b = base.replace("const ", "")
+                lines.append(
+                    f'  {{nb::list x;const {b} *p=reinterpret_cast<const {b} *>(&{c}[0]);for(size_t i=0;i<{total};++i)x.append(p[i]);m.attr("{py}")=nb::tuple(x);}}'
+                )
+        elif "*" in ct:
+            lines.append(
+                f'  m.def("get_{py}_address", []() -> uintptr_t {{ return reinterpret_cast<uintptr_t>({c}); }});'
+            )
+            if "const " not in ct:
+                lines.append(
+                    f'  m.def("set_{py}_address", [](uintptr_t value) {{ {c}=reinterpret_cast<decltype({c})>(value); }}, nb::arg("address"));'
+                )
+        elif "struct " in ct:
             # static struct values are mutable in their translation unit: explicit accessors.
-            if v['storage']=='static':
-                st=ct.replace('struct ','').strip()
+            if v["storage"] == "static":
+                st = ct.replace("struct ", "").strip()
                 lines.append(f'  m.def("get_{py}", []() {{ return {c}; }});')
-                lines.append(f'  m.def("set_{py}", []({st} value) {{ {c}=value; }}, nb::arg("value"));')
+                lines.append(
+                    f'  m.def("set_{py}", []({st} value) {{ {c}=value; }}, nb::arg("value"));'
+                )
             else:
-                lines.append(f'  m.attr("{py}")=nb::cast({c},nb::rv_policy::reference);')
-        elif ct.startswith('const '):
+                lines.append(
+                    f'  m.attr("{py}")=nb::cast({c},nb::rv_policy::reference);'
+                )
+        elif ct.startswith("const "):
             lines.append(f'  m.attr("{py}")=nb::cast({c});')
         else:
             lines.append(f'  m.def("get_{py}", []() {{ return {c}; }});')
-            lines.append(f'  m.def("set_{py}", [](decltype({c}) value) {{ {c}=value; }}, nb::arg("value"));')
-    return '\n'.join(lines)
+            lines.append(
+                f'  m.def("set_{py}", [](decltype({c}) value) {{ {c}=value; }}, nb::arg("value"));'
+            )
+    return "\n".join(lines)
 
 
 def bind_macros(h: dict) -> str:
-    lines=[]
-    for x in h['macros']:
-        if not x.get('bindable'): continue
-        c,py=x['c_name'],x['python_name']
-        if x['kind']=='function_value':
-            args=x.get('args') or ['x'];params=', '.join(f'int {a}' for a in args)
-            lines.append(f'  m.def("{py}", []({params}) {{ return {c}({", ".join(args)}); }}'+''.join(f', nb::arg("{a}")' for a in args)+');')
+    lines = []
+    for x in h["macros"]:
+        if not x.get("bindable"):
+            continue
+        c, py = x["c_name"], x["python_name"]
+        if x["kind"] == "function_value":
+            args = x.get("args") or ["x"]
+            params = ", ".join(f"int {a}" for a in args)
+            lines.append(
+                f'  m.def("{py}", []({params}) {{ return {c}({", ".join(args)}); }}'
+                + "".join(f', nb::arg("{a}")' for a in args)
+                + ");"
+            )
         else:
             lines.append(f'  m.attr("{py}")=nb::cast(({c}));')
-    return '\n'.join(lines)
+    return "\n".join(lines)
 
 
 def generate_cpp(d: dict, h: dict) -> str:
-    adaptations={f['adaptation'] for f in h['functions']}
-    needs_buffer=bool(adaptations & {'spi_inout_buffer','w25_page_write','oled_send','serial_write','serial_write_timeout','serial_context_write'})
-    extra=buffer_helpers() if needs_buffer else ''
-    if h['path']=='wiringPi/wiringPi.h': extra+=callback_helpers()
-    if h['path']=='wiringPi/wiringSerial.h':
-        if 'struct PyBufferGuard' not in extra: extra+=buffer_helpers()
-        extra+=serial_port_class()
-    importdep='  nb::module_::import_("wiringop.wiring_pi.font");\n' if h['path']=='wiringPi/oled.h' else ''
-    out=[preamble(h),extra,f'NB_MODULE({module_basename(h)}, m) {{\n  m.doc() = "nanobind bindings for {h["path"]}";\n',importdep]
-    for s in h['structs']: out.append(bind_struct(s)+'\n')
-    for f in h['functions']: out.append(bind_function(f)+'\n')
-    out.append(bind_variables(h)+'\n'); out.append(bind_macros(h)+'\n')
-    if h['path']=='wiringPi/wiringSerial.h': out.append('  bind_serial_port(m);\n')
-    out.append('}\n')
-    return ''.join(out)
+    adaptations = {f["adaptation"] for f in h["functions"]}
+    needs_buffer = bool(
+        adaptations
+        & {
+            "spi_inout_buffer",
+            "w25_page_write",
+            "oled_send",
+            "serial_write",
+            "serial_write_timeout",
+            "serial_context_write",
+        }
+    )
+    extra = buffer_helpers() if needs_buffer else ""
+    if h["path"] == "wiringPi/wiringPi.h":
+        extra += callback_helpers()
+    if h["path"] == "wiringPi/wiringSerial.h":
+        if "struct PyBufferGuard" not in extra:
+            extra += buffer_helpers()
+        extra += serial_port_class()
+    importdep = (
+        '  nb::module_::import_("wiringop.wiring_pi.font");\n'
+        if h["path"] == "wiringPi/oled.h"
+        else ""
+    )
+    out = [
+        preamble(h),
+        extra,
+        f'NB_MODULE({module_basename(h)}, m) {{\n  m.doc() = "nanobind bindings for {h["path"]}";\n',
+        importdep,
+    ]
+    for s in h["structs"]:
+        out.append(bind_struct(s) + "\n")
+    for f in h["functions"]:
+        out.append(bind_function(f) + "\n")
+    out.append(bind_variables(h) + "\n")
+    out.append(bind_macros(h) + "\n")
+    if h["path"] == "wiringPi/wiringSerial.h":
+        out.append("  bind_serial_port(m);\n")
+    out.append("}\n")
+    return "".join(out)
 
 
 def mock_return(rt: str) -> str:
-    if rt=='void': return ''
-    if '*' in rt: return 'return NULL;'
-    if rt=='bool': return 'return true;'
-    return 'return 1;'
+    if rt == "void":
+        return ""
+    if "*" in rt:
+        return "return NULL;"
+    if rt == "bool":
+        return "return true;"
+    return "return 1;"
 
 
 def mock_body(f: dict) -> str | None:
-    c,rt,p=f['c_name'],f['return_type'],f['parameters']
-    if c=='wiringPiVersion': return '*major=2;*minor=61;'
-    if c=='piBoardId': return '*model=17;'
-    if c=='ds1302clockRead': return 'for(int i=0;i<8;++i)clockData[i]=10+i;'
-    if c=='lcd128x64orientCoordinates': return '*x+=1;*y+=2;'
-    if c=='lcd128x64getScreenSize': return '*x=128;*y=64;'
-    if c=='maxDetectRead': return 'buffer[0]=1;buffer[1]=2;buffer[2]=3;buffer[3]=4;return 1;'
-    if c=='readRHT03': return '*temp=234;*rh=567;return 1;'
-    if c=='W25Q64_readManufacturer': return 'd[0]=0xEF;d[1]=0x40;d[2]=0x17;'
-    if c=='W25Q64_readUniqieID': return 'for(int i=0;i<7;++i)d[i]=(uint8_t)(0x10+i);'
-    if c in ('W25Q64_read','W25Q64_fastread'): return 'for(uint16_t i=0;i<n;++i)buf[i]=(uint8_t)(addr+i);return n;'
-    if c=='W25Q64_pageWrite': return '(void)sect_no;(void)inaddr;(void)data;return n;'
-    if c=='wiringPiSPIDataRW': return 'for(int i=0;i<len;++i)data[i]^=0xA5;return len;'
-    if c=='wiringPiISR': return 'if(function)function();return 0;'
-    if c=='piThreadCreate': return 'if(fn)fn(NULL);return 0;'
-    if c=='getClientIP': return 'return "127.0.0.1";'
-    if c=='getResponse': return 'return clientFd+100;'
-    if c=='oled_open': return 'disp->file=42;disp->address=0x3c;(void)filename;return 0;'
-    if c=='oled_send': return '(void)disp;return payload?payload->size:-1;'
-    if c=='serialConfigInit': return 'memset(config,0,sizeof(*config));config->structSize=sizeof(*config);config->version=SERIAL_CONFIG_VERSION;config->baud=9600;config->dataBits=8;config->parity=SERIAL_PARITY_NONE;config->stopBits=SERIAL_STOP_BITS_ONE;config->xonChar=0x11;config->xoffChar=0x13;'
-    if c=='serialOpen': return '(void)device;mock_serial_config.baud=(uint32_t)baud;return 7;'
-    if c=='serialOpenConfig': return '(void)device;if(config)mock_serial_config=*config;return 7;'
-    if c=='serialGetConfig': return '(void)fd;*config=mock_serial_config;return 0;'
-    if c=='serialSetConfig': return '(void)fd;mock_serial_config=*config;return 0;'
-    if c=='serialGetBaud': return '(void)fd;*baud=mock_serial_config.baud;return 0;'
-    if c=='serialSetBaud': return '(void)fd;mock_serial_config.baud=baud;return 0;'
-    if c in ('serialRead','serialReadTimeout'):
-        extra='(void)timeoutMs;(void)interByteTimeoutMs;' if c=='serialReadTimeout' else ''
-        return f'(void)fd;{extra}for(size_t i=0;i<count;++i)((unsigned char*)buffer)[i]=(unsigned char)(0x30+(i%10));return(ssize_t)count;'
-    if c in ('serialWrite','serialWriteTimeout'):
-        extra='(void)timeoutMs;' if c=='serialWriteTimeout' else ''
-        return f'(void)fd;(void)buffer;{extra}return(ssize_t)count;'
-    if c in ('serialInputWaiting','serialOutputWaiting'): return '(void)fd;return 3;'
-    if c=='serialGetModemLines': return '(void)fd;*lines=SERIAL_MODEM_RTS|SERIAL_MODEM_DTR|SERIAL_MODEM_CTS;return 0;'
-    if c in ('serialGetCTS','serialGetDSR','serialGetRI','serialGetCD'): return '(void)fd;return 1;'
-    if c=='serialGetLowLatency': return '(void)fd;return 1;'
-    if c=='serialGetCounters': return '(void)fd;memset(counters,0,sizeof(*counters));counters->structSize=sizeof(*counters);counters->rx=12;counters->tx=34;return 0;'
-    if c=='serialTxEmpty': return '(void)fd;return 1;'
-    if c=='serialGetRS485': return '(void)fd;*config=mock_rs485;config->structSize=sizeof(*config);return 0;'
-    if c=='serialSetRS485': return '(void)fd;mock_rs485=*config;return 0;'
-    if c=='serialGetRxTrigger': return '(void)fd;return mock_rx_trigger;'
-    if c=='serialSetRxTrigger': return '(void)fd;mock_rx_trigger=(int)bytes;return 0;'
-    if c=='serialGetWakeup': return '(void)fd;return mock_wakeup;'
-    if c=='serialSetWakeup': return '(void)fd;mock_wakeup=enabled;return 0;'
-    if c=='serialGetHardwareInfo': return '(void)fd;memset(info,0,sizeof(*info));info->structSize=sizeof(*info);info->hardwareType=SERIAL_HARDWARE_RK3588_UART;info->fifoSize=64;info->capabilities=SERIAL_CAP_CUSTOM_BAUD|SERIAL_CAP_RTS_CTS|SERIAL_CAP_RK3588_UART|SERIAL_CAP_FIFO|SERIAL_CAP_CANCEL_IO;return 0;'
-    if c=='serialGetCapabilities': return '(void)fd;*capabilities=SERIAL_CAP_CUSTOM_BAUD|SERIAL_CAP_RTS_CTS|SERIAL_CAP_RK3588_UART|SERIAL_CAP_FIFO|SERIAL_CAP_CANCEL_IO;return 0;'
-    if c=='serialContextOpen': return '(void)device;if(config)mock_serial_config=*config;mock_context.fd=7;return &mock_context;'
-    if c=='serialContextFromFd': return '(void)takeOwnership;mock_context.fd=fd;return &mock_context;'
-    if c=='serialContextClose': return '(void)context;'
-    if c=='serialContextGetFd': return 'return context?context->fd:-1;'
-    if c=='serialContextRead': return '(void)timeoutMs;(void)interByteTimeoutMs;if(!context)return-1;for(size_t i=0;i<count;++i)((unsigned char*)buffer)[i]=(unsigned char)(0x30+(i%10));return(ssize_t)count;'
-    if c=='serialContextWrite': return '(void)timeoutMs;if(!context)return-1;(void)buffer;return(ssize_t)count;'
-    if c in ('serialContextCancelRead','serialContextCancelWrite'): return 'return context?0:-1;'
-    if c in ('digitalRead8','digitalWrite8','wiringPiSetupPiFace','wiringPiSetupPiFaceForGpioProg','getResponce'): return None
-    uses=''.join(f'(void){x["name"]};' for x in p)
-    return uses+mock_return(rt)
+    c, rt, p = f["c_name"], f["return_type"], f["parameters"]
+    if c == "wiringPiVersion":
+        return "*major=2;*minor=61;"
+    if c == "piBoardId":
+        return "*model=17;"
+    if c == "ds1302clockRead":
+        return "for(int i=0;i<8;++i)clockData[i]=10+i;"
+    if c == "lcd128x64orientCoordinates":
+        return "*x+=1;*y+=2;"
+    if c == "lcd128x64getScreenSize":
+        return "*x=128;*y=64;"
+    if c == "maxDetectRead":
+        return "buffer[0]=1;buffer[1]=2;buffer[2]=3;buffer[3]=4;return 1;"
+    if c == "readRHT03":
+        return "*temp=234;*rh=567;return 1;"
+    if c == "W25Q64_readManufacturer":
+        return "d[0]=0xEF;d[1]=0x40;d[2]=0x17;"
+    if c == "W25Q64_readUniqieID":
+        return "for(int i=0;i<7;++i)d[i]=(uint8_t)(0x10+i);"
+    if c in ("W25Q64_read", "W25Q64_fastread"):
+        return "for(uint16_t i=0;i<n;++i)buf[i]=(uint8_t)(addr+i);return n;"
+    if c == "W25Q64_pageWrite":
+        return "(void)sect_no;(void)inaddr;(void)data;return n;"
+    if c == "wiringPiSPIDataRW":
+        return "for(int i=0;i<len;++i)data[i]^=0xA5;return len;"
+    if c == "wiringPiISR":
+        return "if(function)function();return 0;"
+    if c == "piThreadCreate":
+        return "if(fn)fn(NULL);return 0;"
+    if c == "getClientIP":
+        return 'return "127.0.0.1";'
+    if c == "getResponse":
+        return "return clientFd+100;"
+    if c == "oled_open":
+        return "disp->file=42;disp->address=0x3c;(void)filename;return 0;"
+    if c == "oled_send":
+        return "(void)disp;return payload?payload->size:-1;"
+    if c == "serialConfigInit":
+        return "memset(config,0,sizeof(*config));config->structSize=sizeof(*config);config->version=SERIAL_CONFIG_VERSION;config->baud=9600;config->dataBits=8;config->parity=SERIAL_PARITY_NONE;config->stopBits=SERIAL_STOP_BITS_ONE;config->xonChar=0x11;config->xoffChar=0x13;"
+    if c == "serialOpen":
+        return "(void)device;mock_serial_config.baud=(uint32_t)baud;return 7;"
+    if c == "serialOpenConfig":
+        return "(void)device;if(config)mock_serial_config=*config;return 7;"
+    if c == "serialGetConfig":
+        return "(void)fd;*config=mock_serial_config;return 0;"
+    if c == "serialSetConfig":
+        return "(void)fd;mock_serial_config=*config;return 0;"
+    if c == "serialGetBaud":
+        return "(void)fd;*baud=mock_serial_config.baud;return 0;"
+    if c == "serialSetBaud":
+        return "(void)fd;mock_serial_config.baud=baud;return 0;"
+    if c in ("serialRead", "serialReadTimeout"):
+        extra = (
+            "(void)timeoutMs;(void)interByteTimeoutMs;"
+            if c == "serialReadTimeout"
+            else ""
+        )
+        return f"(void)fd;{extra}for(size_t i=0;i<count;++i)((unsigned char*)buffer)[i]=(unsigned char)(0x30+(i%10));return(ssize_t)count;"
+    if c in ("serialWrite", "serialWriteTimeout"):
+        extra = "(void)timeoutMs;" if c == "serialWriteTimeout" else ""
+        return f"(void)fd;(void)buffer;{extra}return(ssize_t)count;"
+    if c in ("serialInputWaiting", "serialOutputWaiting"):
+        return "(void)fd;return 3;"
+    if c == "serialGetModemLines":
+        return "(void)fd;*lines=SERIAL_MODEM_RTS|SERIAL_MODEM_DTR|SERIAL_MODEM_CTS;return 0;"
+    if c in ("serialGetCTS", "serialGetDSR", "serialGetRI", "serialGetCD"):
+        return "(void)fd;return 1;"
+    if c == "serialGetLowLatency":
+        return "(void)fd;return 1;"
+    if c == "serialGetCounters":
+        return "(void)fd;memset(counters,0,sizeof(*counters));counters->structSize=sizeof(*counters);counters->rx=12;counters->tx=34;return 0;"
+    if c == "serialTxEmpty":
+        return "(void)fd;return 1;"
+    if c == "serialGetRS485":
+        return (
+            "(void)fd;*config=mock_rs485;config->structSize=sizeof(*config);return 0;"
+        )
+    if c == "serialSetRS485":
+        return "(void)fd;mock_rs485=*config;return 0;"
+    if c == "serialGetRxTrigger":
+        return "(void)fd;return mock_rx_trigger;"
+    if c == "serialSetRxTrigger":
+        return "(void)fd;mock_rx_trigger=(int)bytes;return 0;"
+    if c == "serialGetWakeup":
+        return "(void)fd;return mock_wakeup;"
+    if c == "serialSetWakeup":
+        return "(void)fd;mock_wakeup=enabled;return 0;"
+    if c == "serialGetHardwareInfo":
+        return "(void)fd;memset(info,0,sizeof(*info));info->structSize=sizeof(*info);info->hardwareType=SERIAL_HARDWARE_RK3588_UART;info->fifoSize=64;info->capabilities=SERIAL_CAP_CUSTOM_BAUD|SERIAL_CAP_RTS_CTS|SERIAL_CAP_RK3588_UART|SERIAL_CAP_FIFO|SERIAL_CAP_CANCEL_IO;return 0;"
+    if c == "serialGetCapabilities":
+        return "(void)fd;*capabilities=SERIAL_CAP_CUSTOM_BAUD|SERIAL_CAP_RTS_CTS|SERIAL_CAP_RK3588_UART|SERIAL_CAP_FIFO|SERIAL_CAP_CANCEL_IO;return 0;"
+    if c == "serialContextOpen":
+        return "(void)device;if(config)mock_serial_config=*config;mock_context.fd=7;return &mock_context;"
+    if c == "serialContextFromFd":
+        return "(void)takeOwnership;mock_context.fd=fd;return &mock_context;"
+    if c == "serialContextClose":
+        return "(void)context;"
+    if c == "serialContextGetFd":
+        return "return context?context->fd:-1;"
+    if c == "serialContextRead":
+        return "(void)timeoutMs;(void)interByteTimeoutMs;if(!context)return-1;for(size_t i=0;i<count;++i)((unsigned char*)buffer)[i]=(unsigned char)(0x30+(i%10));return(ssize_t)count;"
+    if c == "serialContextWrite":
+        return "(void)timeoutMs;if(!context)return-1;(void)buffer;return(ssize_t)count;"
+    if c in ("serialContextCancelRead", "serialContextCancelWrite"):
+        return "return context?0:-1;"
+    if c in (
+        "digitalRead8",
+        "digitalWrite8",
+        "wiringPiSetupPiFace",
+        "wiringPiSetupPiFaceForGpioProg",
+        "getResponce",
+    ):
+        return None
+    uses = "".join(f"(void){x['name']};" for x in p)
+    return uses + mock_return(rt)
 
 
 def generate_mock(h: dict) -> str:
-    lines=['#include <stdint.h>\n#include <stddef.h>\n#include <stdbool.h>\n#include <string.h>\n',f'#include "{h["path"]}"\n']
-    if h['path']=='wiringPi/wiringSerial.h':
-        lines.append('struct serialContext { int fd; int ownFd; int cancelRead[2]; int cancelWrite[2]; };\nstatic serialConfig mock_serial_config={.structSize=sizeof(serialConfig),.version=SERIAL_CONFIG_VERSION,.baud=9600,.dataBits=8,.stopBits=SERIAL_STOP_BITS_ONE};\nstatic serialRS485Config mock_rs485={.structSize=sizeof(serialRS485Config)};\nstatic struct serialContext mock_context={.fd=7};\nstatic int mock_rx_trigger=16;static int mock_wakeup=0;\n')
-    for v in h['variables']:
-        if v['storage']!='extern': continue
-        ct,c=v['c_type'],v['c_name']
-        if '[' in ct:
-            base=ct.split('[')[0].strip();dims=''.join(re.findall(r'\[\d+\]',ct));lines.append(f'{base} {c}{dims}={{0}};\n')
-        else: lines.append(f'{ct} {c}=0;\n')
-    for f in h['functions']:
-        body=mock_body(f)
-        if body is None: continue
-        params=', '.join(decl(x['c_type'],x['name']) for x in f['parameters']) or 'void'
-        if f['variadic']: params+=', ...'
-        lines.append(f'{f["return_type"]} {f["c_name"]}({params}) {{ {body} }}\n')
-    return ''.join(lines)
-
-
-def test_value_for_param(p: dict, structs: dict[str,str]) -> str:
-    t=p['c_type']
-    if t=='bool': return 'True'
-    if t in SCALAR_TYPES: return '1'
-    if t=='const char *': return '"x"'
-    if '*' in t:
-        cn=cpp_type_name(t)
-        if cn in structs: return f'm.{structs[cn]}()'
-        return '0'
-    return '1'
-
-
-def generate_test(d: dict,h: dict,structs: dict[str,str]) -> str:
-    lines=[f'import importlib\nimport pytest\n\nm=importlib.import_module("{h["python_module"]}")\n']
-    for s in h['structs']:
-        lines.append(f'\ndef test_struct_{s["python_name"].lower()}():\n    obj=m.{s["python_name"]}()\n')
-        for fld in s['fields']:
-            pn,ct=fld['python_name'],fld['c_type']
-            if fld['pointer']: lines.append(f'    assert obj.{pn} == 0\n    obj.{pn}=0\n')
-            elif '[' in ct:
-                total=1
-                for q in re.findall(r'\[(\d+)\]',ct): total*=int(q)
-                lines.append(f'    assert len(obj.{pn}) == {total}\n')
-            else: lines.append(f'    _=obj.{pn}\n')
-    for f in h['functions']:
-        py,ad,c=f['python_name'],f['adaptation'],f['c_name'];lines.append(f'\ndef test_{py}():\n')
-        if ad=='missing': lines.append(f'    with pytest.raises(NotImplementedError): m.{py}('+', '.join('1' for _ in f['parameters'])+')\n');continue
-        if ad=='legacy_typo': lines.append('    assert m.get_response_legacy(3)==103\n');continue
-        if ad=='callback_isr': lines.append('    seen=[]\n    assert m.wiring_pi_isr(1,1,lambda:seen.append(1))==0\n    assert seen==[1]\n');continue
-        if ad=='callback_thread': lines.append('    seen=[]\n    assert m.pi_thread_create(lambda:seen.append(1))==0\n    assert seen==[1]\n');continue
-        if ad=='spi_inout_buffer': lines.append('    b=bytearray([1,2,3]);assert m.wiring_pi_spi_data_rw(0,b)==3;assert b==bytearray([0xA4,0xA7,0xA6])\n    with pytest.raises((TypeError,BufferError)):m.wiring_pi_spi_data_rw(0,b"abc")\n');continue
-        if ad=='ds1302_clock_read': lines.append('    assert m.ds1302_clock_read()==tuple(range(10,18))\n');continue
-        if ad=='ds1302_clock_write': lines.append('    m.ds1302_clock_write(range(8))\n    with pytest.raises(ValueError):m.ds1302_clock_write([1])\n');continue
-        if ad=='lcd_char_def': lines.append('    m.lcd_char_def(1,0,b"12345678")\n    with pytest.raises(ValueError):m.lcd_char_def(1,0,b"x")\n');continue
-        if ad=='lcd_screen_size': lines.append('    assert m.lcd128x64_get_screen_size()==(128,64)\n');continue
-        if c=='lcd128x64orientCoordinates': lines.append('    assert m.lcd128x64orient_coordinates()==(1,2)\n');continue
-        if ad=='maxdetect_read': lines.append('    assert m.max_detect_read(1)==(1,b"\\x01\\x02\\x03\\x04")\n');continue
-        if ad=='rht03_read': lines.append('    assert m.read_rht03(1)==(1,234,567)\n');continue
-        if ad=='w25_manufacturer': lines.append('    assert m.w25q64_read_manufacturer()==bytes.fromhex("ef4017")\n');continue
-        if ad=='w25_unique_id': lines.append('    assert m.w25q64_read_unique_id()==bytes(range(0x10,0x17))\n');continue
-        if ad=='w25_read': lines.append(f'    assert m.{py}(0x20,4)==bytes([0x20,0x21,0x22,0x23])\n');continue
-        if ad=='w25_page_write': lines.append(f'    assert m.{py}(0,0,b"abc")==3\n    with pytest.raises(ValueError):m.{py}(0,250,b"0123456789")\n');continue
-        if ad=='serial_config_init': lines.append('    c=m.serial_config_init();assert c.baud==9600 and c.data_bits==8\n');continue
-        if ad=='serial_get_config': lines.append('    rc,c=m.serial_get_config(7);assert rc==0\n');continue
-        if ad=='serial_get_baud': lines.append('    assert m.serial_get_baud(7)[0]==0\n');continue
-        if ad in ('serial_read','serial_read_timeout'):
-            suffix=',10,-1' if ad=='serial_read_timeout' else ''
-            lines.append(f'    assert m.{py}(7,4{suffix})==b"0123"\n');continue
-        if ad in ('serial_write','serial_write_timeout'):
-            suffix=',10' if ad=='serial_write_timeout' else ''
-            lines.append(f'    assert m.{py}(7,b"abcd"{suffix})==4\n');continue
-        if ad in ('serial_get_modem_lines','serial_get_counters','serial_get_rs485','serial_get_hardware_info','serial_get_capabilities'):
-            lines.append(f'    assert m.{py}(7)[0]==0\n');continue
-        if ad=='serial_context_open': lines.append('    cfg=m.serial_config_init();a=m.serial_context_open("mock",cfg);assert isinstance(a,int) and a!=0;m.serial_context_close(a)\n');continue
-        if ad=='serial_context_from_fd': lines.append('    a=m.serial_context_from_fd(7,0);assert m.serial_context_get_fd(a)==7;m.serial_context_close(a)\n');continue
-        if ad=='serial_context_close': lines.append('    cfg=m.serial_config_init();a=m.serial_context_open("mock",cfg);m.serial_context_close(a)\n');continue
-        if ad=='serial_context_get_fd': lines.append('    a=m.serial_context_from_fd(7,0);assert m.serial_context_get_fd(a)==7;m.serial_context_close(a)\n');continue
-        if ad=='serial_context_read': lines.append('    a=m.serial_context_from_fd(7,0);assert m.serial_context_read(a,4,10,-1)==b"0123";m.serial_context_close(a)\n');continue
-        if ad=='serial_context_write': lines.append('    a=m.serial_context_from_fd(7,0);assert m.serial_context_write(a,b"abcd",10)==4;m.serial_context_close(a)\n');continue
-        if ad in ('serial_context_cancel_read','serial_context_cancel_write'):
-            lines.append(f'    a=m.serial_context_from_fd(7,0);assert m.{py}(a)==0;m.serial_context_close(a)\n');continue
-        if ad.startswith('oled_'):
-            if ad=='oled_open': lines.append('    d=m.DisplayInfo();assert m.oled_open(d,"/dev/null")==0 and d.file==42\n')
-            elif ad=='oled_send': lines.append('    d=m.DisplayInfo();assert m.oled_send(d,b"abc")==3\n')
-            elif ad=='oled_putstr': lines.append('    d=m.DisplayInfo();m.oled_putstr(d,0,"abc")\n')
-            else: lines.append('    d=m.DisplayInfo();m.oled_putstrto(d,0,0,"abc")\n')
+    lines = [
+        "#include <stdint.h>\n#include <stddef.h>\n#include <stdbool.h>\n#include <string.h>\n",
+        f'#include "{h["path"]}"\n',
+    ]
+    if h["path"] == "wiringPi/wiringSerial.h":
+        lines.append(
+            "struct serialContext { int fd; int ownFd; int cancelRead[2]; int cancelWrite[2]; };\nstatic serialConfig mock_serial_config={.structSize=sizeof(serialConfig),.version=SERIAL_CONFIG_VERSION,.baud=9600,.dataBits=8,.stopBits=SERIAL_STOP_BITS_ONE};\nstatic serialRS485Config mock_rs485={.structSize=sizeof(serialRS485Config)};\nstatic struct serialContext mock_context={.fd=7};\nstatic int mock_rx_trigger=16;static int mock_wakeup=0;\n"
+        )
+    for v in h["variables"]:
+        if v["storage"] != "extern":
             continue
-        if ad=='prepared_printf':
-            args=[test_value_for_param(x,structs) for x in f['parameters'][:-1]]+['"safe text"'];lines.append(f'    m.{py}({", ".join(args)})\n');continue
-        if ad=='mutable_c_string':
-            args=[('"x"' if x['c_type']=='char *' else test_value_for_param(x,structs)) for x in f['parameters']];lines.append(f'    m.{py}({", ".join(args)})\n');continue
-        if ad=='output_pointers':
-            ins=[x for x in f['parameters'] if not ('*' in x['c_type'] and not x['c_type'].lstrip().startswith('const '))];args=[test_value_for_param(x,structs) for x in ins];lines.append(f'    _=m.{py}({", ".join(args)})\n');continue
-        if ad=='direct':
-            args=[test_value_for_param(x,structs) for x in f['parameters']];lines.append(f'    _=m.{py}({", ".join(args)})\n');continue
-        lines.append(f'    assert callable(m.{py})\n')
-    for v in h['variables']:
-        py,ct=v['python_name'],v['c_type'];lines.append(f'\ndef test_variable_{py}():\n')
-        if v['c_name'] in OPTIONAL_LEGACY_ARRAYS or '[' in ct or ct.startswith('const '): lines.append(f'    assert hasattr(m,"{py}")\n')
-        elif '*' in ct: lines.append(f'    assert isinstance(m.get_{py}_address(),int)\n')
-        elif 'struct ' in ct and v['storage']=='static': lines.append(f'    x=m.get_{py}();m.set_{py}(x)\n')
-        else: lines.append(f'    x=m.get_{py}();m.set_{py}(x)\n')
-    bm=[x for x in h['macros'] if x.get('bindable')]
+        ct, c = v["c_type"], v["c_name"]
+        if "[" in ct:
+            base = ct.split("[")[0].strip()
+            dims = "".join(re.findall(r"\[\d+\]", ct))
+            lines.append(f"{base} {c}{dims}={{0}};\n")
+        else:
+            lines.append(f"{ct} {c}=0;\n")
+    for f in h["functions"]:
+        body = mock_body(f)
+        if body is None:
+            continue
+        params = (
+            ", ".join(decl(x["c_type"], x["name"]) for x in f["parameters"]) or "void"
+        )
+        if f["variadic"]:
+            params += ", ..."
+        lines.append(f"{f['return_type']} {f['c_name']}({params}) {{ {body} }}\n")
+    return "".join(lines)
+
+
+def test_value_for_param(p: dict, structs: dict[str, str]) -> str:
+    t = p["c_type"]
+    if t == "bool":
+        return "True"
+    if t in SCALAR_TYPES:
+        return "1"
+    if t == "const char *":
+        return '"x"'
+    if "*" in t:
+        cn = cpp_type_name(t)
+        if cn in structs:
+            return f"m.{structs[cn]}()"
+        return "0"
+    return "1"
+
+
+def generate_test(d: dict, h: dict, structs: dict[str, str]) -> str:
+    lines = [
+        f'import importlib\nimport pytest\n\nm=importlib.import_module("{h["python_module"]}")\n'
+    ]
+    for s in h["structs"]:
+        lines.append(
+            f"\ndef test_struct_{s['python_name'].lower()}():\n    obj=m.{s['python_name']}()\n"
+        )
+        for fld in s["fields"]:
+            pn, ct = fld["python_name"], fld["c_type"]
+            if fld["pointer"]:
+                lines.append(f"    assert obj.{pn} == 0\n    obj.{pn}=0\n")
+            elif "[" in ct:
+                total = 1
+                for q in re.findall(r"\[(\d+)\]", ct):
+                    total *= int(q)
+                lines.append(f"    assert len(obj.{pn}) == {total}\n")
+            else:
+                lines.append(f"    _=obj.{pn}\n")
+    for f in h["functions"]:
+        py, ad, c = f["python_name"], f["adaptation"], f["c_name"]
+        lines.append(f"\ndef test_{py}():\n")
+        if ad == "missing":
+            lines.append(
+                f"    with pytest.raises(NotImplementedError): m.{py}("
+                + ", ".join("1" for _ in f["parameters"])
+                + ")\n"
+            )
+            continue
+        if ad == "legacy_typo":
+            lines.append("    assert m.get_response_legacy(3)==103\n")
+            continue
+        if ad == "callback_isr":
+            lines.append(
+                "    seen=[]\n    assert m.wiring_pi_isr(1,1,lambda:seen.append(1))==0\n    assert seen==[1]\n"
+            )
+            continue
+        if ad == "callback_thread":
+            lines.append(
+                "    seen=[]\n    assert m.pi_thread_create(lambda:seen.append(1))==0\n    assert seen==[1]\n"
+            )
+            continue
+        if ad == "spi_inout_buffer":
+            lines.append(
+                '    b=bytearray([1,2,3]);assert m.wiring_pi_spi_data_rw(0,b)==3;assert b==bytearray([0xA4,0xA7,0xA6])\n    with pytest.raises((TypeError,BufferError)):m.wiring_pi_spi_data_rw(0,b"abc")\n'
+            )
+            continue
+        if ad == "ds1302_clock_read":
+            lines.append("    assert m.ds1302_clock_read()==tuple(range(10,18))\n")
+            continue
+        if ad == "ds1302_clock_write":
+            lines.append(
+                "    m.ds1302_clock_write(range(8))\n    with pytest.raises(ValueError):m.ds1302_clock_write([1])\n"
+            )
+            continue
+        if ad == "lcd_char_def":
+            lines.append(
+                '    m.lcd_char_def(1,0,b"12345678")\n    with pytest.raises(ValueError):m.lcd_char_def(1,0,b"x")\n'
+            )
+            continue
+        if ad == "lcd_screen_size":
+            lines.append("    assert m.lcd128x64_get_screen_size()==(128,64)\n")
+            continue
+        if c == "lcd128x64orientCoordinates":
+            lines.append("    assert m.lcd128x64orient_coordinates()==(1,2)\n")
+            continue
+        if ad == "maxdetect_read":
+            lines.append(
+                '    assert m.max_detect_read(1)==(1,b"\\x01\\x02\\x03\\x04")\n'
+            )
+            continue
+        if ad == "rht03_read":
+            lines.append("    assert m.read_rht03(1)==(1,234,567)\n")
+            continue
+        if ad == "w25_manufacturer":
+            lines.append(
+                '    assert m.w25q64_read_manufacturer()==bytes.fromhex("ef4017")\n'
+            )
+            continue
+        if ad == "w25_unique_id":
+            lines.append(
+                "    assert m.w25q64_read_unique_id()==bytes(range(0x10,0x17))\n"
+            )
+            continue
+        if ad == "w25_read":
+            lines.append(f"    assert m.{py}(0x20,4)==bytes([0x20,0x21,0x22,0x23])\n")
+            continue
+        if ad == "w25_page_write":
+            lines.append(
+                f'    assert m.{py}(0,0,b"abc")==3\n    with pytest.raises(ValueError):m.{py}(0,250,b"0123456789")\n'
+            )
+            continue
+        if ad == "serial_config_init":
+            lines.append(
+                "    c=m.serial_config_init();assert c.baud==9600 and c.data_bits==8\n"
+            )
+            continue
+        if ad == "serial_get_config":
+            lines.append("    rc,_config=m.serial_get_config(7);assert rc==0\n")
+            continue
+        if ad == "serial_get_baud":
+            lines.append("    assert m.serial_get_baud(7)[0]==0\n")
+            continue
+        if ad in ("serial_read", "serial_read_timeout"):
+            suffix = ",10,-1" if ad == "serial_read_timeout" else ""
+            lines.append(f'    assert m.{py}(7,4{suffix})==b"0123"\n')
+            continue
+        if ad in ("serial_write", "serial_write_timeout"):
+            suffix = ",10" if ad == "serial_write_timeout" else ""
+            lines.append(f'    assert m.{py}(7,b"abcd"{suffix})==4\n')
+            continue
+        if ad in (
+            "serial_get_modem_lines",
+            "serial_get_counters",
+            "serial_get_rs485",
+            "serial_get_hardware_info",
+            "serial_get_capabilities",
+        ):
+            lines.append(f"    assert m.{py}(7)[0]==0\n")
+            continue
+        if ad == "serial_context_open":
+            lines.append(
+                '    cfg=m.serial_config_init();a=m.serial_context_open("mock",cfg);assert isinstance(a,int) and a!=0;m.serial_context_close(a)\n'
+            )
+            continue
+        if ad == "serial_context_from_fd":
+            lines.append(
+                "    a=m.serial_context_from_fd(7,0);assert m.serial_context_get_fd(a)==7;m.serial_context_close(a)\n"
+            )
+            continue
+        if ad == "serial_context_close":
+            lines.append(
+                '    cfg=m.serial_config_init();a=m.serial_context_open("mock",cfg);m.serial_context_close(a)\n'
+            )
+            continue
+        if ad == "serial_context_get_fd":
+            lines.append(
+                "    a=m.serial_context_from_fd(7,0);assert m.serial_context_get_fd(a)==7;m.serial_context_close(a)\n"
+            )
+            continue
+        if ad == "serial_context_read":
+            lines.append(
+                '    a=m.serial_context_from_fd(7,0);assert m.serial_context_read(a,4,10,-1)==b"0123";m.serial_context_close(a)\n'
+            )
+            continue
+        if ad == "serial_context_write":
+            lines.append(
+                '    a=m.serial_context_from_fd(7,0);assert m.serial_context_write(a,b"abcd",10)==4;m.serial_context_close(a)\n'
+            )
+            continue
+        if ad in ("serial_context_cancel_read", "serial_context_cancel_write"):
+            lines.append(
+                f"    a=m.serial_context_from_fd(7,0);assert m.{py}(a)==0;m.serial_context_close(a)\n"
+            )
+            continue
+        if ad.startswith("oled_"):
+            if ad == "oled_open":
+                lines.append(
+                    '    d=m.DisplayInfo();assert m.oled_open(d,"/dev/null")==0 and d.file==42\n'
+                )
+            elif ad == "oled_send":
+                lines.append('    d=m.DisplayInfo();assert m.oled_send(d,b"abc")==3\n')
+            elif ad == "oled_putstr":
+                lines.append('    d=m.DisplayInfo();m.oled_putstr(d,0,"abc")\n')
+            else:
+                lines.append('    d=m.DisplayInfo();m.oled_putstrto(d,0,0,"abc")\n')
+            continue
+        if ad == "prepared_printf":
+            args = [test_value_for_param(x, structs) for x in f["parameters"][:-1]] + [
+                '"safe text"'
+            ]
+            lines.append(f"    m.{py}({', '.join(args)})\n")
+            continue
+        if ad == "mutable_c_string":
+            args = [
+                ('"x"' if x["c_type"] == "char *" else test_value_for_param(x, structs))
+                for x in f["parameters"]
+            ]
+            lines.append(f"    m.{py}({', '.join(args)})\n")
+            continue
+        if ad == "output_pointers":
+            ins = [
+                x
+                for x in f["parameters"]
+                if not (
+                    "*" in x["c_type"] and not x["c_type"].lstrip().startswith("const ")
+                )
+            ]
+            args = [test_value_for_param(x, structs) for x in ins]
+            lines.append(f"    _=m.{py}({', '.join(args)})\n")
+            continue
+        if ad == "direct":
+            args = [test_value_for_param(x, structs) for x in f["parameters"]]
+            lines.append(f"    _=m.{py}({', '.join(args)})\n")
+            continue
+        lines.append(f"    assert callable(m.{py})\n")
+    for v in h["variables"]:
+        py, ct = v["python_name"], v["c_type"]
+        lines.append(f"\ndef test_variable_{py}():\n")
+        if (
+            v["c_name"] in OPTIONAL_LEGACY_ARRAYS
+            or "[" in ct
+            or ct.startswith("const ")
+        ):
+            lines.append(f'    assert hasattr(m,"{py}")\n')
+        elif "*" in ct:
+            lines.append(f"    assert isinstance(m.get_{py}_address(),int)\n")
+        elif "struct " in ct and v["storage"] == "static":
+            lines.append(f"    x=m.get_{py}();m.set_{py}(x)\n")
+        else:
+            lines.append(f"    x=m.get_{py}();m.set_{py}(x)\n")
+    bm = [x for x in h["macros"] if x.get("bindable")]
     if bm:
-        lines.append('\ndef test_constants_and_macros():\n')
+        lines.append("\ndef test_constants_and_macros():\n")
         for x in bm:
-            if x['kind']=='function_value': lines.append(f'    _=m.{x["python_name"]}(1)\n')
-            else: lines.append(f'    assert hasattr(m,"{x["python_name"]}")\n')
-    if h['path']=='wiringPi/wiringSerial.h':
-        lines.append(r'''
+            if x["kind"] == "function_value":
+                lines.append(f"    _=m.{x['python_name']}(1)\n")
+            else:
+                lines.append(f'    assert hasattr(m,"{x["python_name"]}")\n')
+    if h["path"] == "wiringPi/wiringPi.h":
+        lines.append(r"""
+def test_wiring_pi_isr_reentrant_replacement_mock():
+    calls=[]
+    def outer():
+        calls.append("outer")
+        assert m.wiring_pi_isr(2,1,lambda: calls.append("nested"))==0
+    assert m.wiring_pi_isr(2,1,outer)==0
+    assert calls==["outer","nested"]
+
+def test_wiring_pi_isr_concurrent_replacement_mock():
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Lock
+    calls=[]
+    lock=Lock()
+    def register(_):
+        def callback():
+            with lock: calls.append(1)
+        assert m.wiring_pi_isr(3,1,callback)==0
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        list(pool.map(register,range(256)))
+    assert len(calls)==256
+""")
+    if h["path"] == "wiringPi/wiringSerial.h":
+        lines.append(r"""
 def test_serial_port_high_level():
     p=m.SerialPort("mock",115200)
     assert p.is_open and p.fileno()==7 and p.port=="mock" and p.name=="mock"
@@ -861,72 +1301,114 @@ def test_serial_port_dsrdtr_reports_linux_limit():
     assert p.dsrdtr is False
     with pytest.raises(NotImplementedError): p.dsrdtr=True
     p.close()
-''')
-    return ''.join(lines)
+
+def test_serial_port_parallel_close_and_reopen_mock():
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+    for _ in range(12):
+        port=m.SerialPort("mock",115200)
+        barrier=Barrier(6)
+        def finish(_worker: int, bound_barrier=barrier, bound_port=port):
+            bound_barrier.wait(timeout=10)
+            bound_port.close()
+        with ThreadPoolExecutor(max_workers=6) as pool:
+            list(pool.map(finish,range(6)))
+        assert not port.is_open
+        port.open()
+        assert port.is_open
+        port.close()
+""")
+    return "".join(lines)
 
 
 def generate_doc(h: dict) -> str:
-    L=[f'# `{h["path"]}`\n\n',f'Python-модуль: `{h["python_module"]}`.\n\n','Модуль зеркально покрывает публичный API заголовка wiringOP. Имена Python приведены к Python-стилю; рядом сохраняются C-имена для однозначного сопоставления.\n\n']
-    if h['path']=='wiringPi/wiringSerial.h':
-        L.append('## Расширенный UART\n\nLegacy `serialOpen()` и старый ABI сохранены без изменения. Новый API добавляет произвольный baud через Linux `termios2/BOTHER`, 5–8 бит, parity N/O/E/M/S (если поддерживает драйвер), 1/1.5/2 stop bits, XON/XOFF, RTS/CTS, modem lines, таймауты, break, exclusive/low-latency, error counters, Linux RS-485, RX FIFO trigger, wakeup, hardware/capability discovery и cancellable `serialContext`. На RK3588/DesignWare обнаруживаются FIFO, DMA description, auto RTS/CTS и расширенные RS-485 capabilities без прямого MMIO-конфликта с ядром. `SerialPort` использует один C syscall/poll path для bulk `read`/`write`, writable buffer в `read_into`, освобождает GIL на блокирующем I/O и реально реализует `cancel_read`/`cancel_write` через wakeup pipe. URL/network handlers pySerial намеренно не входят в hardware UART слой. Автоматический DSR/DTR flow-control не имеет переносимого Linux tty API и при попытке включения явно выдаёт `NotImplementedError`; ручной DTR доступен.\n\n')
-    if h['functions']:
-        L.append('## Функции\n\n')
-        for f in h['functions']:
-            ps=', '.join(p['python_name'] for p in f['parameters']);L.append(f'- `{f["c_name"]}` → `{f["python_name"]}({ps})`; C return `{f["return_type"]}`; адаптация `{f["adaptation"]}`.\n')
-        L.append('\n')
-    if h['structs']:
-        L.append('## Структуры\n\n')
-        for s in h['structs']:
-            L.append(f'### `{s["python_name"]}` (`{s["c_name"]}`)\n\n')
-            for f in s['fields']:L.append(f'- `{f["name"]}` → `{f["python_name"]}`: `{f["c_type"]}`.\n')
-            L.append('\n')
-    if h['variables']:
-        L.append('## Данные и глобальные значения\n\n')
-        for v in h['variables']:
-            note='; отсутствующие legacy extern arrays в production представлены как `None`' if v['c_name'] in OPTIONAL_LEGACY_ARRAYS else ''
-            L.append(f'- `{v["c_name"]}` → `{v["python_name"]}` (`{v["c_type"]}`, `{v["storage"]}`){note}.\n')
-        L.append('\n')
-    if h['macros']:
-        L.append('## Макросы\n\n')
-        for x in h['macros']:
-            state='экспортируется' if x.get('bindable') else 'остаётся C-only'
-            L.append(f'- `{x["c_name"]}` → `{x["python_name"]}`: {state}; `{x["kind"]}`; определение `{x.get("definition",x.get("body",""))}`.\n')
-    return ''.join(L)
+    L = [
+        f"# `{h['path']}`\n\n",
+        f"Python-модуль: `{h['python_module']}`.\n\n",
+        "Модуль зеркально покрывает публичный API заголовка wiringOP. Имена Python приведены к Python-стилю; рядом сохраняются C-имена для однозначного сопоставления.\n\n",
+    ]
+    if h["path"] == "wiringPi/wiringSerial.h":
+        L.append(
+            "## Расширенный UART\n\nLegacy `serialOpen()` и старый ABI сохранены без изменения. Новый API добавляет произвольный baud через Linux `termios2/BOTHER`, 5–8 бит, parity N/O/E/M/S (если поддерживает драйвер), 1/1.5/2 stop bits, XON/XOFF, RTS/CTS, modem lines, таймауты, break, exclusive/low-latency, error counters, Linux RS-485, RX FIFO trigger, wakeup, hardware/capability discovery и cancellable `serialContext`. На RK3588/DesignWare обнаруживаются FIFO, DMA description, auto RTS/CTS и расширенные RS-485 capabilities без прямого MMIO-конфликта с ядром. `SerialPort` использует один C syscall/poll path для bulk `read`/`write`, writable buffer в `read_into`, освобождает GIL на блокирующем I/O и реально реализует `cancel_read`/`cancel_write` через wakeup pipe. URL/network handlers pySerial намеренно не входят в hardware UART слой. Автоматический DSR/DTR flow-control не имеет переносимого Linux tty API и при попытке включения явно выдаёт `NotImplementedError`; ручной DTR доступен.\n\n"
+        )
+    if h["functions"]:
+        L.append("## Функции\n\n")
+        for f in h["functions"]:
+            ps = ", ".join(p["python_name"] for p in f["parameters"])
+            L.append(
+                f"- `{f['c_name']}` → `{f['python_name']}({ps})`; C return `{f['return_type']}`; адаптация `{f['adaptation']}`.\n"
+            )
+        L.append("\n")
+    if h["structs"]:
+        L.append("## Структуры\n\n")
+        for s in h["structs"]:
+            L.append(f"### `{s['python_name']}` (`{s['c_name']}`)\n\n")
+            for f in s["fields"]:
+                L.append(f"- `{f['name']}` → `{f['python_name']}`: `{f['c_type']}`.\n")
+            L.append("\n")
+    if h["variables"]:
+        L.append("## Данные и глобальные значения\n\n")
+        for v in h["variables"]:
+            note = (
+                "; отсутствующие legacy extern arrays в production представлены как `None`"
+                if v["c_name"] in OPTIONAL_LEGACY_ARRAYS
+                else ""
+            )
+            L.append(
+                f"- `{v['c_name']}` → `{v['python_name']}` (`{v['c_type']}`, `{v['storage']}`){note}.\n"
+            )
+        L.append("\n")
+    if h["macros"]:
+        L.append("## Макросы\n\n")
+        for x in h["macros"]:
+            state = "экспортируется" if x.get("bindable") else "остаётся C-only"
+            L.append(
+                f"- `{x['c_name']}` → `{x['python_name']}`: {state}; `{x['kind']}`; определение `{x.get('definition', x.get('body', ''))}`.\n"
+            )
+    return "".join(L)
 
 
 def production_sources() -> list[str]:
-    prod=[]
-    for p in sorted((UPSTREAM/'wiringPi').glob('*.c')): prod.append(p.relative_to(UPSTREAM).as_posix())
-    for p in sorted((UPSTREAM/'devLib').glob('*.c')):
-        if p.name!='piFaceOld.c': prod.append(p.relative_to(UPSTREAM).as_posix())
-    for p in sorted((UPSTREAM/'wiringPiD').glob('*.c')):
-        if p.name!='wiringpid.c': prod.append(p.relative_to(UPSTREAM).as_posix())
-    assert len(prod)==48, len(prod)
+    prod = []
+    for p in sorted((UPSTREAM / "wiringPi").glob("*.c")):
+        prod.append(p.relative_to(UPSTREAM).as_posix())
+    for p in sorted((UPSTREAM / "devLib").glob("*.c")):
+        if p.name != "piFaceOld.c":
+            prod.append(p.relative_to(UPSTREAM).as_posix())
+    for p in sorted((UPSTREAM / "wiringPiD").glob("*.c")):
+        if p.name != "wiringpid.c":
+            prod.append(p.relative_to(UPSTREAM).as_posix())
+    assert len(prod) == 48, len(prod)
     return prod
 
 
 def cmake_text(d: dict) -> str:
-    mocks='\n'.join(f'  support/mock_backend/{h["path"][:-2]}.c' for h in d['headers'])
-    prodtxt='\n'.join('  ${WIRINGOP_SOURCE}/'+x for x in production_sources())
-    blocks=[]
-    for h in d['headers']:
-        src='src/'+h['path'][:-2]+'.cpp'
-        base=module_basename(h)
-        rel=py_rel_from_module(h['python_module'])
-        parent=rel.parent.as_posix()
-        outdir='${CMAKE_BINARY_DIR}/python/wiringop' + ('' if parent=='.' else '/'+parent)
-        install_dir='wiringop' + ('' if parent=='.' else '/'+parent)
-        stub='stubs/'+h['path'][:-2]+'.pyi'
-        t='nb_'+re.sub(r'[^A-Za-z0-9_]','_',h['path'][:-2])
-        blocks.append(f'''add_library({t} MODULE {src})
+    mocks = "\n".join(
+        f"  support/mock_backend/{h['path'][:-2]}.c" for h in d["headers"]
+    )
+    prodtxt = "\n".join("  ${WIRINGOP_SOURCE}/" + x for x in production_sources())
+    blocks = []
+    for h in d["headers"]:
+        src = "src/" + h["path"][:-2] + ".cpp"
+        base = module_basename(h)
+        rel = py_rel_from_module(h["python_module"])
+        parent = rel.parent.as_posix()
+        outdir = "${CMAKE_BINARY_DIR}/python/wiringop" + (
+            "" if parent == "." else "/" + parent
+        )
+        install_dir = "wiringop" + ("" if parent == "." else "/" + parent)
+        stub = "stubs/" + h["path"][:-2] + ".pyi"
+        t = "nb_" + re.sub(r"[^A-Za-z0-9_]", "_", h["path"][:-2])
+        blocks.append(f'''nanobind_add_module({t} NB_STATIC FREE_THREADED PROTECT_STACK NOMINSIZE {src})
 target_include_directories({t} PRIVATE ${{NB_ROOT}}/include ${{NB_ROOT}}/ext/robin_map/include ${{WIRINGOP_SOURCE}} ${{WIRINGOP_SOURCE}}/wiringPi ${{WIRINGOP_SOURCE}}/devLib ${{WIRINGOP_SOURCE}}/wiringPiD)
 target_compile_definitions({t} PRIVATE CONFIG_ORANGEPI _GNU_SOURCE)
-target_link_libraries({t} PRIVATE nanobind_runtime wiringop_backend Python::Module Threads::Threads dl m)
+target_link_libraries({t} PRIVATE wiringop_backend ${{WIRINGOP_NATIVE_SYSTEM_LIBS}})
+wiringop_native_windows_abi({t})
 set_target_properties({t} PROPERTIES PREFIX "" OUTPUT_NAME "{base}" LIBRARY_OUTPUT_DIRECTORY "{outdir}")
 install(TARGETS {t} LIBRARY DESTINATION "{install_dir}" RUNTIME DESTINATION "{install_dir}")
 install(FILES "${{CMAKE_CURRENT_SOURCE_DIR}}/{stub}" DESTINATION "{install_dir}" RENAME "{base}.pyi")
 ''')
-    return f'''cmake_minimum_required(VERSION 3.18)
+    return f"""cmake_minimum_required(VERSION 3.18)
 project(wiringop_nanobind LANGUAGES C CXX)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
@@ -1005,20 +1487,42 @@ if(NOT WIRINGOP_SOURCE)
     message(FATAL_ERROR "Failed to prepare pinned wiringOP source: ${{WIRINGOP_PREPARE_ERROR}}")
   endif()
 endif()
-add_library(nanobind_runtime STATIC "${{NB_ROOT}}/src/nb_combined.cpp")
-target_include_directories(nanobind_runtime PUBLIC "${{NB_ROOT}}/include" "${{NB_ROOT}}/ext/robin_map/include" PRIVATE "${{NB_ROOT}}/src")
-target_link_libraries(nanobind_runtime PUBLIC Python::Module)
-target_compile_definitions(nanobind_runtime PRIVATE NB_COMPACT_ASSERTIONS)
+# Use the upstream nanobind build integration: it selects the correct ABI,
+# backend library, and Py_mod_gil metadata for the chosen CPython.
+# Defining NB_FREE_THREADED only in user wrappers is not sufficient.
+find_package(nanobind 2.14.0 EXACT CONFIG REQUIRED
+  PATHS "${{NB_ROOT}}/cmake" NO_DEFAULT_PATH)
+# Nanobind's own NB_STATIC runtime is module-local. The production wiringOP C
+# backend is different: it owns process-global physical device state and must
+# be linked exactly once as a shared library across all extension modules.
+# Hardware-free mock bindings retain their independent static shim.
+set(WIRINGOP_NATIVE_SYSTEM_LIBS Threads::Threads ${{CMAKE_DL_LIBS}})
+if(UNIX)
+  list(APPEND WIRINGOP_NATIVE_SYSTEM_LIBS m)
+endif()
 if(WIRINGOP_USE_MOCK)
  add_library(wiringop_backend STATIC
 {mocks}
  )
 else()
- add_library(wiringop_backend STATIC
+ add_library(wiringop_backend SHARED
 {prodtxt}
  )
 endif()
+# Do not mispackage the Linux-specific physical GPIO backend as a native
+# Windows hardware implementation. Windows CI validates genuine native C ABI
+# mock shims only, and may not publish them as physical-hardware wheels.
+if(WIN32 AND NOT WIRINGOP_USE_MOCK)
+  message(FATAL_ERROR "Windows physical wiringOP backend is unsupported; do not ship a mock as production")
+endif()
+function(wiringop_native_windows_abi target_name)
+  if(MSVC)
+    target_include_directories(${{target_name}} BEFORE PRIVATE "${{CMAKE_CURRENT_SOURCE_DIR}}/support/windows_native/include")
+    target_compile_options(${{target_name}} PRIVATE "/FI${{CMAKE_CURRENT_SOURCE_DIR}}/support/windows_native/include/msvc_compat.h")
+  endif()
+endfunction()
 target_include_directories(wiringop_backend PUBLIC "${{WIRINGOP_SOURCE}}" "${{WIRINGOP_SOURCE}}/wiringPi" "${{WIRINGOP_SOURCE}}/devLib" "${{WIRINGOP_SOURCE}}/wiringPiD")
+wiringop_native_windows_abi(wiringop_backend)
 target_compile_definitions(wiringop_backend PRIVATE CONFIG_ORANGEPI _GNU_SOURCE)
 find_library(CRYPT_LIBRARY NAMES crypt)
 if(CRYPT_LIBRARY)
@@ -1026,14 +1530,25 @@ if(CRYPT_LIBRARY)
 elseif(NOT WIRINGOP_USE_MOCK)
   message(FATAL_ERROR "libcrypt is required by wiringOP network/drcNet code")
 endif()
+if(NOT WIRINGOP_USE_MOCK)
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(FATAL_ERROR "Physical wiringOP backend requires Linux; cannot publish a mock as production")
+  endif()
+  # Keep one process-wide GPIO/UART state object in the installed wheel.
+  # The backend resides in wiringop/, extensions in wiringop/ or its child
+  # packages; do not rely on absolute build paths or system installations.
+  install(TARGETS wiringop_backend LIBRARY DESTINATION wiringop)
+  set(CMAKE_INSTALL_RPATH "$ORIGIN;$ORIGIN/..")
+  set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
+endif()
 file(COPY "${{CMAKE_CURRENT_SOURCE_DIR}}/python/wiringop" DESTINATION "${{CMAKE_BINARY_DIR}}/python" PATTERN "__pycache__" EXCLUDE PATTERN "*.pyc" EXCLUDE)
 install(DIRECTORY "${{CMAKE_CURRENT_SOURCE_DIR}}/python/wiringop/" DESTINATION wiringop FILES_MATCHING PATTERN "*.py" PATTERN "py.typed" PATTERN "__pycache__" EXCLUDE PATTERN "*.pyc" EXCLUDE)
-{''.join(blocks)}
-'''
+{"".join(blocks)}
+"""
 
 
 def pyproject_text() -> str:
-    return '''[build-system]
+    return """[build-system]
 requires = ["scikit-build-core>=0.10", "nanobind==2.14.0"]
 build-backend = "scikit_build_core.build"
 
@@ -1048,36 +1563,85 @@ license = {text = "LGPL-3.0-or-later"}
 testpaths = ["tests"]
 python_files = ["*.py"]
 addopts = ["--import-mode=importlib"]
-'''
+
+# The Git submodule is a *checkout* dependency, not a distributable Git repo.
+# Ship the separately SHA-256-attested exact 53fe570 git archive instead.
+# A sdist must not contain local CMake/MSVC build outputs or a partial fork.
+[tool.scikit-build.sdist]
+include = ["/support/upstream/wiringOP-53fe570936ebca007d6d76f26ef21ba9f2609ca6-git-archive.zip"]
+exclude = [
+    "/extern/wiringOP/**",
+    "/_r2_native_build/**",
+    "/build/**",
+    "/dist/**",
+    "/.venv/**",
+    "/**/.git/**",
+    "/**/.pytest_cache/**",
+    "/**/__pycache__/**",
+    "/**/*.pyc",
+    "/**/*.pyd",
+    "/**/*.obj",
+    "/**/*.lib",
+    "/**/*.dll",
+    "/**/*.pdb",
+    "/**/CMakeFiles/**",
+    "/**/CMakeCache.txt",
+]
+
+[tool.sklint]
+strict = true
+"""
 
 
 def main() -> None:
-    d=json.loads(MANIFEST.read_text());structs=struct_class_map(d)
-    for name in ('src','tests','docs','stubs','support/mock_backend','python/wiringop'):
-        p=ROOT/name
-        if p.exists(): shutil.rmtree(p)
-        p.mkdir(parents=True,exist_ok=True)
-    (ROOT/'python/wiringop/__init__.py').write_text('"""Pythonic nanobind bindings for wiringOP."""\n__version__="0.1.0"\n',encoding='utf-8')
-    (ROOT/'python/wiringop/py.typed').write_text('',encoding='utf-8')
-    for h in d['headers']:
-        for base,suffix,text in (
-            ('src','.cpp',generate_cpp(d,h)),
-            ('tests','.py',generate_test(d,h,structs)),
-            ('docs','.md',generate_doc(h)),
-            ('support/mock_backend','.c',generate_mock(h)),
+    d = json.loads(MANIFEST.read_text())
+    structs = struct_class_map(d)
+    for name in (
+        "src",
+        "tests",
+        "docs",
+        "stubs",
+        "support/mock_backend",
+        "python/wiringop",
+    ):
+        p = ROOT / name
+        if p.exists():
+            shutil.rmtree(p)
+        p.mkdir(parents=True, exist_ok=True)
+    (ROOT / "python/wiringop/__init__.py").write_text(
+        '"""Pythonic nanobind bindings for wiringOP."""\n__version__="0.1.0"\n',
+        encoding="utf-8",
+    )
+    (ROOT / "python/wiringop/py.typed").write_text("", encoding="utf-8")
+    for h in d["headers"]:
+        for base, suffix, text in (
+            ("src", ".cpp", generate_cpp(d, h)),
+            ("tests", ".py", generate_test(d, h, structs)),
+            ("docs", ".md", generate_doc(h)),
+            ("support/mock_backend", ".c", generate_mock(h)),
         ):
-            p=ROOT/base/Path(h['path']).with_suffix(suffix);p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text,encoding='utf-8')
-        pkg=ROOT/'python'/Path(*h['python_module'].split('.')[:-1]);pkg.mkdir(parents=True,exist_ok=True)
-        q=pkg
-        while q!=ROOT/'python' and q.is_relative_to(ROOT/'python'):
-            init=q/'__init__.py'
-            if not init.exists(): init.write_text('',encoding='utf-8')
-            q=q.parent
-    (ROOT/'CMakeLists.txt').write_text(cmake_text(d),encoding='utf-8')
-    (ROOT/'pyproject.toml').write_text(pyproject_text(),encoding='utf-8')
-    (ROOT/'.gitignore').write_text('build/\ndist/\n*.egg-info/\n__pycache__/\n*.py[cod]\n*.so\n*.dylib\n*.dll\n.pytest_cache/\n.venv/\nhardware_validation/*.tar.gz\n',encoding='utf-8')
-    license_src=ROOT/'extern/wiringOP/COPYING.LESSER'
-    if license_src.is_file(): shutil.copyfile(license_src,ROOT/'LICENSE')
-    print(f'generated {len(d["headers"])} mirrored units')
+            p = ROOT / base / Path(h["path"]).with_suffix(suffix)
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(text, encoding="utf-8")
+        pkg = ROOT / "python" / Path(*h["python_module"].split(".")[:-1])
+        pkg.mkdir(parents=True, exist_ok=True)
+        q = pkg
+        while q != ROOT / "python" and q.is_relative_to(ROOT / "python"):
+            init = q / "__init__.py"
+            if not init.exists():
+                init.write_text("", encoding="utf-8")
+            q = q.parent
+    (ROOT / "CMakeLists.txt").write_text(cmake_text(d), encoding="utf-8")
+    (ROOT / "pyproject.toml").write_text(pyproject_text(), encoding="utf-8")
+    (ROOT / ".gitignore").write_text(
+        "build/\ndist/\n*.egg-info/\n__pycache__/\n*.py[cod]\n*.so\n*.dylib\n*.dll\n.pytest_cache/\n.venv/\nhardware_validation/*.tar.gz\n",
+        encoding="utf-8",
+    )
+    license_src = ROOT / "extern/wiringOP/COPYING.LESSER"
+    if license_src.is_file():
+        shutil.copyfile(license_src, ROOT / "LICENSE")
+    print(f"generated {len(d['headers'])} mirrored units")
 
-if __name__=='__main__': main()
+
+if __name__ == "__main__":
+    main()

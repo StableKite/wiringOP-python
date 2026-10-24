@@ -1,7 +1,5 @@
 """nanobind bindings for wiringPi/mcp23x0817.h"""
 
-
-
 MCP23X08_IODIR: int = 0
 
 MCP23X08_IPOL: int = 1

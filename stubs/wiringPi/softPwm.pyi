@@ -1,9 +1,5 @@
 """nanobind bindings for wiringPi/softPwm.h"""
 
-
-
 def soft_pwm_create(pin: int, value: int, range: int) -> int: ...
-
 def soft_pwm_write(pin: int, value: int) -> None: ...
-
 def soft_pwm_stop(pin: int) -> None: ...

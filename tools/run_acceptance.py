@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib
 import json
 import os
 import shutil
@@ -12,7 +11,14 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PINNED_WIRINGOP = "a7921ca2f5c124203be10d3418db70a2e15f3c10"
+from upstream_contract import (
+    BASE_SHA,
+    INTEGRATION_SHA,
+    assert_no_legacy_patch_application,
+    verify_integrated_features,
+    verify_upstream,
+)
+
 NB_VERSION = "2.14.0"
 NB_HEADER_BLOB = "d18f1320133bf5df4c8ecc90dd99b8fd1dd856b9"
 NB_COMBINED_BLOB = "6abb636a73da3d307c101ca2231dd1e6bd794f30"
@@ -55,7 +61,7 @@ def python_env(package_root: Path, wheel: Path | None = None) -> dict[str, str]:
 
 
 def import_smoke(package_root: Path, label: str) -> None:
-    code = r'''
+    code = r"""
 import pkgutil, importlib, wiringop
 mods=[m.name for m in pkgutil.walk_packages(wiringop.__path__, wiringop.__name__+'.')]
 failed=[]
@@ -66,7 +72,7 @@ print("IMPORT_SMOKE", len(mods)-len(failed), len(mods), "failed", len(failed))
 if failed:
     print(failed)
     raise SystemExit(1)
-'''
+"""
     run([sys.executable, "-c", code], env=python_env(package_root))
     print(f"{label}_IMPORT_OK", flush=True)
 
@@ -91,21 +97,19 @@ def verify_dependency_tree(nb_root: Path, wheel: Path) -> None:
         raise SystemExit(f"missing nanobind wheel: {wheel}")
     actual_wheel = file_sha256(wheel)
     if actual_wheel != NB_WHEEL_SHA256:
-        raise SystemExit(f"nanobind wheel SHA256 mismatch: {actual_wheel} != {NB_WHEEL_SHA256}")
+        raise SystemExit(
+            f"nanobind wheel SHA256 mismatch: {actual_wheel} != {NB_WHEEL_SHA256}"
+        )
     print("DEPENDENCY_GATE_OK nanobind=2.14.0 exact_blobs=3 wheel_sha256=OK")
 
 
-def verify_upstream() -> None:
-    upstream = ROOT / "extern/wiringOP"
-    head = capture(["git", "rev-parse", "HEAD"], cwd=upstream)
-    if head != PINNED_WIRINGOP:
-        raise SystemExit(f"wiringOP HEAD mismatch: {head}")
-    if capture(["git", "status", "--porcelain"], cwd=upstream):
-        raise SystemExit("extern/wiringOP is dirty")
-    entry = capture(["git", "ls-files", "-s", "extern/wiringOP"])
-    if not entry.startswith("160000 "):
-        raise SystemExit(f"extern/wiringOP is not a gitlink: {entry}")
-    print(f"UPSTREAM_GATE_OK commit={head} gitlink=160000")
+def verify_upstream_gate() -> None:
+    source = verify_upstream(ROOT)
+    verify_integrated_features(source)
+    assert_no_legacy_patch_application(ROOT)
+    print(
+        f"UPSTREAM_GATE_OK base={BASE_SHA} integration={INTEGRATION_SHA} gitlink=160000"
+    )
 
 
 def compare_manifest(build_root: Path) -> None:
@@ -114,26 +118,38 @@ def compare_manifest(build_root: Path) -> None:
     current = json.loads((ROOT / "api_manifest.json").read_text())
     fresh = json.loads(generated.read_text())
     if current != fresh:
-        raise SystemExit("fresh Clang manifest differs from committed api_manifest.json")
+        raise SystemExit(
+            "fresh Clang manifest differs from committed api_manifest.json"
+        )
     t = current["totals"]
     print("MANIFEST_REPRO_OK", json.dumps(t, sort_keys=True))
 
 
-def configure_and_build(build_dir: Path, nb_root: Path, use_mock: bool, jobs: int) -> None:
+def configure_and_build(
+    build_dir: Path, nb_root: Path, use_mock: bool, jobs: int
+) -> None:
     if build_dir.exists():
         shutil.rmtree(build_dir)
-    run([
-        "cmake", "-S", ".", "-B", str(build_dir),
-        f"-DNB_ROOT={nb_root}",
-        f"-DWIRINGOP_USE_MOCK={'ON' if use_mock else 'OFF'}",
-        f"-DWIRINGOP_SOURCE={ROOT / 'build/upstream/wiringOP'}",
-        "-DCMAKE_BUILD_TYPE=Release",
-    ])
+    run(
+        [
+            "cmake",
+            "-S",
+            ".",
+            "-B",
+            str(build_dir),
+            f"-DNB_ROOT={nb_root}",
+            f"-DWIRINGOP_USE_MOCK={'ON' if use_mock else 'OFF'}",
+            f"-DWIRINGOP_SOURCE={ROOT / 'build/upstream/wiringOP'}",
+            "-DCMAKE_BUILD_TYPE=Release",
+        ]
+    )
     run(["cmake", "--build", str(build_dir), f"-j{jobs}"])
     count = len(list((build_dir / "python/wiringop").rglob("*.so")))
     if count != 54:
         raise SystemExit(f"expected 54 built extension modules, found {count}")
-    print(f"BUILD_GATE_OK backend={'mock' if use_mock else 'production'} modules={count}")
+    print(
+        f"BUILD_GATE_OK backend={'mock' if use_mock else 'production'} modules={count}"
+    )
 
 
 def generate_stubs(mock_python: Path, wheel: Path) -> None:
@@ -141,7 +157,7 @@ def generate_stubs(mock_python: Path, wheel: Path) -> None:
     if stubs.exists():
         shutil.rmtree(stubs)
     stubs.mkdir(parents=True)
-    code = r'''
+    code = r"""
 import json, pathlib
 from nanobind import stubgen
 root=pathlib.Path.cwd()
@@ -151,7 +167,7 @@ for h in d['headers']:
     out.parent.mkdir(parents=True, exist_ok=True)
     stubgen.main(['-m', h['python_module'], '-o', str(out), '--quiet'])
 print('OFFICIAL_STUBGEN_OK', len(d['headers']))
-'''
+"""
     run([sys.executable, "-c", code], env=python_env(mock_python, wheel))
 
 
@@ -162,30 +178,74 @@ def verify_install_tree(prod_build: Path, install_root: Path) -> None:
     package = install_root / "wiringop"
     pyi = list(package.rglob("*.pyi"))
     so = list(package.rglob("*.so"))
+    backend = package / "libwiringop_backend.so"
+    extensions = [item for item in so if item != backend]
     pycache = list(package.rglob("__pycache__"))
     pyc = list(package.rglob("*.pyc"))
-    if len(pyi) != 54 or len(so) != 54:
-        raise SystemExit(f"install tree mismatch: .pyi={len(pyi)} .so={len(so)}")
+    if (
+        len(pyi) != 54
+        or len(extensions) != 54
+        or len(so) != 55
+        or not backend.is_file()
+    ):
+        raise SystemExit(
+            f"production install mismatch: .pyi={len(pyi)} native extensions={len(extensions)} "
+            f"shared C backends={len(so) - len(extensions)}"
+        )
     if pycache or pyc:
-        raise SystemExit(f"install tree contains Python cache artifacts: dirs={len(pycache)} pyc={len(pyc)}")
+        raise SystemExit(
+            f"install tree contains Python cache artifacts: dirs={len(pycache)} pyc={len(pyc)}"
+        )
     if not (package / "py.typed").is_file():
         raise SystemExit("installed py.typed is missing")
     env = python_env(install_root)
     env["PYTHONDONTWRITEBYTECODE"] = "1"
-    code = r'''
-import pkgutil, importlib, wiringop
-mods=[m.name for m in pkgutil.walk_packages(wiringop.__path__, wiringop.__name__+'.')]
+    code = r"""
+import json, pkgutil, importlib, pathlib, wiringop
+source=json.loads((pathlib.Path.cwd()/'api_manifest.json').read_text())
+manifest_modules={h['python_module'] for h in source['headers']}
+assert len(manifest_modules)==54
+package_modules={'wiringop.dev_lib','wiringop.wiring_pi','wiringop.wiring_pi_d'}
+# pkgutil discovers the shared C backend as a pseudo-Python extension.
+# Assert the exact module set; do not suppress arbitrary ImportErrors.
+native_backend={'wiringop.libwiringop_backend'}
+mods={m.name for m in pkgutil.walk_packages(wiringop.__path__, wiringop.__name__+'.')}
+expected=manifest_modules|package_modules|native_backend
+assert mods==expected, f'installed module set mismatch: missing={expected-mods}, extra={mods-expected}'
 failed=[]
-for name in mods:
+for name in sorted(manifest_modules|package_modules):
     try: importlib.import_module(name)
     except Exception as exc: failed.append((name, repr(exc)))
-print("INSTALL_IMPORT_SMOKE", len(mods)-len(failed), len(mods), "failed", len(failed))
+print("INSTALL_IMPORT_SMOKE", len(manifest_modules)-len(failed), len(manifest_modules), "failed", len(failed), "C_SHARED_BACKEND_ONE")
 if failed:
     print(failed)
     raise SystemExit(1)
-'''
+"""
     run([sys.executable, "-c", code], env=env)
-    print("INSTALL_TREE_OK modules=54 stubs=54 py.typed=yes caches=none")
+    run(
+        [
+            sys.executable,
+            "tools/audit_production_backend.py",
+            "--installed-package",
+            str(package),
+            "--manifest",
+            str(ROOT / "api_manifest.json"),
+            "--import-all",
+            "--report",
+            str(install_root / "production-shared-backend-audit.json"),
+        ]
+    )
+    run(
+        [
+            sys.executable,
+            "tools/selftest_production_backend.py",
+            "--installed-package",
+            str(package),
+            "--manifest",
+            str(ROOT / "api_manifest.json"),
+        ]
+    )
+    print("INSTALL_TREE_OK modules=54 stubs=54 shared_gpio_backend=1 caches=none")
 
 
 def verify_default_packaging_config(build_root: Path, wheel: Path) -> None:
@@ -195,43 +255,70 @@ def verify_default_packaging_config(build_root: Path, wheel: Path) -> None:
         shutil.rmtree(package_root)
     if configure_root.exists():
         shutil.rmtree(configure_root)
-    run([
-        sys.executable, "-m", "pip", "install", "--no-index", "--no-deps",
-        "--target", str(package_root), str(wheel),
-    ])
+    run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--no-index",
+            "--no-deps",
+            "--target",
+            str(package_root),
+            str(wheel),
+        ]
+    )
     env = os.environ.copy()
     old = env.get("PYTHONPATH")
     env["PYTHONPATH"] = str(package_root) + (os.pathsep + old if old else "")
-    run(["cmake", "-S", ".", "-B", str(configure_root), "-DCMAKE_BUILD_TYPE=Release"], env=env)
+    run(
+        ["cmake", "-S", ".", "-B", str(configure_root), "-DCMAKE_BUILD_TYPE=Release"],
+        env=env,
+    )
     cache = (configure_root / "CMakeCache.txt").read_text()
     if "WIRINGOP_USE_MOCK:BOOL=OFF" not in cache:
         raise SystemExit("default package configure did not select production backend")
     expected_nb = (package_root / "nanobind").resolve()
     if f"NB_ROOT:PATH={expected_nb}" not in cache:
-        raise SystemExit("default package configure did not auto-discover exact nanobind wheel")
+        raise SystemExit(
+            "default package configure did not auto-discover exact nanobind wheel"
+        )
     prepared = configure_root / "upstream/wiringOP"
-    if "serialContextCancelRead" not in (prepared / "wiringPi/wiringSerial.h").read_text():
-        raise SystemExit("default package configure did not apply UART overlay")
+    if (
+        "serialContextCancelRead"
+        not in (prepared / "wiringPi/wiringSerial.h").read_text()
+    ):
+        raise SystemExit("default package configure lacks fork-integrated UART")
     if "uintptr_t" not in (prepared / "wiringPi/pseudoPins.c").read_text():
-        raise SystemExit("default package configure did not apply AArch64 pseudoPins overlay")
-    print("PACKAGE_DEFAULT_CONFIG_OK production=yes nanobind=auto overlays=2")
+        raise SystemExit(
+            "default package configure lacks fork-integrated AArch64 pseudoPins fix"
+        )
+    print(
+        "PACKAGE_DEFAULT_CONFIG_OK production=yes nanobind=auto overlays=already-integrated"
+    )
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--nb-root", type=Path, default=Path(os.environ.get("NB_ROOT", "/mnt/data/.deps/nanobind-2.14.0")))
+    ap.add_argument(
+        "--nb-root",
+        type=Path,
+        default=Path(os.environ.get("NB_ROOT", "/mnt/data/.deps/nanobind-2.14.0")),
+    )
     ap.add_argument("--nanobind-wheel", type=Path)
     ap.add_argument("--qemu-bundle", type=Path)
     ap.add_argument("--jobs", type=int, default=2)
     ap.add_argument("--build-root", type=Path, default=ROOT / "build/acceptance")
     ns = ap.parse_args()
     nb_root = ns.nb_root.resolve()
-    wheel = (ns.nanobind_wheel or (nb_root.parent / "pypi/nanobind-2.14.0-py3-none-any.whl")).resolve()
+    wheel = (
+        ns.nanobind_wheel or (nb_root.parent / "pypi/nanobind-2.14.0-py3-none-any.whl")
+    ).resolve()
     build_root = ns.build_root.resolve()
     build_root.mkdir(parents=True, exist_ok=True)
 
     verify_dependency_tree(nb_root, wheel)
-    verify_upstream()
+    verify_upstream_gate()
     verify_default_packaging_config(build_root, wheel)
     run([sys.executable, "tools/prepare_wiringop.py"])
     compare_manifest(build_root)
@@ -260,28 +347,48 @@ def main() -> int:
     configure_and_build(prod, nb_root, False, ns.jobs)
     prod_python = prod / "python"
     import_smoke(prod_python, "PRODUCTION")
-    run([sys.executable, "tools/test_serial_python_pty.py"], env=python_env(prod_python))
+    run(
+        [sys.executable, "tools/test_serial_python_pty.py"], env=python_env(prod_python)
+    )
     verify_install_tree(prod, build_root / "install")
 
     if ns.qemu_bundle is not None:
-        run([sys.executable, "tools/test_qemu_aarch64.py", str(ns.qemu_bundle.resolve())])
+        run(
+            [
+                sys.executable,
+                "tools/test_qemu_aarch64.py",
+                str(ns.qemu_bundle.resolve()),
+            ]
+        )
     else:
         print("QEMU_GATE_SKIPPED no --qemu-bundle supplied")
 
     summary = {
         "status": "ok",
-        "wiringop_commit": PINNED_WIRINGOP,
+        "wiringop_commit": INTEGRATION_SHA,
+        "wiringop_base_commit": BASE_SHA,
         "nanobind_version": NB_VERSION,
-        "manifest_totals": json.loads((ROOT / "api_manifest.json").read_text())["totals"],
-        "mock_pytest": "321/321 passed",
-        "stubgen": "official nanobind.stubgen 2.14.0, 54/54",
-        "production_import": "57/57",
-        "install_tree": {"extensions": 54, "stubs": 54, "py_typed": True, "cache_artifacts": 0},
-        "package_default": "production, nanobind auto-discovery, overlays auto-prepared",
+        "manifest_totals": json.loads((ROOT / "api_manifest.json").read_text())[
+            "totals"
+        ],
+        "mock_pytest": "see exact pytest output for this run",
+        "stubgen": "official nanobind.stubgen 2.14.0 (see audit output)",
+        "production_import": "see exact import-smoke output",
+        "install_tree": {
+            "extensions": 54,
+            "shared_gpio_backend": 1,
+            "stubs": 54,
+            "py_typed": True,
+            "cache_artifacts": 0,
+        },
+        "production_backend_global_singleton": "verified with imported ELF extension symbols",
+        "package_default": "production, nanobind auto-discovery, integrated fork source auto-prepared",
         "python_serial_pty": "passed",
         "qemu": "passed" if ns.qemu_bundle is not None else "skipped",
     }
-    (build_root / "acceptance-summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    (build_root / "acceptance-summary.json").write_text(
+        json.dumps(summary, indent=2) + "\n"
+    )
     print("ACCEPTANCE_OK", json.dumps(summary, sort_keys=True))
     return 0
 

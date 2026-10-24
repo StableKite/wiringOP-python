@@ -1,6 +1,6 @@
 # wiringop-nanobind
 
-Полное Pythonic nanobind-покрытие `orangepi-xunlong/wiringOP`, закреплённого на ветке `next`, commit `a7921ca2f5c124203be10d3418db70a2e15f3c10`.
+Полное Pythonic nanobind-покрытие исторического `orangepi-xunlong/wiringOP` (`next`, база `a7921ca2f5c124203be10d3418db70a2e15f3c10`) через зафиксированный интеграционный fork `StableKite/wiringOP` (`53fe570936ebca007d6d76f26ef21ba9f2609ca6`).
 
 Проект рассматривает публичные upstream headers как контракт. Для каждого из 54 заголовков существуют зеркальные `src/**/*.cpp`, `tests/**/*.py`, `docs/**/*.md` и сгенерированный официальный `nanobind.stubgen` файл `stubs/**/*.pyi`.
 
@@ -9,8 +9,8 @@
 ## Структура
 
 ```text
-extern/wiringOP/          git submodule на exact upstream commit
-patches/wiringOP/         минимальные project overlays поверх upstream
+extern/wiringOP/          git submodule на exact integration fork SHA
+patches/wiringOP/         архивные upstream-review overlays — повторно НЕ применять
 src/<header>.cpp          nanobind binder
 tests/<header>.py         зеркальный hardware-free acceptance test
 docs/<header>.md          русская документация
@@ -45,7 +45,7 @@ git submodule update --init --recursive
 python -m pip install .
 ```
 
-`pyproject.toml` фиксирует build dependency `nanobind==2.14.0`. CMake автоматически находит установленный build-пакет nanobind, проверяет версию, готовит чистую копию закреплённого `wiringOP`, применяет project overlays и **по умолчанию собирает production backend**. Mock backend включается только явно через `-DWIRINGOP_USE_MOCK=ON`.
+`pyproject.toml` фиксирует build dependency `nanobind==2.14.0`. CMake автоматически находит установленный build-пакет nanobind, проверяет версию, готовит чистую копию закреплённого интеграционного fork **без повторного применения уже включённых overlays** и **по умолчанию собирает production backend**. Перед копированием проверяются exact Gitlink в commit/index, чистота и origin submodule, ancestry исходной базы и содержимое ключевых интегрированных функций. Mock backend включается только явно через `-DWIRINGOP_USE_MOCK=ON`.
 
 Для полностью offline CMake-сборки exact source tree можно передать непосредственно:
 
@@ -73,19 +73,28 @@ python tools/run_acceptance.py \
 
 Финальный проверенный прогон: **321/321 pytest**, **54/54 stubs**, **54/54 production imports**, install-tree **54 `.so` + 54 `.pyi` + `py.typed`**. Подробности сохранены в `ACCEPTANCE_RESULTS.md` и `ACCEPTANCE_LOG.txt`.
 
-## Upstream PRs and project overlays
+## Историческая upstream-база и текущий integration fork
 
-The warning cleanup and UART work are intentionally reviewable as two independent upstream changes:
+Историческая база upstream: `a7921ca2f5c124203be10d3418db70a2e15f3c10`.
+Текущий Gitlink, который должен быть в HEAD и индексе: `53fe570936ebca007d6d76f26ef21ba9f2609ca6` из `StableKite/wiringOP`.
+Это подтверждённый descendant первоначальной базы (5 дополнительных коммитов), содержащий
+`-Werror` warning cleanup, cancellable UART API, 64-bit pseudoPins fix и оптимизации.
 
-- `upstream_prs/PR1-werror-cleanup.patch` — warning fixes required for strict `-Werror` builds;
-- `upstream_prs/PR2-uart-standalone.patch` — enhanced cancellable/configurable UART API, based directly on the pinned upstream commit.
+Исторические `upstream_prs/PR1-werror-cleanup.patch`, `upstream_prs/PR2-uart-standalone.patch`,
+`patches/wiringOP/0001-werror-cleanup.patch` и `0002-wiringSerial-extended-UART.patch` сохранены для аудита,
+но **не применяются при подготовке production/mock source**. Повторный `git apply` здесь нарушит
+доказательство точного исходного SHA и может конфликтовать с последующими изменениями fork.
 
-For this Python project the same changes are applied sequentially from `patches/wiringOP/`:
+Проверка источника без сетевых/изменяющих действий:
 
-1. `0001-werror-cleanup.patch`;
-2. `0002-wiringSerial-extended-UART.patch`.
+```bash
+python tools/upstream_contract.py
+python tools/selftest_upstream_contract.py
+```
 
-The original `extern/wiringOP` remains clean at the pinned upstream commit.
+Примечание по статусу: `ACCEPTANCE_RESULTS.md` отражает исторический до-CI acceptance.
+Текущая задача пяти native free-threaded GitHub платформ и devpi публикации является отдельной,
+её нельзя объявлять завершённой на основании исторических тестов.
 
 ## Release optimization policy
 
