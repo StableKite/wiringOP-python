@@ -1538,6 +1538,7 @@ if(NOT WIRINGOP_USE_MOCK)
   # The backend resides in wiringop/, extensions in wiringop/ or its child
   # packages; do not rely on absolute build paths or system installations.
   install(TARGETS wiringop_backend LIBRARY DESTINATION wiringop)
+  set_target_properties(wiringop_backend PROPERTIES INSTALL_RPATH "$ORIGIN")
   set(CMAKE_INSTALL_RPATH "$ORIGIN;$ORIGIN/..")
   set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
 endif()

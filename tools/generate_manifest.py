@@ -156,6 +156,7 @@ def direct_decl(node: dict[str, Any], header_abs: Path, tu: Path) -> bool:
 
 
 def ast_for_header(upstream: Path, header: str):
+    """Parse one pinned upstream header with clang and return its AST and TU."""
     with tempfile.NamedTemporaryFile("w", suffix=".c", delete=False) as f:
         tu = Path(f.name)
         f.write("#include <stdint.h>\n#include <stddef.h>\n#include <stdbool.h>\n")
@@ -179,10 +180,11 @@ def ast_for_header(upstream: Path, header: str):
             subprocess.check_output(cmd, text=True, stderr=subprocess.STDOUT)
         ), tu
     except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"clang AST failed for {header}:\n{e.output}")
+        raise RuntimeError(f"clang AST failed for {header}:\n{e.output}") from e
 
 
 def return_type(q: str) -> str:
+    """Extract the return type from a qualified C function type."""
     i = q.find("(")
     return q.strip() if i < 0 else q[:i].strip()
 
